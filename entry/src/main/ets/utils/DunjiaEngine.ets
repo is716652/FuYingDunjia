@@ -79,6 +79,19 @@ export interface DunjiaPanResult {
   hourGanZhi?: string;
   /** 真太阳时偏移量（分钟） */
   solarTimeOffset?: number;
+  /** 识别的格局列表 */
+  gejuPatterns?: GejuPattern[];
+}
+
+/**
+ * 格局模式接口
+ */
+export interface GejuPattern {
+  id: string;
+  name: string;  // 格局名称，如"三奇得使"、"天遁"
+  description: string;  // 格局说明
+  palaceIndices: number[];  // 涉及的宫位索引
+  level: 'minor' | 'major' | 'special';  // 次要、主要、特殊格局
 }
 
 // 核心引擎：负责从时间/地点计算出完整的遁甲盘与结构化分析
@@ -129,8 +142,8 @@ export class DunjiaEngine {
       focusPoints: [] as string[]
     };
     
-    // 7. 计算真太阳时偏移（简化：根据经度计算）
-    const solarTimeOffset = Math.round((input.longitude - 120) * 4); // 120°E为基准，每15°差1小时
+    // 8. 识别格局
+    const gejuPatterns = this.identifyGejuPatterns(ju, palaces, dayInfo, hourGanZhi);
 
     return {
       dunType: ju.dunType,
@@ -143,7 +156,8 @@ export class DunjiaEngine {
       summary,
       dayInfo: dayInfo,
       hourGanZhi: `${hourGanZhi.gan}${hourGanZhi.zhi}`,
-      solarTimeOffset: solarTimeOffset
+      solarTimeOffset: this.calculateSolarTimeOffset(input.longitude),
+      gejuPatterns: gejuPatterns
     };
   }
 
@@ -638,6 +652,163 @@ export class DunjiaEngine {
       longitude,
       sceneType: DunjiaSceneType.GENERAL_STUDY
     };
+  }
+
+  /**
+   * 计算真太阳时偏移量
+   * @param longitude 经度
+   * @returns 偏移量（分钟）
+   */
+  private calculateSolarTimeOffset(longitude: number): number {
+    // 真太阳时偏移量计算公式：(经度 - 120) × 4分钟
+    return (longitude - 120) * 4;
+  }
+
+  /**
+   * 识别奇门遁甲格局
+   * @param ju 局信息
+   * @param palaces 九宫状态
+   * @param dayInfo 当日信息
+   * @param hourGanZhi 时辰干支
+   */
+
+  /**
+   * 识别奇门遁甲格局
+   * @param ju 局信息
+   * @param palaces 九宫状态
+   * @param dayInfo 当日信息
+   * @param hourGanZhi 时辰干支
+   */
+  private identifyGejuPatterns(ju: JuInfo, palaces: PalaceState[], dayInfo: CalendarDayInfo, hourGanZhi: HourGanZhi): GejuPattern[] {
+    const patterns: GejuPattern[] = [];
+    
+    // 1. 识别三奇得使格局
+    // 三奇（乙丙丁）临八门之一，且该门为值使门
+    const sanQiGan = ['乙', '丙', '丁'];
+    for (const gan of sanQiGan) {
+      const ganPalaceIndex = palaces.findIndex(p => p.tianGan === gan);
+      if (ganPalaceIndex !== -1 && ganPalaceIndex === ju.zhiShiPalace) {
+        patterns.push({
+          id: `sanqi_deshi_${gan}`,
+          name: `三奇得使(${gan})`,
+          description: `${gan}奇临值使门，为三奇得使格局，主贵人扶助，事半功倍`,
+          palaceIndices: [ganPalaceIndex],
+          level: 'major'
+        });
+      }
+    }
+    
+    // 2. 识别三奇合格局
+    // 三奇（乙丙丁）同在一宫
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      // 检查一个宫位中是否同时有乙丙丁三个天干
+      const allGanInPalace: string[] = [];
+      if (palace.tianGan) allGanInPalace.push(palace.tianGan);
+      if (palace.diGan) allGanInPalace.push(palace.diGan);
+      if (sanQiGan.every(qi => allGanInPalace.includes(qi))) {
+        patterns.push({
+          id: `sanqi_he_${i}`,
+          name: `三奇合局`,
+          description: `乙丙丁三奇同聚${palace.palaceName}，为三奇合局，主大吉昌隆`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+    
+    // 3. 识别天遁格局
+    // 丙奇临开、休、生三吉门，且临天上六甲
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      if (palace.tianGan === '丙' && ['开门', '休门', '生门'].includes(palace.doorName || '') &&
+          (palace.diGan === '甲' || palace.diGan === '戊' || palace.diGan === '己')) {
+        patterns.push({
+          id: `tian_dun_${i}`,
+          name: `天遁`,
+          description: `丙奇临${palace.doorName}，得天时之利，宜争讼、陈诉、上书、献策等`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+    
+    // 4. 识别地遁格局
+    // 乙奇临开门或杜门，且临地下六己
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      if (palace.tianGan === '乙' && ['开门', '杜门'].includes(palace.doorName || '') &&
+          (palace.diGan === '己')) {
+        patterns.push({
+          id: `di_dun_${i}`,
+          name: `地遁`,
+          description: `乙奇临${palace.doorName}，得地利之便，宜埋葬、修造、建厂、藏兵等`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+    
+    // 5. 识别人遁格局
+    // 丁奇临杜门，且临地下六癸
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      if (palace.tianGan === '丁' && palace.doorName === '杜门' &&
+          (palace.diGan === '癸')) {
+        patterns.push({
+          id: `ren_dun_${i}`,
+          name: `人遁`,
+          description: `丁奇临杜门，得人和之助，宜潜藏、匿形、和谈、密谋等`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+    
+    // 6. 识别伏吟格局
+    // 天盘地盘相同
+    for (let i = 0; i < 9; i++) {
+      if (palaces[i].tianGan && palaces[i].diGan && palaces[i].tianGan === palaces[i].diGan) {
+        patterns.push({
+          id: `fu_yin_${i}`,
+          name: `伏吟`,
+          description: `${palaces[i].tianGan}干在${palaces[i].palaceName}伏吟，主静守为宜，不宜轻举妄动`,
+          palaceIndices: [i],
+          level: 'minor'
+        });
+      }
+    }
+    
+    // 7. 识别反吟格局
+    // 甲子与甲午、甲戌与甲辰、甲申与甲寅相对
+    const oppositePairs = [
+      ['甲子', '甲午'],
+      ['甲戌', '甲辰'],
+      ['甲申', '甲寅']
+    ];
+    for (let i = 0; i < 9; i++) {
+      for (let j = i + 1; j < 9; j++) {
+        const tianGan1 = palaces[i].tianGan || '';
+        const tianGan2 = palaces[j].tianGan || '';
+        const diGan1 = palaces[i].diGan || '';
+        const diGan2 = palaces[j].diGan || '';
+        const hasOpposite = oppositePairs.some(pair => 
+          (pair.includes(tianGan1) && pair.includes(diGan2)) || 
+          (pair.includes(diGan1) && pair.includes(tianGan2))
+        );
+        if (hasOpposite) {
+          patterns.push({
+            id: `fan_yin_${i}_${j}`,
+            name: `反吟`,
+            description: `${tianGan1}与${tianGan2}在宫位间反吟，主变动、反复，宜谨慎行事`,
+            palaceIndices: [i, j],
+            level: 'minor'
+          });
+        }
+      }
+    }
+
+    return patterns;
   }
 }
 
