@@ -73,6 +73,12 @@ export interface DunjiaPanResult {
   ruleHits: RuleHit[];
   /** 针对当前场景的整体结构评估（研习向描述） */
   summary: EvaluationSummary;
+  /** 当日干支信息（包含农历） */
+  dayInfo?: CalendarDayInfo;
+  /** 时辰干支 */
+  hourGanZhi?: string;
+  /** 真太阳时偏移量（分钟） */
+  solarTimeOffset?: number;
 }
 
 // 核心引擎：负责从时间/地点计算出完整的遁甲盘与结构化分析
@@ -122,6 +128,9 @@ export class DunjiaEngine {
       overview: `当前为${ju.dunType === DunType.YANG ? '阳遁' : '阴遁'}${ju.juNumber}局，值符在${palaces[ju.zhiFuPalace].palaceName}，值使在${palaces[ju.zhiShiPalace].palaceName}`,
       focusPoints: [] as string[]
     };
+    
+    // 7. 计算真太阳时偏移（简化：根据经度计算）
+    const solarTimeOffset = Math.round((input.longitude - 120) * 4); // 120°E为基准，每15°差1小时
 
     return {
       dunType: ju.dunType,
@@ -131,7 +140,10 @@ export class DunjiaEngine {
       zhiShiPalace: ju.zhiShiPalace,
       palaces,
       ruleHits,
-      summary
+      summary,
+      dayInfo: dayInfo,
+      hourGanZhi: `${hourGanZhi.gan}${hourGanZhi.zhi}`,
+      solarTimeOffset: solarTimeOffset
     };
   }
 

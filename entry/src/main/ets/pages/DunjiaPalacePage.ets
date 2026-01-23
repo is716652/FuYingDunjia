@@ -166,31 +166,64 @@ struct DunjiaPalacePage {
             if (this.panResult) {
               Column({ space: 10 }) {
                 // 时间与局数信息
-                Column({ space: 6 }) {
-                  Row({ space: 10 }) {
-                    Text('当前时间：')
-                      .fontSize(12)
+                Column({ space: 8 }) {
+                  // 阳历日期+时辰
+                  Row({ space: 8 }) {
+                    Text('阳历：')
+                      .fontSize(13)
                       .fontColor('#888888')
-                    Text(`${this.currentDateTime.getFullYear()}-${this.currentDateTime.getMonth() + 1}-${this.currentDateTime.getDate()}`)
-                      .fontSize(12)
-                      .fontColor('#555555')
+                    Text(`${this.currentDateTime.getFullYear()}年${this.currentDateTime.getMonth() + 1}月${this.currentDateTime.getDate()}日 ${this.panResult.hourGanZhi || ''}时`)
+                      .fontSize(14)
+                      .fontWeight(FontWeight.Medium)
+                      .fontColor('#2C2416')
                   }
                   
-                  Row({ space: 10 }) {
+                  // 农历日期+时辰
+                  if (this.panResult.dayInfo) {
+                    Row({ space: 8 }) {
+                      Text('农历：')
+                        .fontSize(13)
+                        .fontColor('#888888')
+                      Text(`${this.panResult.dayInfo.lunar_year}年${this.panResult.dayInfo.lunar_month}月${this.panResult.dayInfo.lunar_day}日 ${this.panResult.hourGanZhi || ''}时`)
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Medium)
+                        .fontColor('#2C2416')
+                    }
+                  }
+                  
+                  // 真太阳时偏移
+                  if (this.panResult.solarTimeOffset !== undefined) {
+                    Row({ space: 8 }) {
+                      Text('真太阳时：')
+                        .fontSize(13)
+                        .fontColor('#888888')
+                      Text(`${this.panResult.solarTimeOffset >= 0 ? '+' : ''}${this.panResult.solarTimeOffset}分钟`)
+                        .fontSize(13)
+                        .fontColor('#666666')
+                      Text(`(当地经度${this.panResult.input.longitude.toFixed(2)}°)`)
+                        .fontSize(11)
+                        .fontColor('#999999')
+                    }
+                  }
+                  
+                  Divider().color('#e0e0e0').strokeWidth(1).margin({ top: 4, bottom: 4 })
+                  
+                  // 局数
+                  Row({ space: 8 }) {
                     Text('局数：')
-                      .fontSize(12)
+                      .fontSize(13)
                       .fontColor('#888888')
                     Text(this.panResult.juLabel)
-                      .fontSize(13)
-                      .fontWeight(FontWeight.Medium)
+                      .fontSize(16)
+                      .fontWeight(FontWeight.Bold)
                       .fontColor('#D4A574')
                   }
                   
                   if (this.panResult.summary && this.panResult.summary.overview) {
                     Text(this.panResult.summary.overview)
-                      .fontSize(12)
+                      .fontSize(13)
                       .fontColor('#666666')
-                      .lineHeight(18)
+                      .lineHeight(20)
                   }
                 }
                 .width('100%')
