@@ -306,7 +306,7 @@ export class DunjiaEngine {
     const stars = this.layoutStars(ju.juNumber, ju.dunType);
     
     // 布八门
-    const doors = this.layoutDoors(ju.juNumber, ju.dunType);
+    const doors = this.layoutDoors(ju.juNumber, ju.dunType, hourGanZhi);
     
     // 布三奇六仪（天盘地盘天干）
     const tianPan = this.layoutTianGan(ju, hourGanZhi, true);  // 天盘（暗干）
@@ -354,54 +354,188 @@ export class DunjiaEngine {
   }
 
   /**
-   * 布八门（简化版：直接按局数顺飞或逆飞）
+   * 布八门（优化版：值使门根据时支确定，其他门按局数顺飞或逆飞）
+   * @param juNumber 局数
+   * @param dunType 阴阳遁
+   * @param hourGanZhi 时辰干支信息
    */
-  private layoutDoors(juNumber: number, dunType: DunType): string[] {
+  private layoutDoors(juNumber: number, dunType: DunType, hourGanZhi: HourGanZhi): string[] {
     const doorNames = ['休门', '死门', '伤门', '杜门', '', '开门', '惊门', '生门', '景门'];
     const result: string[] = new Array(9).fill('');
     
-    // 简化：阳遁顺飞，阴遁逆飞
-    const startPalace = juNumber - 1;
+    // 首先确定值使门：根据时支确定对应八门
+    const zhiList = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+    const doorIndexMap: Record<string, number> = {
+      '子': 0, // 休门
+      '丑': 1, // 死门
+      '寅': 2, // 伤门
+      '卯': 3, // 杜门
+      '辰': 5, // 开门（辰时归于开门）
+      '巳': 6, // 惊门
+      '午': 7, // 生门
+      '未': 8, // 景门
+      '申': 6, // 惊门
+      '酉': 5, // 开门
+      '戌': 1, // 死门（戌时归于死门）
+      '亥': 0  // 休门
+    };
+    
+    const zhiIndex = zhiList.indexOf(hourGanZhi.zhi);
+    const zhiShiDoorIndex = doorIndexMap[hourGanZhi.zhi] || 0;
+    const zhiShiDoor = doorNames[zhiShiDoorIndex];
+    
+    // 根据《遁甲符应经》规则：值使门在值使宫
+    // 计算值使宫位（已在calculateZhiFuZhiShi中计算）
+    // 简化：这里我们先模拟值使宫，实际使用传入的ju.zhiShiPalace
+    const zhiShiPalace = this.calculateZhiShiPalace(juNumber, dunType, hourGanZhi);
+    
+    // 将值使门放在值使宫
+    result[zhiShiPalace] = zhiShiDoor;
+    
+    // 布置其余七门：根据阴阳遁顺飞或逆飞
+    const remainingDoors = [...doorNames.filter(d => d !== '' && d !== zhiShiDoor)];
+    
+    // 从值使宫开始，按阴阳遁方向依次布置其他门
     if (dunType === DunType.YANG) {
-      for (let i = 0; i < 9; i++) {
-        if (i !== 4) { // 中宫无门
-          result[(startPalace + i) % 9] = doorNames[i];
+      // 阳遁顺飞
+      let placementIndex = (zhiShiPalace + 1) % 9;
+      for (const door of remainingDoors) {
+        // 跳过中宫，最多循环9次避免死循环
+        let attempts = 0;
+        while (placementIndex === 4 && attempts < 9) {
+          placementIndex = (placementIndex + 1) % 9;
+          attempts++;
         }
+        
+        if (attempts < 9 && placementIndex !== zhiShiPalace && result[placementIndex] === '') {
+          result[placementIndex] = door;
+        }
+        
+        placementIndex = (placementIndex + 1) % 9;
       }
     } else {
-      for (let i = 0; i < 9; i++) {
-        if (i !== 4) {
-          result[(startPalace - i + 9) % 9] = doorNames[i];
+      // 阴遁逆飞
+      let placementIndex = (zhiShiPalace - 1 + 9) % 9;
+      for (const door of remainingDoors) {
+        // 跳过中宫，最多循环9次避免死循环
+        let attempts = 0;
+        while (placementIndex === 4 && attempts < 9) {
+          placementIndex = (placementIndex - 1 + 9) % 9;
+          attempts++;
         }
+        
+        if (attempts < 9 && placementIndex !== zhiShiPalace && result[placementIndex] === '') {
+          result[placementIndex] = door;
+        }
+        
+        placementIndex = (placementIndex - 1 + 9) % 9;
       }
     }
     
     return result;
   }
+  
+  /**
+   * 计算值使宫位
+   * @param juNumber 局数
+   * @param dunType 阴阳遁
+   * @param hourGanZhi 时辰干支信息
+   */
+  private calculateZhiShiPalace(juNumber: number, dunType: DunType, hourGanZhi: HourGanZhi): PalaceIndex {
+    // 简化：值使宫与值符宫有一定关联，根据时支确定
+    // 根据《遁甲符应经》：值使门随值符移动，但固定在时支所对应的宫位
+    
+    // 基础宫位：根据局数确定
+    let basePalace = (juNumber - 1) % 9;
+    
+    // 根据时支修正值使宫位
+    const zhiToPalaceAdjustment: Record<string, number> = {
+      '子': 0, // 休门在坎宫
+      '丑': 1, // 死门在坤宫
+      '寅': 2, // 伤门在震宫
+      '卯': 3, // 杜门在巽宫
+      '辰': 5, // 开门在乾宫
+      '巳': 6, // 惊门在兑宫
+      '午': 8, // 景门在离宫
+      '未': 7, // 八门在艮宫（未时近丑，归于艮）
+      '申': 6, // 惊门在兑宫
+      '酉': 5, // 开门在乾宫
+      '戌': 1, // 死门在坤宫
+      '亥': 0  // 休门在坎宫
+    };
+    
+    const adjustment = zhiToPalaceAdjustment[hourGanZhi.zhi] || 0;
+    
+    // 阴阳遁不同算法
+    if (dunType === DunType.YANG) {
+      return (basePalace + adjustment) % 9 as PalaceIndex;
+    } else {
+      return (basePalace - adjustment + 9) % 9 as PalaceIndex;
+    }
+  }
 
   /**
    * 布三奇六仪（天干）
    * @param isTianPan true=天盘（暗干），false=地盘（明干）
+   * @param ju 局信息
+   * @param hourGanZhi 时辰干支信息
    */
   private layoutTianGan(ju: JuInfo, hourGanZhi: HourGanZhi, isTianPan: boolean): string[] {
     const ganList = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
     const result: string[] = new Array(9).fill('');
     
     if (isTianPan) {
-      // 天盘：三奇六仪按局数从甲开始飞布
-      // 简化：从局数宫开始，按顺序排列甲乙丙丁戊己庚辛壬癸
-      const startPalace = ju.juNumber - 1;
-      for (let i = 0; i < 9; i++) {
-        const ganIndex = i % 10;
-        if (ju.dunType === DunType.YANG) {
-          result[(startPalace + i) % 9] = ganList[ganIndex];
-        } else {
-          result[(startPalace - i + 9) % 9] = ganList[ganIndex];
+      // 天盘：根据《遁甲符应经》规则精确布局三奇六仪
+      // 三奇（乙丙丁）和六仪（戊己庚辛壬癸）的布局遵循特定规则
+      
+      // 首先确定值符的位置
+      const zhiFuPalace = ju.zhiFuPalace;
+      
+      // 根据《遁甲符应经》：三奇六仪随天盘运行
+      // 甲在值符宫，其他干支按阴阳遁顺飞或逆飞
+      result[zhiFuPalace] = '甲';
+      
+      // 其余天干的布局
+      const remainingGans = ['乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+      
+      if (ju.dunType === DunType.YANG) {
+        // 阳遁顺飞
+        let placementIndex = (zhiFuPalace + 1) % 9;
+        for (const gan of remainingGans) {
+          // 跳过中宫和已有天干的宫位，最多循环9次避免死循环
+          let attempts = 0;
+          while ((placementIndex === 4 || result[placementIndex] !== '') && attempts < 9) {
+            placementIndex = (placementIndex + 1) % 9;
+            attempts++;
+          }
+          
+          if (attempts < 9 && placementIndex !== zhiFuPalace && result[placementIndex] === '') {
+            result[placementIndex] = gan;
+          }
+          
+          placementIndex = (placementIndex + 1) % 9;
+        }
+      } else {
+        // 阴遁逆飞
+        let placementIndex = (zhiFuPalace - 1 + 9) % 9;
+        for (const gan of remainingGans) {
+          // 跳过中宫和已有天干的宫位，最多循环9次避免死循环
+          let attempts = 0;
+          while ((placementIndex === 4 || result[placementIndex] !== '') && attempts < 9) {
+            placementIndex = (placementIndex - 1 + 9) % 9;
+            attempts++;
+          }
+          
+          if (attempts < 9 && placementIndex !== zhiFuPalace && result[placementIndex] === '') {
+            result[placementIndex] = gan;
+          }
+          
+          placementIndex = (placementIndex - 1 + 9) % 9;
         }
       }
     } else {
       // 地盘：固定布局（与九宫固定对应）
-      // 地盘排列：戊己庚辛壬癸甲乙丙
+      // 地盘排列：戊己庚辛甲壬癸乙丙
       const diPanGans = ['戊', '己', '庚', '辛', '甲', '壬', '癸', '乙', '丙'];
       for (let i = 0; i < 9; i++) {
         result[i] = diPanGans[i];
