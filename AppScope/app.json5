@@ -1,0 +1,10 @@
+{
+  "app": {
+    "bundleName": "cn.is716652.fuyingdunjia",
+    "vendor": "example",
+    "versionCode": 1000000,
+    "versionName": "1.0.0",
+    "icon": "$media:dunjia_logo_v2",
+    "label": "$string:app_name"
+  }
+}

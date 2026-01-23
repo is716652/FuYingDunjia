@@ -1,0 +1,56 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\is716\\.ohos\\config\\default_FuYingDunjia_m6msrWObQKuFM1fx6L0p66E_KYlJDlgFhiwGP1PVi6Q=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001ADB43418687506C0CF5C0A39B3852BA8593B3020E61AF8E4CC42F8A95FB802724F2F5B770F974",
+          "profile": "C:\\Users\\is716\\.ohos\\config\\default_FuYingDunjia_m6msrWObQKuFM1fx6L0p66E_KYlJDlgFhiwGP1PVi6Q=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\is716\\.ohos\\config\\default_FuYingDunjia_m6msrWObQKuFM1fx6L0p66E_KYlJDlgFhiwGP1PVi6Q=.p12",
+          "storePassword": "0000001AD8F715BF00C7EC43C29D9DED94565A5E8D1C1334703061595A557EF0A11B6E89C5068F550764"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "6.0.0(20)",
+        "compatibleSdkVersion": "6.0.0(20)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
