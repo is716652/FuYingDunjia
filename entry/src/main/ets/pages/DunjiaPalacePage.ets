@@ -56,6 +56,109 @@ struct DunjiaPalacePage {
       this.selectedPalace = index;
     }
   }
+  
+  /**
+   * 获取宫位方位
+   */
+  private getPalacePosition(index: number): string {
+    const positions = ['北方', '西南方', '东方', '东南方', '中央', '西北方', '西方', '东北方', '南方'];
+    return positions[index] || '未知方位';
+  }
+  
+  /**
+   * 获取九星含义
+   */
+  private getStarMeaning(starName: string): string {
+    const starMeanings: Record<string, string> = {
+      '天蓬': '天蓬星属水，主大盗、贪狼，利擒贼捕盗，不利涉河渡江。',
+      '天芮': '天芮星属土，主疾病、死丧之事，利受业入学、授官册封。',
+      '天冲': '天冲星属木，主大胜仗、兴造动众，利先动者，利出军征伐。',
+      '天辅': '天辅星属木，主天财、喜事，利远客出行、商贾贸易。',
+      '天禽': '天禽星属土，主天福、印信，利招贤、纳士、求贤、拜将。',
+      '天心': '天心星属金，主医药、疗病，利避难、逃亡、求福。',
+      '天柱': '天柱星属金，主口舌、刑罚，利掩捕凶顽、斩杀叛逆。',
+      '天任': '天任星属土，主天佑、厚禄，利祭祀、祈福、求仙、学道。',
+      '天英': '天英星属火，主火灾、血光，利出入、远行、嫁娶、移徙。'
+    };
+    return starMeanings[starName] || '暂无解释';
+  }
+  
+  /**
+   * 获取八门含义
+   */
+  private getDoorMeaning(doorName: string): string {
+    const doorMeanings: Record<string, string> = {
+      '休门': '休门属水，主休闲、休养，利休息、求财、婚姻、交易。',
+      '死门': '死门属土，主死亡、刑罚，利渔猎、吊丧、埋葬、诉讼。',
+      '伤门': '伤门属木，主伤害、损伤，利渔猎、捕捉、索债、讨债。',
+      '杜门': '杜门属木，主遮蔽、阻塞，利躲灾、避难、藏身、潜伏。',
+      '开门': '开门属金，主开启、开通，利经商、交易、求学、考试。',
+      '惊门': '惊门属金，主惊恐、官司，利诉讼、谈判、辩论、求名。',
+      '生门': '生门属土，主生机、发财，利经营、贸易、开业、求财。',
+      '景门': '景门属火，主文书、文章，利考试、谈判、聚会、演说。'
+    };
+    return doorMeanings[doorName] || '暂无解释';
+  }
+  
+  /**
+   * 获取八神含义
+   */
+  private getDeityMeaning(deityName: string): string {
+    const deityMeanings: Record<string, string> = {
+      '值符': '值符为贵人之首，主贵人提携，利朝见、面圣、求情、办事。',
+      '腾蛇': '腾蛇主虚惊、怪异，利驱邪、压惊、镇煞、化解灾厄。',
+      '太阴': '太阴主私密、阴私，利密谋、策划、暗中行事、私下交易。',
+      '六合': '六合主合作、和合，利婚庆、谈判、签约、合作、交往。',
+      '白虎': '白虎主道路、血光，利出行、搬迁、远行、寻访。',
+      '玄武': '玄武主偷盗、暗昧，利追逃、捕盗、调查、暗访。',
+      '九地': '九地主沉稳、固守，利屯兵、坚守、积蓄力量、稳定根基。',
+      '九天': '九天主飞扬、刚健，利举事、出行、征战、扬威、展翅高飞。'
+    };
+    return deityMeanings[deityName] || '暂无解释';
+  }
+  
+  /**
+   * 获取天盘地盘组合分析
+   */
+  private getGanCombinationAnalysis(palaceState: PalaceState): string {
+    const tianGan = palaceState.tianGan;
+    const diGan = palaceState.diGan;
+    
+    if (!tianGan || !diGan) {
+      return '天盘地盘干支组合待分析';
+    }
+    
+    // 伏吟分析
+    if (tianGan === diGan) {
+      return `${tianGan}干伏吟，主静守为宜，不宜轻举妄动，事情进展缓慢，宜按兵不动。`;
+    }
+    
+    // 相生相克分析
+    const wuxingMap: Record<string, string> = {
+      '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
+    };
+    
+    const tianWuxing = wuxingMap[tianGan] || '';
+    const diWuxing = wuxingMap[diGan] || '';
+    
+    if (tianWuxing && diWuxing) {
+      if (tianWuxing === diWuxing) {
+        return `${tianGan}临${diGan}同类比和，主和谐稳定，合作顺利。`;
+      } else if (
+        (tianWuxing === '木' && diWuxing === '火') ||
+        (tianWuxing === '火' && diWuxing === '土') ||
+        (tianWuxing === '土' && diWuxing === '金') ||
+        (tianWuxing === '金' && diWuxing === '水') ||
+        (tianWuxing === '水' && diWuxing === '木')
+      ) {
+        return `${tianGan}生${diGan}相生，主助力增益，事情顺利，有利发展。`;
+      } else {
+        return `${tianGan}与${diGan}相克，主阻碍冲突，需谨慎应对，防范风险。`;
+      }
+    }
+    
+    return `${tianGan}临${diGan}，干支关系待进一步分析。`;
+  }
 
   /**
    * 渲染单个宫位卡片
@@ -370,110 +473,186 @@ struct DunjiaPalacePage {
                   .textAlign(TextAlign.Center)
                   .padding({ bottom: 12 })
                 
-                // 宫位基本信息 - 采用表格形式
+                // 宫位详细信息 - 采用表格形式
                 Column({ space: 8 }) {
-                  // 宫位名称
-                  Row() {
-                    Text('宫位名称：')
-                      .fontSize(14)
-                      .fontWeight(FontWeight.Medium)
-                      .fontColor('#D4A574')
-                      .width(80)
-                    Text(`${this.panResult.palaces[this.selectedPalace].palaceName} (${this.panResult.palaces[this.selectedPalace].palaceElement}宫)`)
-                      .fontSize(14)
-                      .fontColor('#2C2416')
-                      .layoutWeight(1)
+                  // 宫位基本信息
+                  Column({ space: 6 }) {
+                    // 宫位名称与方位
+                    Row() {
+                      Text('宫位：')
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Medium)
+                        .fontColor('#D4A574')
+                        .width(80)
+                      Text(`${this.panResult.palaces[this.selectedPalace].palaceName} (${this.panResult.palaces[this.selectedPalace].palaceElement}宫)`)
+                        .fontSize(14)
+                        .fontColor('#2C2416')
+                        .layoutWeight(1)
+                    }
+                    .width('100%')
+                    .alignItems(VerticalAlign.Center)
+                    
+                    // 方位与五行
+                    Row() {
+                      Text('方位五行：')
+                        .fontSize(14)
+                        .fontWeight(FontWeight.Medium)
+                        .fontColor('#D4A574')
+                        .width(80)
+                      Text(`${this.getPalacePosition(this.selectedPalace)} • ${this.panResult.palaces[this.selectedPalace].palaceElement}行`)
+                        .fontSize(14)
+                        .fontColor('#666666')
+                        .layoutWeight(1)
+                    }
+                    .width('100%')
+                    .alignItems(VerticalAlign.Center)
                   }
-                  .width('100%')
-                  .alignItems(VerticalAlign.Center)
+                  
+                  Divider()
+                    .color('#e0e0e0')
+                    .strokeWidth(1)
+                    .margin({ top: 4, bottom: 4 })
                   
                   // 九星信息
                   if (this.panResult.palaces[this.selectedPalace].starName) {
-                    Row() {
-                      Text('九星：')
-                        .fontSize(14)
-                        .fontWeight(FontWeight.Medium)
-                        .fontColor('#D4A574')
-                        .width(80)
-                      Text(`${this.panResult.palaces[this.selectedPalace].starName}`)
-                        .fontSize(14)
+                    Column({ space: 4 }) {
+                      Row() {
+                        Text('九星：')
+                          .fontSize(14)
+                          .fontWeight(FontWeight.Medium)
+                          .fontColor('#D4A574')
+                          .width(80)
+                        Text(`${this.panResult.palaces[this.selectedPalace].starName}`)
+                          .fontSize(14)
+                          .fontColor('#D4691A')
+                          .layoutWeight(1)
+                      }
+                      .width('100%')
+                      .alignItems(VerticalAlign.Center)
+                      
+                      // 九星含义
+                      Text(`${this.getStarMeaning(this.panResult.palaces[this.selectedPalace].starName || '')}`)
+                        .fontSize(13)
                         .fontColor('#666666')
-                        .layoutWeight(1)
+                        .width('100%')
+                        .margin({ left: 80 })
+                        .textAlign(TextAlign.Start)
                     }
-                    .width('100%')
-                    .alignItems(VerticalAlign.Center)
                   }
+                  
+                  Divider()
+                    .color('#e0e0e0')
+                    .strokeWidth(1)
+                    .margin({ top: 4, bottom: 4 })
                   
                   // 八门信息
                   if (this.panResult.palaces[this.selectedPalace].doorName) {
-                    Row() {
-                      Text('八门：')
-                        .fontSize(14)
-                        .fontWeight(FontWeight.Medium)
-                        .fontColor('#D4A574')
-                        .width(80)
-                      Text(`${this.panResult.palaces[this.selectedPalace].doorName}`)
-                        .fontSize(14)
+                    Column({ space: 4 }) {
+                      Row() {
+                        Text('八门：')
+                          .fontSize(14)
+                          .fontWeight(FontWeight.Medium)
+                          .fontColor('#D4A574')
+                          .width(80)
+                        Text(`${this.panResult.palaces[this.selectedPalace].doorName}`)
+                          .fontSize(14)
+                          .fontColor('#2A7A8C')
+                          .layoutWeight(1)
+                      }
+                      .width('100%')
+                      .alignItems(VerticalAlign.Center)
+                      
+                      // 八门含义
+                      Text(`${this.getDoorMeaning(this.panResult.palaces[this.selectedPalace].doorName || '')}`)
+                        .fontSize(13)
                         .fontColor('#666666')
-                        .layoutWeight(1)
+                        .width('100%')
+                        .margin({ left: 80 })
+                        .textAlign(TextAlign.Start)
                     }
-                    .width('100%')
-                    .alignItems(VerticalAlign.Center)
                   }
                   
-                  // 天盘信息
-                  if (this.panResult.palaces[this.selectedPalace].tianGan) {
-                    Row() {
-                      Text('天盘：')
-                        .fontSize(14)
-                        .fontWeight(FontWeight.Medium)
-                        .fontColor('#D4A574')
-                        .width(80)
-                      Text(`${this.panResult.palaces[this.selectedPalace].tianGan}`)
-                        .fontSize(14)
-                        .fontColor('#D4691A')
+                  Divider()
+                    .color('#e0e0e0')
+                    .strokeWidth(1)
+                    .margin({ top: 4, bottom: 4 })
+                  
+                  // 天盘地盘信息
+                  if (this.panResult.palaces[this.selectedPalace].tianGan || this.panResult.palaces[this.selectedPalace].diGan) {
+                    Column({ space: 4 }) {
+                      // 天盘地盘组合
+                      Row() {
+                        Text('天盘地盘：')
+                          .fontSize(14)
+                          .fontWeight(FontWeight.Medium)
+                          .fontColor('#D4A574')
+                          .width(80)
+                        Row() {
+                          if (this.panResult.palaces[this.selectedPalace].tianGan) {
+                            Text(`天:${this.panResult.palaces[this.selectedPalace].tianGan}`)
+                              .fontSize(14)
+                              .fontColor('#D4691A')
+                          }
+                          if (this.panResult.palaces[this.selectedPalace].diGan) {
+                            Text(` 地:${this.panResult.palaces[this.selectedPalace].diGan}`)
+                              .fontSize(14)
+                              .fontColor('#2A7A8C')
+                          }
+                        }
                         .layoutWeight(1)
+                      }
+                      .width('100%')
+                      .alignItems(VerticalAlign.Center)
+                      
+                      // 干支组合分析
+                      Text(`${this.getGanCombinationAnalysis(this.panResult.palaces[this.selectedPalace])}`)
+                        .fontSize(13)
+                        .fontColor('#666666')
+                        .width('100%')
+                        .margin({ left: 80 })
+                        .textAlign(TextAlign.Start)
                     }
-                    .width('100%')
-                    .alignItems(VerticalAlign.Center)
                   }
                   
-                  // 地盘信息
-                  if (this.panResult.palaces[this.selectedPalace].diGan) {
-                    Row() {
-                      Text('地盘：')
-                        .fontSize(14)
-                        .fontWeight(FontWeight.Medium)
-                        .fontColor('#D4A574')
-                        .width(80)
-                      Text(`${this.panResult.palaces[this.selectedPalace].diGan}`)
-                        .fontSize(14)
-                        .fontColor('#2A7A8C')
-                        .layoutWeight(1)
-                    }
-                    .width('100%')
-                    .alignItems(VerticalAlign.Center)
-                  }
+                  Divider()
+                    .color('#e0e0e0')
+                    .strokeWidth(1)
+                    .margin({ top: 4, bottom: 4 })
                   
                   // 八神信息
                   if (this.panResult.palaces[this.selectedPalace].deityName) {
-                    Row() {
-                      Text('八神：')
-                        .fontSize(14)
-                        .fontWeight(FontWeight.Medium)
-                        .fontColor('#D4A574')
-                        .width(80)
-                      Text(`${this.panResult.palaces[this.selectedPalace].deityName}`)
-                        .fontSize(14)
+                    Column({ space: 4 }) {
+                      Row() {
+                        Text('八神：')
+                          .fontSize(14)
+                          .fontWeight(FontWeight.Medium)
+                          .fontColor('#D4A574')
+                          .width(80)
+                        Text(`${this.panResult.palaces[this.selectedPalace].deityName}`)
+                          .fontSize(14)
+                          .fontColor('#8B6914')
+                          .layoutWeight(1)
+                      }
+                      .width('100%')
+                      .alignItems(VerticalAlign.Center)
+                      
+                      // 八神含义
+                      Text(`${this.getDeityMeaning(this.panResult.palaces[this.selectedPalace].deityName || '')}`)
+                        .fontSize(13)
                         .fontColor('#666666')
-                        .layoutWeight(1)
+                        .width('100%')
+                        .margin({ left: 80 })
+                        .textAlign(TextAlign.Start)
                     }
-                    .width('100%')
-                    .alignItems(VerticalAlign.Center)
                   }
                   
-                  // 特殊标识
-                  if (this.panResult.zhiFuPalace === this.selectedPalace || this.panResult.zhiShiPalace === this.selectedPalace) {
+                  Divider()
+                    .color('#e0e0e0')
+                    .strokeWidth(1)
+                    .margin({ top: 4, bottom: 4 })
+                  
+                  // 特殊标识与分析
+                  Column({ space: 4 }) {
                     Row() {
                       Text('特殊标识：')
                         .fontSize(14)
@@ -482,14 +661,34 @@ struct DunjiaPalacePage {
                         .width(80)
                       Column({ space: 4 }) {
                         if (this.panResult.zhiFuPalace === this.selectedPalace) {
-                          Text('• 值符宫')
+                          Text('• 值符宫：为时干落宫，代表事物的主要矛盾或核心人物')
                             .fontSize(12)
                             .fontColor('#D4A574')
                         }
                         if (this.panResult.zhiShiPalace === this.selectedPalace) {
-                          Text('• 值使宫')
+                          Text('• 值使宫：为时支落宫，代表事物的发展趋势或行动方向')
                             .fontSize(12)
                             .fontColor('#4A6A8B')
+                        }
+                        // 三奇标识
+                        if (this.panResult.palaces[this.selectedPalace].tianGan === '乙') {
+                          Text('• 日奇落宫：主光明、吉利、贵人扶持')
+                            .fontSize(12)
+                            .fontColor('#666666')
+                        } else if (this.panResult.palaces[this.selectedPalace].tianGan === '丙') {
+                          Text('• 月奇落宫：主光明、吉利、贵人扶持')
+                            .fontSize(12)
+                            .fontColor('#666666')
+                        } else if (this.panResult.palaces[this.selectedPalace].tianGan === '丁') {
+                          Text('• 星奇落宫：主光明、吉利、贵人扶持')
+                            .fontSize(12)
+                            .fontColor('#666666')
+                        }
+                        // 六仪标识
+                        if (['戊', '己', '庚', '辛', '壬', '癸'].includes(this.panResult.palaces[this.selectedPalace].tianGan || '')) {
+                          Text('• 六仪落宫：主常规事务、按部就班')
+                            .fontSize(12)
+                            .fontColor('#666666')
                         }
                       }
                       .layoutWeight(1)
