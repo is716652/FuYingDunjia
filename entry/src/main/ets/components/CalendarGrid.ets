@@ -40,6 +40,14 @@ export struct CalendarGrid {
            dayCell.date.getDate() === this.selectedDate.getDate();
   }
 
+  // 判断是否为今天
+  isToday(dayCell: DayCell): boolean {
+    const today = new Date();
+    return dayCell.date.getFullYear() === today.getFullYear() &&
+           dayCell.date.getMonth() === today.getMonth() &&
+           dayCell.date.getDate() === today.getDate();
+  }
+
   build() {
     Column({ space: 0 }) {
       // 星期标题行
@@ -80,14 +88,22 @@ export struct CalendarGrid {
       // 公历日期
       Text(dayCell.day.toString())
         .fontSize(16)
-        .fontColor(dayCell.isCurrentMonth ? '#2C2416' : '#cccccc')
-        .fontWeight(this.isSelectedDate(dayCell) ? FontWeight.Bold : FontWeight.Normal)
+        .fontColor(
+          this.isToday(dayCell) ? '#FF6B35' : // 今天用橙色
+          (dayCell.isCurrentMonth ? '#2C2416' : '#cccccc')
+        )
+        .fontWeight(
+          this.isSelectedDate(dayCell) || this.isToday(dayCell) ? FontWeight.Bold : FontWeight.Normal
+        )
       
       // 农历日期
       if (dayCell.lunarDay) {
         Text(dayCell.lunarDay)
           .fontSize(10)
-          .fontColor(dayCell.isCurrentMonth ? '#999999' : '#dddddd')
+          .fontColor(
+            this.isToday(dayCell) ? '#FF6B35' : // 今天用橙色
+            (dayCell.isCurrentMonth ? '#999999' : '#dddddd')
+          )
           .maxLines(1)
       }
     }
@@ -96,8 +112,8 @@ export struct CalendarGrid {
     .justifyContent(FlexAlign.Center)
     .backgroundColor(this.isSelectedDate(dayCell) ? '#E8F4FD' : '#ffffff')
     .border({
-      width: this.isSelectedDate(dayCell) ? 2 : 0,
-      color: '#4A90E2'
+      width: this.isSelectedDate(dayCell) ? 2 : (this.isToday(dayCell) ? 1 : 0),
+      color: this.isSelectedDate(dayCell) ? '#4A90E2' : (this.isToday(dayCell) ? '#FF6B35' : '#ffffff')
     })
     .borderRadius(6)
     .onClick(() => {

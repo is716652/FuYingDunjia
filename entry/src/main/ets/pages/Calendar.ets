@@ -19,6 +19,7 @@ struct CalendarPage {
   @State currentMonth: number = new Date().getMonth() + 1;
   @State calendarDays: DayCell[] = [];
   @State currentShizhu: string = '暂无';  // 当前时柱，用于响应式更新
+  @State showYearPicker: boolean = false;
   private solarTimeHelper: SolarTimeHelper = new SolarTimeHelper(CHINA_CITY_LONGITUDES.BEIJING);
 
   aboutToAppear() {
@@ -40,37 +41,65 @@ struct CalendarPage {
     const lastDay = new Date(year, month, 0);
     const daysInMonth = lastDay.getDate();
       
-    // 获取月份第一天是周几 (0=周日, 1=周一...6=周六)
     let firstWeekDay = firstDay.getDay();
-    // 转换为周一开始 (0=周一, 6=周日)
     firstWeekDay = firstWeekDay === 0 ? 6 : firstWeekDay - 1;
       
     const days: DayCell[] = [];
+        
+    // 收集所有需要查询的日期
+    const datesToQuery: Date[] = [];
       
-    // 填充上月的尾部日期
+    // 上月尾部日期
     if (firstWeekDay > 0) {
       const prevMonthLastDay = new Date(year, month - 1, 0).getDate();
       for (let i = firstWeekDay - 1; i >= 0; i--) {
         const day = prevMonthLastDay - i;
         const date = new Date(year, month - 2, day);
-        const lunarDay = await this.getLunarDayText(date);
-        days.push({ day, isCurrentMonth: false, date, lunarDay });
+        datesToQuery.push(date);
       }
     }
       
-    // 填充当月日期
+    // 当月日期
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month - 1, i);
-      const lunarDay = await this.getLunarDayText(date);
-      days.push({ day: i, isCurrentMonth: true, date, lunarDay });
+      datesToQuery.push(date);
     }
       
-    // 填充下月的开头日期，凑齐42个格子（6周）
-    const remainingCells = 42 - days.length;
+    // 下月开头日期
+    const remainingCells = 42 - datesToQuery.length;
     for (let i = 1; i <= remainingCells; i++) {
       const date = new Date(year, month, i);
-      const lunarDay = await this.getLunarDayText(date);
-      days.push({ day: i, isCurrentMonth: false, date, lunarDay });
+      datesToQuery.push(date);
+    }
+      
+    // 批量获取所有日期的农历信息
+    const lunarInfos = await Promise.all(
+      datesToQuery.map(date => this.getLunarDayText(date))
+    );
+      
+    // 组装数据
+    let index = 0;
+      
+    // 上月尾部
+    if (firstWeekDay > 0) {
+      const prevMonthLastDay = new Date(year, month - 1, 0).getDate();
+      for (let i = firstWeekDay - 1; i >= 0; i--) {
+        const day = prevMonthLastDay - i;
+        const date = new Date(year, month - 2, day);
+        days.push({ day, isCurrentMonth: false, date, lunarDay: lunarInfos[index++] });
+      }
+    }
+      
+    // 当月
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = new Date(year, month - 1, i);
+      days.push({ day: i, isCurrentMonth: true, date, lunarDay: lunarInfos[index++] });
+    }
+      
+    // 下月开头
+    for (let i = 1; i <= remainingCells; i++) {
+      const date = new Date(year, month, i);
+      days.push({ day: i, isCurrentMonth: false, date, lunarDay: lunarInfos[index++] });
     }
       
     this.calendarDays = days;
@@ -107,6 +136,24 @@ struct CalendarPage {
     this.currentMonth = newMonth;
     this.currentYear = newYear;
     this.generateCalendar(newYear, newMonth);
+  }
+
+  // 返回今天
+  backToToday() {
+    const now = new Date();
+    this.selectedDate = now;
+    this.currentYear = now.getFullYear();
+    this.currentMonth = now.getMonth() + 1;
+    this.selectedShichenIndex = ShichenHelper.getCurrentShichenIndex();
+    this.generateCalendar(this.currentYear, this.currentMonth);
+    this.loadDateInfo(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  }
+
+  // 切换年份
+  changeYear(newYear: number) {
+    this.currentYear = newYear;
+    this.showYearPicker = false;
+    this.generateCalendar(newYear, this.currentMonth);
   }
 
   // 选中日期
@@ -188,6 +235,12 @@ struct CalendarPage {
             },
             onNextMonth: () => {
               this.changeMonth(1);
+            },
+            onToday: () => {
+              this.backToToday();
+            },
+            onYearClick: () => {
+              this.showYearPicker = true;
             }
           });
 
@@ -314,5 +367,59 @@ struct CalendarPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#FAFAFA')
+    .bindContentCover(this.showYearPicker, this.buildYearPicker(), {
+      modalTransition: ModalTransition.DEFAULT
+    })
+  }
+
+  @Builder buildYearPicker() {
+    Column({ space: 20 }) {
+      Text('选择年份')
+        .fontSize(20)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#2C2416')
+        .margin({ top: 20 })
+
+      Grid() {
+        ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8], (row: number) => {
+          ForEach([0, 1, 2], (col: number) => {
+            GridItem() {
+              Text((this.currentYear + (row * 3 + col) - 4).toString())
+                .fontSize(16)
+                .fontColor((this.currentYear + (row * 3 + col) - 4) === this.currentYear ? '#FFFFFF' : '#2C2416')
+                .fontWeight((this.currentYear + (row * 3 + col) - 4) === this.currentYear ? FontWeight.Bold : FontWeight.Normal)
+                .width('100%')
+                .height(50)
+                .textAlign(TextAlign.Center)
+                .backgroundColor((this.currentYear + (row * 3 + col) - 4) === this.currentYear ? '#D4A574' : '#FFFFFF')
+                .borderRadius(8)
+                .border({ width: 1, color: (this.currentYear + (row * 3 + col) - 4) === this.currentYear ? '#D4A574' : '#eeeeee' })
+                .onClick(() => {
+                  this.changeYear(this.currentYear + (row * 3 + col) - 4);
+                })
+            }
+          })
+        })
+      }
+      .columnsTemplate('1fr 1fr 1fr')
+      .rowsTemplate('repeat(9, 1fr)')
+      .rowsGap(10)
+      .columnsGap(10)
+      .width('90%')
+      .height(500)
+
+      Button('取消')
+        .fontSize(16)
+        .fontColor('#666666')
+        .backgroundColor('#F5F5F5')
+        .width('90%')
+        .onClick(() => {
+          this.showYearPicker = false;
+        })
+    }
+    .width('100%')
+    .padding(20)
+    .backgroundColor('#FFFFFF')
+    .borderRadius({ topLeft: 16, topRight: 16 })
   }
 }

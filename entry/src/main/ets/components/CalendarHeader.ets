@@ -27,6 +27,8 @@ export struct CalendarHeader {
 
   onPrevMonth?: () => void;
   onNextMonth?: () => void;
+  onToday?: () => void;
+  onYearClick?: () => void;
 
   build() {
     Row() {
@@ -42,12 +44,37 @@ export struct CalendarHeader {
         });
 
       // 当前年月
-      Text(`${this.year}年${this.month}月`)
-        .fontSize(20)
-        .fontWeight(FontWeight.Bold)
-        .fontColor('#2C2416')
-        .layoutWeight(1)
-        .textAlign(TextAlign.Center);
+      Row({ space: 4 }) {
+        Text(`${this.year}年`)
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#D4A574')
+          .onClick(() => {
+            if (this.onYearClick) {
+              this.onYearClick();
+            }
+          });
+        Text(`${this.month}月`)
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#2C2416');
+      }
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center);
+      
+      // 返回今天
+      Text('今')
+        .fontSize(14)
+        .fontColor('#4A90E2')
+        .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+        .backgroundColor('#E8F4FD')
+        .borderRadius(4)
+        .margin({ right: 8 })
+        .onClick(() => {
+          if (this.onToday) {
+            this.onToday();
+          }
+        });
 
       // 下一月
       Text('▶')
