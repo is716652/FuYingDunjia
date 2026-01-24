@@ -239,6 +239,14 @@ struct CalendarPage {
     await this.loadDateInfo(year, month, day);
   }
 
+  // 双击日期快速进入排盘
+  onDayDoubleClick(dayCell: DayCell) {
+    if (!dayCell.isCurrentMonth) {
+      return; // 非当月日期不响应双击
+    }
+    this.navigateToDunjia();
+  }
+
   async loadDateInfo(year: number, month: number, day: number) {
     const info = await CalendarManager.getInstance().getDayInfo(year, month, day);
     if (info) {
@@ -321,6 +329,9 @@ struct CalendarPage {
             selectedDate: this.selectedDate,
             onDaySelected: (dayCell: DayCell) => {
               this.onDaySelected(dayCell);
+            },
+            onDayDoubleClick: (dayCell: DayCell) => {
+              this.onDayDoubleClick(dayCell);
             }
           });
 
@@ -458,18 +469,18 @@ struct CalendarPage {
         ForEach([0, 1, 2, 3, 4, 5, 6, 7, 8], (row: number) => {
           ForEach([0, 1, 2], (col: number) => {
             GridItem() {
-              Text((this.currentYear + (row * 3 + col) - 4).toString())
+              Text((this.currentYear - (row * 3 + col) + 4).toString())
                 .fontSize(16)
-                .fontColor((this.currentYear + (row * 3 + col) - 4) === this.currentYear ? '#FFFFFF' : '#2C2416')
-                .fontWeight((this.currentYear + (row * 3 + col) - 4) === this.currentYear ? FontWeight.Bold : FontWeight.Normal)
+                .fontColor((this.currentYear - (row * 3 + col) + 4) === this.currentYear ? '#FFFFFF' : '#2C2416')
+                .fontWeight((this.currentYear - (row * 3 + col) + 4) === this.currentYear ? FontWeight.Bold : FontWeight.Normal)
                 .width('100%')
                 .height(50)
                 .textAlign(TextAlign.Center)
-                .backgroundColor((this.currentYear + (row * 3 + col) - 4) === this.currentYear ? '#D4A574' : '#FFFFFF')
+                .backgroundColor((this.currentYear - (row * 3 + col) + 4) === this.currentYear ? '#D4A574' : '#FFFFFF')
                 .borderRadius(8)
-                .border({ width: 1, color: (this.currentYear + (row * 3 + col) - 4) === this.currentYear ? '#D4A574' : '#eeeeee' })
+                .border({ width: 1, color: (this.currentYear - (row * 3 + col) + 4) === this.currentYear ? '#D4A574' : '#eeeeee' })
                 .onClick(() => {
-                  this.changeYear(this.currentYear + (row * 3 + col) - 4);
+                  this.changeYear(this.currentYear - (row * 3 + col) + 4);
                 })
             }
           })

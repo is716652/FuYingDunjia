@@ -32,8 +32,12 @@ export struct CalendarGrid {
   @Prop selectedDate: Date = new Date();
   
   onDaySelected?: (dayCell: DayCell) => void;
+  onDayDoubleClick?: (dayCell: DayCell) => void;
   
   private weekDays: string[] = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  private lastClickTime: number = 0;
+  private lastClickDay: DayCell | null = null;
+  private DOUBLE_CLICK_DELAY: number = 300; // 双击间隔300ms
 
   // 判断是否为选中日期
   isSelectedDate(dayCell: DayCell): boolean {
@@ -138,8 +142,24 @@ export struct CalendarGrid {
     })
     .borderRadius(6)
     .onClick(() => {
-      if (this.onDaySelected) {
-        this.onDaySelected(dayCell);
+      const currentTime = Date.now();
+      const isSameDay = this.lastClickDay?.date.getTime() === dayCell.date.getTime();
+      const isDoubleClick = isSameDay && (currentTime - this.lastClickTime) < this.DOUBLE_CLICK_DELAY;
+      
+      if (isDoubleClick) {
+        // 双击事件
+        if (this.onDayDoubleClick) {
+          this.onDayDoubleClick(dayCell);
+        }
+        this.lastClickTime = 0;
+        this.lastClickDay = null;
+      } else {
+        // 单击事件
+        this.lastClickTime = currentTime;
+        this.lastClickDay = dayCell;
+        if (this.onDaySelected) {
+          this.onDaySelected(dayCell);
+        }
       }
     })
   }
