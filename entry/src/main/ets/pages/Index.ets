@@ -48,19 +48,26 @@ struct Index {
           .fontSize(18)
           .fontColor('#ffffff')
           .textShadow({ radius: 4, color: '#000000', offsetX: 1, offsetY: 1 })
+      }
+      .width('100%')
+      .height('100%')
+      .justifyContent(FlexAlign.Center)
 
-        Button('点击进入')
-          .fontSize(20)
-          .width('60%')
-          .backgroundColor('#ff6b00')
-          .borderRadius(24)
+      // 下方文字链接
+      Column() {
+        Text('点击进入')
+          .fontSize(18)
+          .fontColor('#ffffff')
+          .decoration({ type: TextDecorationType.Underline, color: '#ffffff' })
+          .textShadow({ radius: 4, color: '#000000', offsetX: 1, offsetY: 1 })
           .onClick(() => {
             this.navigateToCalendar();
           })
       }
       .width('100%')
-      .height('100%')
-      .justifyContent(FlexAlign.Center)
+      .position({ x: 0, y: 0 })
+      .offset({ y: '85%' })
+      .alignItems(HorizontalAlign.Center)
     }
     .height('100%')
     .width('100%')

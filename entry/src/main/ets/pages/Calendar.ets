@@ -3,6 +3,8 @@ import { ShichenHelper } from '../utils/ShichenHelper';
 import { SolarTimeHelper, CHINA_CITY_LONGITUDES } from '../utils/SolarTimeHelper';
 import { SolarTermCalculator } from '../utils/SolarTermCalculator';
 import { router } from '@kit.ArkUI';
+import { NavigationBar } from '../components/NavigationBar';
+import { CalendarHeader } from '../components/CalendarHeader';
 
 interface SelectOption {
   value: string;
@@ -185,62 +187,29 @@ struct CalendarPage {
   build() {
     Column({ space: 0 }) {
       // 顶部导航栏
-      Row() {
-        Text('← 返回')
-          .fontSize(16)
-          .fontColor('#666666')
-          .onClick(() => {
-            router.back();
-          })
-        Text('遁甲符应经')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-        Text('说明')
-          .fontSize(14)
-          .fontColor('#D4A574')
-          .onClick(() => {
-            router.pushUrl({
-              url: 'pages/DocsPage'
-            });
-          })
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-      .backgroundColor('#ffffff')
-
-      Divider().color('#eeeeee')
+      NavigationBar({
+        title: '遁甲符应经',
+        rightActionText: '说明',
+        onRightAction: () => {
+          router.pushUrl({
+            url: 'pages/DocsPage'
+          });
+        }
+      });
 
       Scroll() {
         Column({ space: 16 }) {
           // 月份切换栏
-          Row() {
-            Text('◀')
-              .fontSize(24)
-              .fontColor('#D4A574')
-              .onClick(() => {
-                this.changeMonth(-1);
-              })
-              .padding(8)
-
-            Text(`${this.currentYear}年${this.currentMonth}月`)
-              .fontSize(20)
-              .fontWeight(FontWeight.Bold)
-              .fontColor('#2C2416')
-              .layoutWeight(1)
-              .textAlign(TextAlign.Center)
-
-            Text('▶')
-              .fontSize(24)
-              .fontColor('#D4A574')
-              .onClick(() => {
-                this.changeMonth(1);
-              })
-              .padding(8)
-          }
-          .width('100%')
-          .padding({ left: 16, right: 16, top: 12, bottom: 8 })
+          CalendarHeader({
+            year: this.currentYear,
+            month: this.currentMonth,
+            onPrevMonth: () => {
+              this.changeMonth(-1);
+            },
+            onNextMonth: () => {
+              this.changeMonth(1);
+            }
+          });
 
           // 日历主体
           Column({ space: 0 }) {
