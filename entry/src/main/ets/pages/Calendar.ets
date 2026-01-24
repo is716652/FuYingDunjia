@@ -1,20 +1,12 @@
 import { CalendarManager, CalendarDayInfo } from '../utils/CalendarManager';
 import { ShichenHelper } from '../utils/ShichenHelper';
 import { SolarTimeHelper, CHINA_CITY_LONGITUDES } from '../utils/SolarTimeHelper';
-import { SolarTermCalculator } from '../utils/SolarTermCalculator';
 import { router } from '@kit.ArkUI';
 import { NavigationBar } from '../components/NavigationBar';
 import { CalendarHeader } from '../components/CalendarHeader';
-
-interface SelectOption {
-  value: string;
-}
-
-interface DayCell {
-  day: number;          // 日期数字
-  isCurrentMonth: boolean;  // 是否当月
-  date: Date;           // 完整日期对象
-}
+import { CalendarGrid, DayCell } from '../components/CalendarGrid';
+import { ShichenSelector } from '../components/ShichenSelector';
+import { LunarInfoPanel } from '../components/LunarInfoPanel';
 
 @Entry
 @Component
@@ -22,13 +14,11 @@ struct CalendarPage {
   @State dayInfo: CalendarDayInfo | null = null;
   @State selectedShichenIndex: number = 0;
   @State shichenTexts: string[] = [];
-  @State showShichenPicker: boolean = false;
-  @State showDatePicker: boolean = false;
   @State selectedDate: Date = new Date();
   @State currentYear: number = new Date().getFullYear();
   @State currentMonth: number = new Date().getMonth() + 1;
   @State calendarDays: DayCell[] = [];
-  private weekDays: string[] = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  @State currentShizhu: string = '暂无';  // 当前时柱，用于响应式更新
   private solarTimeHelper: SolarTimeHelper = new SolarTimeHelper(CHINA_CITY_LONGITUDES.BEIJING);
 
   aboutToAppear() {
@@ -116,21 +106,15 @@ struct CalendarPage {
     await this.loadDateInfo(year, month, day);
   }
 
-  // 判断是否为选中日期
-  isSelectedDate(dayCell: DayCell): boolean {
-    return dayCell.date.getFullYear() === this.selectedDate.getFullYear() &&
-           dayCell.date.getMonth() === this.selectedDate.getMonth() &&
-           dayCell.date.getDate() === this.selectedDate.getDate();
-  }
-
   async loadDateInfo(year: number, month: number, day: number) {
     console.log(`[Calendar] loadDateInfo: ${year}-${month}-${day}`);
     const info = await CalendarManager.getInstance().getDayInfo(year, month, day);
     console.log(`[Calendar] getDayInfo result:`, JSON.stringify(info));
     if (info) {
-      // 强制触发状态更新：先置空再赋值
-      this.dayInfo = null;
+      // 直接赋值，不再置null
       this.dayInfo = info;
+      // 更新时柱
+      this.currentShizhu = ShichenHelper.getShizhuInfo(this.dayInfo.day_gan, this.selectedShichenIndex);
       console.log(`[Calendar] dayInfo updated:`, 
         `${this.dayInfo.year_gan}${this.dayInfo.year_zhi} ` +
         `${this.dayInfo.month_gan}${this.dayInfo.month_zhi} ` +
@@ -211,39 +195,14 @@ struct CalendarPage {
             }
           });
 
-          // 日历主体
-          Column({ space: 0 }) {
-            // 星期标题行
-            Row() {
-              ForEach(this.weekDays, (weekDay: string) => {
-                Text(weekDay)
-                  .fontSize(14)
-                  .fontColor('#999999')
-                  .width(`${100/7}%`)
-                  .textAlign(TextAlign.Center)
-              })
+          // 日历网格组件
+          CalendarGrid({
+            calendarDays: this.calendarDays,
+            selectedDate: this.selectedDate,
+            onDaySelected: (dayCell: DayCell) => {
+              this.onDaySelected(dayCell);
             }
-            .width('100%')
-            .height(36)
-            .backgroundColor('#F5F1E8')
-
-            // 日期网格 (6周 x 7天)
-            Column({ space: 0 }) {
-              ForEach([0, 1, 2, 3, 4, 5], (weekIndex: number) => {
-                Row({ space: 0 }) {
-                  ForEach(this.calendarDays.slice(weekIndex * 7, (weekIndex + 1) * 7), (dayCell: DayCell) => {
-                    this.buildDayCell(dayCell)
-                  })
-                }
-                .width('100%')
-              })
-            }
-            .width('100%')
-          }
-          .width('90%')
-          .backgroundColor('#ffffff')
-          .borderRadius(12)
-          .border({ width: 1, color: '#eeeeee' })
+          });
 
           if (this.dayInfo) {
             // 选中日期详情区
@@ -289,230 +248,37 @@ struct CalendarPage {
                 .width('100%')
               }
 
-              // 时辰选择
-              Column({ space: 8 }) {
-                Row({ space: 8 }) {
-                  Text('🕐 选择时辰：')
-                    .fontSize(14)
-                    .fontColor('#666666')
-                }
-
-                Row() {
-                  Text(this.shichenTexts[this.selectedShichenIndex] || '请选择')
-                    .fontSize(13)
-                    .fontColor('#2C2416')
-                    .layoutWeight(1)
-                  Text('▼')
-                    .fontSize(10)
-                    .fontColor('#999999')
-                }
-                .width('100%')
-                .padding(10)
-                .backgroundColor('#F5F1E8')
-                .borderRadius(6)
-                .onClick(() => {
-                  this.showShichenPicker = true;
-                })
-              }
-              .width('100%')
-              .padding(12)
-              .backgroundColor('#ffffff')
-              .borderRadius(8)
-
-              // 四柱干支 - 八字排列形式
-              Column({ space: 8 }) {
-                Text('⚛️ 四柱八字')
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Bold)
-                  .fontColor('#2C2416')
-                  .width('100%')
-                
-                // 八字四柱排列
-                Row({ space: 0 }) {
-                  // 年柱
-                  Column({ space: 4 }) {
-                    Text('年')
-                      .fontSize(12)
-                      .fontColor('#999999')
-                    Column({ space: 2 }) {
-                      Text(this.dayInfo.year_gan)
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#D4A574')
-                      Text(this.dayInfo.year_zhi)
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#8B4513')
-                    }
-                  }
-                  .layoutWeight(1)
-                  .padding(8)
-                  .backgroundColor('#FFF8F0')
-                  .borderRadius(8)
-
-                  Divider()
-                    .vertical(true)
-                    .height(60)
-                    .color('#eeeeee')
-                    .strokeWidth(1)
-
-                  // 月柱
-                  Column({ space: 4 }) {
-                    Text('月')
-                      .fontSize(12)
-                      .fontColor('#999999')
-                    Column({ space: 2 }) {
-                      Text(this.dayInfo.month_gan)
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#D4A574')
-                      Text(this.dayInfo.month_zhi)
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#8B4513')
-                    }
-                  }
-                  .layoutWeight(1)
-                  .padding(8)
-                  .backgroundColor('#FFF8F0')
-                  .borderRadius(8)
-
-                  Divider()
-                    .vertical(true)
-                    .height(60)
-                    .color('#eeeeee')
-                    .strokeWidth(1)
-
-                  // 日柱
-                  Column({ space: 4 }) {
-                    Text('日')
-                      .fontSize(12)
-                      .fontColor('#999999')
-                    Column({ space: 2 }) {
-                      Text(this.dayInfo.day_gan)
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#D4A574')
-                      Text(this.dayInfo.day_zhi)
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#8B4513')
-                    }
-                  }
-                  .layoutWeight(1)
-                  .padding(8)
-                  .backgroundColor('#FFF8F0')
-                  .borderRadius(8)
-
-                  Divider()
-                    .vertical(true)
-                    .height(60)
-                    .color('#eeeeee')
-                    .strokeWidth(1)
-
-                  // 时柱
-                  Column({ space: 4 }) {
-                    Text('时')
-                      .fontSize(12)
-                      .fontColor('#999999')
-                    Column({ space: 2 }) {
-                      Text(this.getShizhu().substring(0, 1))
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#D4A574')
-                      Text(this.getShizhu().substring(1, 2))
-                        .fontSize(24)
-                        .fontWeight(FontWeight.Bold)
-                        .fontColor('#8B4513')
-                    }
-                  }
-                  .layoutWeight(1)
-                  .padding(8)
-                  .backgroundColor('#FFF8F0')
-                  .borderRadius(8)
-                }
-                .width('100%')
-              }
-              .width('100%')
-              .padding(12)
-              .backgroundColor('#ffffff')
-              .borderRadius(8)
-              .border({ width: 1, color: '#eeeeee' })
-
-              // 农历信息
-              Column({ space: 8 }) {
-                Text('📅 农历信息')
-                  .fontSize(16)
-                  .fontWeight(FontWeight.Bold)
-                  .fontColor('#2C2416')
-                  .width('100%')
-                
-                // 农历日期 - 放大显示
-                Text(`${this.dayInfo.lunar_year}年 ${this.getLunarMonth()}${this.getLunarDay()}`)
-                  .fontSize(20)
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor('#2C2416')
-                  .width('100%')
-                  .margin({ top: 4 })
-                
-                Text(`生肖：${this.dayInfo.zodiac}`)
-                  .fontSize(16)
-                  .fontColor('#666666')
-                  .width('100%')
-                  .margin({ top: 4 })
-              }
-              .width('100%')
-              .padding(12)
-              .backgroundColor('#ffffff')
-              .borderRadius(8)
-              .border({ width: 1, color: '#eeeeee' })
-
-              // 节气节日
-              if (this.dayInfo.solar_term || this.dayInfo.festivals) {
-                Column({ space: 8 }) {
-                  Text('🌸 节气节日')
-                    .fontSize(16)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor('#2C2416')
-                    .width('100%')
-                  
-                  // 节日信息
-                  if (this.dayInfo.festivals) {
-                    Text(`节日：${this.dayInfo.festivals}`)
-                      .fontSize(14)
-                      .fontColor('#666666')
-                      .width('100%')
-                  }
-                  
-                  // 节气信息及精确时刻
-                  if (this.dayInfo.solar_term) {
-                    Column({ space: 4 }) {
-                      Text(`节气：${this.dayInfo.solar_term}`)
-                        .fontSize(14)
-                        .fontColor('#666666')
-                        .width('100%')
-                      
-                      // 显示节气精确时刻
-                      if (this.dayInfo.solar_term_time) {
-                        Row({ space: 4 }) {
-                          Text('⏰ 交节时刻：')
-                            .fontSize(13)
-                            .fontColor('#999999')
-                          Text(SolarTermCalculator.formatSolarTermTime(this.dayInfo.solar_term_time).split(' ')[1])
-                            .fontSize(13)
-                            .fontWeight(FontWeight.Medium)
-                            .fontColor('#D4A574')
-                        }
-                      }
-                    }
+              // 时辰选择器组件
+              ShichenSelector({
+                shichenTexts: this.shichenTexts,
+                selectedIndex: this.selectedShichenIndex,
+                onShichenChanged: (index: number) => {
+                  this.selectedShichenIndex = index;
+                  // 更新时柱
+                  if (this.dayInfo) {
+                    this.currentShizhu = ShichenHelper.getShizhuInfo(this.dayInfo.day_gan, index);
                   }
                 }
-                .width('100%')
-                .padding(12)
-                .backgroundColor('#ffffff')
-                .borderRadius(8)
-                .border({ width: 1, color: '#eeeeee' })
-              }
+              });
+
+              // 农历信息组件
+              LunarInfoPanel({
+                lunarYear: this.dayInfo.lunar_year.toString(),
+                lunarMonth: this.dayInfo.lunar_month,
+                lunarDay: this.dayInfo.lunar_day,
+                zodiac: this.dayInfo.zodiac,
+                yearGan: this.dayInfo.year_gan,
+                yearZhi: this.dayInfo.year_zhi,
+                monthGan: this.dayInfo.month_gan,
+                monthZhi: this.dayInfo.month_zhi,
+                dayGan: this.dayInfo.day_gan,
+                dayZhi: this.dayInfo.day_zhi,
+                shiGan: this.currentShizhu.substring(0, 1),
+                shiZhi: this.currentShizhu.substring(1, 2),
+                solarTerm: this.dayInfo.solar_term,
+                solarTermTime: this.dayInfo.solar_term_time,
+                festivals: this.dayInfo.festivals
+              });
             }
             .width('90%')
 
@@ -552,118 +318,5 @@ struct CalendarPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#FAFAFA')
-    .bindContentCover(this.showShichenPicker, this.shichenPickerBuilder(), {
-      modalTransition: ModalTransition.DEFAULT
-    })
-  }
-
-  @Builder buildDayCell(dayCell: DayCell) {
-    Stack() {
-      Text(dayCell.day.toString())
-        .fontSize(16)
-        .fontColor(dayCell.isCurrentMonth ? '#2C2416' : '#cccccc')
-        .fontWeight(this.isSelectedDate(dayCell) ? FontWeight.Bold : FontWeight.Normal)
-    }
-    .width(`${100/7}%`)
-    .height(50)
-    .backgroundColor(this.isSelectedDate(dayCell) ? '#E8F4FD' : '#ffffff')
-    .border({
-      width: this.isSelectedDate(dayCell) ? 2 : 0,
-      color: '#4A90E2'
-    })
-    .borderRadius(6)
-    .onClick(() => {
-      this.onDaySelected(dayCell);
-    })
-  }
-
-  @Builder shichenPickerBuilder() {
-    Column() {
-      Text('选择时辰')
-        .fontSize(18)
-        .fontWeight(FontWeight.Bold)
-        .padding(16)
-
-      TextPicker({ range: this.shichenTexts, selected: this.selectedShichenIndex })
-        .onChange((value: string | string[], index: number | number[]) => {
-          if (typeof index === 'number') {
-            this.selectedShichenIndex = index;
-          }
-        })
-
-      Row({ space: 20 }) {
-        Button('取消')
-          .fontSize(16)
-          .backgroundColor('#eeeeee')
-          .fontColor('#666666')
-          .layoutWeight(1)
-          .onClick(() => {
-            this.showShichenPicker = false;
-          })
-        
-        Button('确定')
-          .fontSize(16)
-          .backgroundColor('#D4A574')
-          .fontColor('#ffffff')
-          .layoutWeight(1)
-          .onClick(() => {
-            this.showShichenPicker = false;
-          })
-      }
-      .width('90%')
-      .padding(16)
-    }
-    .width('100%')
-    .padding(20)
-    .backgroundColor('#ffffff')
-    .borderRadius({ topLeft: 16, topRight: 16 })
-  }
-
-  @Builder createInfoCard(title: string, items: string[]) {
-    Column({ space: 8 }) {
-      Text(title)
-        .fontSize(15)
-        .fontWeight(FontWeight.Medium)
-        .fontColor('#2C2416')
-        .width('100%')
-      
-      ForEach(items, (item: string) => {
-        Text(item)
-          .fontSize(14)
-          .fontColor('#666666')
-          .width('100%')
-      })
-    }
-    .width('100%')
-    .padding(12)
-    .backgroundColor('#ffffff')
-    .borderRadius(8)
-    .border({ width: 1, color: '#eeeeee' })
-  }
-
-  getLunarMonth(): string {
-    if (!this.dayInfo) return '';
-    const months = ['正月', '二月', '三月', '四月', '五月', '六月', 
-                    '七月', '八月', '九月', '十月', '冬月', '腊月'];
-    return months[this.dayInfo.lunar_month - 1] || `${this.dayInfo.lunar_month}月`;
-  }
-
-  getLunarDay(): string {
-    if (!this.dayInfo) return '';
-    const days = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
-                  '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
-                  '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
-    return days[this.dayInfo.lunar_day - 1] || `${this.dayInfo.lunar_day}日`;
-  }
-
-  getJieqiJieri(): string[] {
-    const result: string[] = [];
-    if (this.dayInfo?.festivals) {
-      result.push(`节日：${this.dayInfo.festivals}`);
-    }
-    if (this.dayInfo?.solar_term) {
-      result.push(`节气：${this.dayInfo.solar_term}`);
-    }
-    return result;
   }
 }
