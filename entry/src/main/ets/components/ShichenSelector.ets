@@ -20,7 +20,6 @@ interface ShichenInfo {
   name: string;
   range: string;
   ganZhi: string;
-  wuxing: string;
 }
 
 @Component
@@ -80,13 +79,11 @@ export struct ShichenSelector {
 
   // 解析时辰文本
   private parseShichenText(text: string): ShichenInfo {
-    // 解析文本：子时（23:00-01:00）甲子时 水
-    const match = text.match(/(\S+时)（([^)]+)）(\S+时)?\s*(\S+)?/);
+    const match = text.match(/(\S+时)（([^)]+)）(\S+时)?/);
     return {
       name: match ? match[1] : text,
       range: match ? match[2] : '',
-      ganZhi: match ? (match[3] || '') : '',
-      wuxing: match ? (match[4] || '') : ''
+      ganZhi: match ? (match[3] || '') : ''
     };
   }
 

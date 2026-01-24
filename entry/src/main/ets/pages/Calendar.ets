@@ -63,7 +63,7 @@ struct CalendarPage {
       days.push({ day: i, isCurrentMonth: true, date });
     }
     
-    // 填充下月的开头日期，凑戒42个格子(6周)
+    // 填充下月的开头日期，凑齐4２个格子（6周）
     const remainingCells = 42 - days.length;
     for (let i = 1; i <= remainingCells; i++) {
       const date = new Date(year, month, i);
@@ -107,31 +107,12 @@ struct CalendarPage {
   }
 
   async loadDateInfo(year: number, month: number, day: number) {
-    console.log(`[Calendar] loadDateInfo: ${year}-${month}-${day}`);
     const info = await CalendarManager.getInstance().getDayInfo(year, month, day);
-    console.log(`[Calendar] getDayInfo result:`, JSON.stringify(info));
     if (info) {
-      // 直接赋值，不再置null
       this.dayInfo = info;
-      // 更新时柱
       this.currentShizhu = ShichenHelper.getShizhuInfo(this.dayInfo.day_gan, this.selectedShichenIndex);
-      console.log(`[Calendar] dayInfo updated:`, 
-        `${this.dayInfo.year_gan}${this.dayInfo.year_zhi} ` +
-        `${this.dayInfo.month_gan}${this.dayInfo.month_zhi} ` +
-        `${this.dayInfo.day_gan}${this.dayInfo.day_zhi}`);
-      // 不再自动重置时辰，保持用户已选择的时辰
       this.updateShichenOptions();
-    } else {
-      console.error(`[Calendar] Failed to load date info for ${year}-${month}-${day}`);
     }
-  }
-
-  async loadTodayInfo() {
-    const now = new Date();
-    this.selectedDate = now;
-    // 返回今天时，重置为当前系统时辰
-    this.selectedShichenIndex = ShichenHelper.getCurrentShichenIndex();
-    await this.loadDateInfo(now.getFullYear(), now.getMonth() + 1, now.getDate());
   }
 
   updateShichenOptions() {
@@ -140,9 +121,6 @@ struct CalendarPage {
     this.shichenTexts = allShichen.map((sc, index) => 
       ShichenHelper.getShichenDisplayText(index, this.dayInfo!.day_gan)
     );
-    console.log(`[Calendar] updateShichenOptions: dayGan=${this.dayInfo.day_gan}, ` +
-      `selectedIndex=${this.selectedShichenIndex}, ` +
-      `currentDisplay=${this.shichenTexts[this.selectedShichenIndex]}`);
   }
 
   getShizhu(): string {
