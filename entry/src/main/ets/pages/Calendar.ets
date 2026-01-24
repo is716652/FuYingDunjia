@@ -8,6 +8,12 @@ import { CalendarGrid, DayCell } from '../components/CalendarGrid';
 import { ShichenSelector } from '../components/ShichenSelector';
 import { LunarInfoPanel } from '../components/LunarInfoPanel';
 
+interface DateFullInfo {
+  lunarDay: string;
+  solarTerm?: string;
+  hasFestival: boolean;
+}
+
 @Entry
 @Component
 struct CalendarPage {
@@ -20,6 +26,7 @@ struct CalendarPage {
   @State calendarDays: DayCell[] = [];
   @State currentShizhu: string = '暂无';  // 当前时柱，用于响应式更新
   @State showYearPicker: boolean = false;
+  @State showMonthPicker: boolean = false;
   private solarTimeHelper: SolarTimeHelper = new SolarTimeHelper(CHINA_CITY_LONGITUDES.BEIJING);
 
   aboutToAppear() {
@@ -72,9 +79,9 @@ struct CalendarPage {
       datesToQuery.push(date);
     }
       
-    // 批量获取所有日期的农历信息
-    const lunarInfos = await Promise.all(
-      datesToQuery.map(date => this.getLunarDayText(date))
+    // 批量获取所有日期的完整信息
+    const dateInfos = await Promise.all(
+      datesToQuery.map(date => this.getDateInfo(date))
     );
       
     // 组装数据
@@ -86,20 +93,44 @@ struct CalendarPage {
       for (let i = firstWeekDay - 1; i >= 0; i--) {
         const day = prevMonthLastDay - i;
         const date = new Date(year, month - 2, day);
-        days.push({ day, isCurrentMonth: false, date, lunarDay: lunarInfos[index++] });
+        const info = dateInfos[index++];
+        days.push({ 
+          day, 
+          isCurrentMonth: false, 
+          date, 
+          lunarDay: info.lunarDay,
+          solarTerm: info.solarTerm,
+          hasFestival: info.hasFestival
+        });
       }
     }
       
     // 当月
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month - 1, i);
-      days.push({ day: i, isCurrentMonth: true, date, lunarDay: lunarInfos[index++] });
+      const info = dateInfos[index++];
+      days.push({ 
+        day: i, 
+        isCurrentMonth: true, 
+        date, 
+        lunarDay: info.lunarDay,
+        solarTerm: info.solarTerm,
+        hasFestival: info.hasFestival
+      });
     }
       
     // 下月开头
     for (let i = 1; i <= remainingCells; i++) {
       const date = new Date(year, month, i);
-      days.push({ day: i, isCurrentMonth: false, date, lunarDay: lunarInfos[index++] });
+      const info = dateInfos[index++];
+      days.push({ 
+        day: i, 
+        isCurrentMonth: false, 
+        date, 
+        lunarDay: info.lunarDay,
+        solarTerm: info.solarTerm,
+        hasFestival: info.hasFestival
+      });
     }
       
     this.calendarDays = days;
@@ -118,6 +149,36 @@ struct CalendarPage {
                   '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
                   '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
     return days[info.lunar_day - 1] || '';
+  }
+
+  // 获取完整的日期信息（农历+节气+节日）
+  async getDateInfo(date: Date): Promise<DateFullInfo> {
+    const info = await CalendarManager.getInstance().getDayInfo(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate()
+    );
+    
+    if (!info) {
+      return { lunarDay: '', hasFestival: false };
+    }
+    
+    const days = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
+                  '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+                  '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
+    
+    const months = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '冬月', '腊月'];
+    
+    const hasFestival = (info.festivals && info.festivals.length > 0) ? true : false;
+    
+    // 初一显示月份名称
+    const lunarDayText = info.lunar_day === 1 ? months[info.lunar_month - 1] : (days[info.lunar_day - 1] || '');
+    
+    return {
+      lunarDay: lunarDayText,
+      solarTerm: info.solar_term || undefined,
+      hasFestival: hasFestival
+    };
   }
 
   // 切换月份
@@ -154,6 +215,13 @@ struct CalendarPage {
     this.currentYear = newYear;
     this.showYearPicker = false;
     this.generateCalendar(newYear, this.currentMonth);
+  }
+
+  // 切换月份（直接跳转）
+  changeMonthDirect(newMonth: number) {
+    this.currentMonth = newMonth;
+    this.showMonthPicker = false;
+    this.generateCalendar(this.currentYear, newMonth);
   }
 
   // 选中日期
@@ -241,6 +309,9 @@ struct CalendarPage {
             },
             onYearClick: () => {
               this.showYearPicker = true;
+            },
+            onMonthClick: () => {
+              this.showMonthPicker = true;
             }
           });
 
@@ -370,6 +441,9 @@ struct CalendarPage {
     .bindContentCover(this.showYearPicker, this.buildYearPicker(), {
       modalTransition: ModalTransition.DEFAULT
     })
+    .bindContentCover(this.showMonthPicker, this.buildMonthPicker(), {
+      modalTransition: ModalTransition.DEFAULT
+    })
   }
 
   @Builder buildYearPicker() {
@@ -415,6 +489,55 @@ struct CalendarPage {
         .width('90%')
         .onClick(() => {
           this.showYearPicker = false;
+        })
+    }
+    .width('100%')
+    .padding(20)
+    .backgroundColor('#FFFFFF')
+    .borderRadius({ topLeft: 16, topRight: 16 })
+  }
+
+  @Builder buildMonthPicker() {
+    Column({ space: 20 }) {
+      Text('选择月份')
+        .fontSize(20)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#2C2416')
+        .margin({ top: 20 })
+
+      Grid() {
+        ForEach([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], (month: number) => {
+          GridItem() {
+            Text(`${month}月`)
+              .fontSize(16)
+              .fontColor(month === this.currentMonth ? '#FFFFFF' : '#2C2416')
+              .fontWeight(month === this.currentMonth ? FontWeight.Bold : FontWeight.Normal)
+              .width('100%')
+              .height(60)
+              .textAlign(TextAlign.Center)
+              .backgroundColor(month === this.currentMonth ? '#D4A574' : '#FFFFFF')
+              .borderRadius(8)
+              .border({ width: 1, color: month === this.currentMonth ? '#D4A574' : '#eeeeee' })
+              .onClick(() => {
+                this.changeMonthDirect(month);
+              })
+          }
+        })
+      }
+      .columnsTemplate('1fr 1fr 1fr')
+      .rowsTemplate('1fr 1fr 1fr 1fr')
+      .rowsGap(10)
+      .columnsGap(10)
+      .width('90%')
+      .height(300)
+
+      Button('取消')
+        .fontSize(16)
+        .fontColor('#666666')
+        .backgroundColor('#F5F5F5')
+        .width('90%')
+        .onClick(() => {
+          this.showMonthPicker = false;
         })
     }
     .width('100%')

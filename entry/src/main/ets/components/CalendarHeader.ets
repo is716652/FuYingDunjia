@@ -29,6 +29,7 @@ export struct CalendarHeader {
   onNextMonth?: () => void;
   onToday?: () => void;
   onYearClick?: () => void;
+  onMonthClick?: () => void;
 
   build() {
     Row() {
@@ -57,7 +58,12 @@ export struct CalendarHeader {
         Text(`${this.month}月`)
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#2C2416');
+          .fontColor('#D4A574')
+          .onClick(() => {
+            if (this.onMonthClick) {
+              this.onMonthClick();
+            }
+          });
       }
       .layoutWeight(1)
       .justifyContent(FlexAlign.Center);

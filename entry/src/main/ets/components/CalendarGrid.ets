@@ -22,6 +22,8 @@ export interface DayCell {
   isCurrentMonth: boolean;  // 是否当月
   date: Date;           // 完整日期对象
   lunarDay?: string;    // 农历日期（如“初一”、“十五”）
+  solarTerm?: string;   // 节气（如“立春”、“春分”）
+  hasFestival?: boolean; // 是否有节日
 }
 
 @Component
@@ -84,32 +86,51 @@ export struct CalendarGrid {
   }
 
   @Builder buildDayCell(dayCell: DayCell) {
-    Column({ space: 2 }) {
-      // 公历日期
-      Text(dayCell.day.toString())
-        .fontSize(16)
-        .fontColor(
-          this.isToday(dayCell) ? '#FF6B35' : // 今天用橙色
-          (dayCell.isCurrentMonth ? '#2C2416' : '#cccccc')
-        )
-        .fontWeight(
-          this.isSelectedDate(dayCell) || this.isToday(dayCell) ? FontWeight.Bold : FontWeight.Normal
-        )
-      
-      // 农历日期
-      if (dayCell.lunarDay) {
-        Text(dayCell.lunarDay)
-          .fontSize(10)
+    Stack({ alignContent: Alignment.TopEnd }) {
+      Column({ space: 2 }) {
+        // 公历日期
+        Text(dayCell.day.toString())
+          .fontSize(16)
           .fontColor(
             this.isToday(dayCell) ? '#FF6B35' : // 今天用橙色
-            (dayCell.isCurrentMonth ? '#999999' : '#dddddd')
+            (dayCell.isCurrentMonth ? '#2C2416' : '#cccccc')
           )
-          .maxLines(1)
+          .fontWeight(
+            this.isSelectedDate(dayCell) || this.isToday(dayCell) ? FontWeight.Bold : FontWeight.Normal
+          )
+        
+        // 农历日期/节气
+        if (dayCell.solarTerm && dayCell.isCurrentMonth) {
+          // 优先显示节气
+          Text(dayCell.solarTerm)
+            .fontSize(10)
+            .fontColor('#E74C3C')
+            .fontWeight(FontWeight.Medium)
+            .maxLines(1)
+        } else if (dayCell.lunarDay) {
+          // 其次显示农历
+          Text(dayCell.lunarDay)
+            .fontSize(10)
+            .fontColor(
+              this.isToday(dayCell) ? '#FF6B35' : // 今天用橙色
+              (dayCell.isCurrentMonth ? '#999999' : '#dddddd')
+            )
+            .maxLines(1)
+        }
+      }
+      .width('100%')
+      .height('100%')
+      .justifyContent(FlexAlign.Center)
+
+      // 节日标记（右上角小圆点）
+      if (dayCell.hasFestival && dayCell.isCurrentMonth) {
+        Circle({ width: 6, height: 6 })
+          .fill('#FF6B35')
+          .margin({ top: 4, right: 4 })
       }
     }
     .width(`${100/7}%`)
     .height(60)
-    .justifyContent(FlexAlign.Center)
     .backgroundColor(this.isSelectedDate(dayCell) ? '#E8F4FD' : '#ffffff')
     .border({
       width: this.isSelectedDate(dayCell) ? 2 : (this.isToday(dayCell) ? 1 : 0),
