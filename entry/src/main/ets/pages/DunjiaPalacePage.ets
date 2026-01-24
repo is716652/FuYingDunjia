@@ -63,10 +63,54 @@ struct DunjiaPalacePage {
     }
   }
 
+  /**
+   * 调整时间
+   */
+  private adjustTime(hours: number) {
+    const newDateTime = new Date(this.currentDateTime.getTime() + hours * 60 * 60 * 1000);
+    this.currentDateTime = newDateTime;
+    this.selectedPalace = null; // 清除选中状态
+    this.computePan();
+  }
+
+  /**
+   * 切换时辰（跳转到指定时辰的起始时刻）
+   */
+  private switchToShichen(shiIndex: number) {
+    interface ShichenInfo {
+      name: string;
+      hour: number;
+    }
+
+    const shiMap: ShichenInfo[] = [
+      { name: '子时', hour: 23 },
+      { name: '丑时', hour: 1 },
+      { name: '寅时', hour: 3 },
+      { name: '卯时', hour: 5 },
+      { name: '辰时', hour: 7 },
+      { name: '巳时', hour: 9 },
+      { name: '午时', hour: 11 },
+      { name: '未时', hour: 13 },
+      { name: '申时', hour: 15 },
+      { name: '酉时', hour: 17 },
+      { name: '戌时', hour: 19 },
+      { name: '亥时', hour: 21 }
+    ];
+    
+    if (shiIndex >= 0 && shiIndex < shiMap.length) {
+      const targetHour = shiMap[shiIndex].hour;
+      const newDateTime = new Date(this.currentDateTime);
+      newDateTime.setHours(targetHour, 0, 0, 0); // 设置为时辰起始时刻
+      this.currentDateTime = newDateTime;
+      this.selectedPalace = null;
+      this.computePan();
+    }
+  }
+
   build() {
     Column({ space: 0 }) {
       // 顶部导航栏
-      NavigationBar({ title: '九宬时空盘' })
+      NavigationBar({ title: '九宫时空盘' })
   
       if (this.loading) {
         Column() {
@@ -81,6 +125,76 @@ struct DunjiaPalacePage {
         // 主内容区域：使用Scroll包裹，九宫盘和宫位详情垂直排列
         Scroll() {
           Column({ space: 16 }) {
+            // 时间调整按钮组
+            Column({ space: 12 }) {
+              Text('⏰ 时间微调')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#2C2416')
+                .width('100%')
+              
+              // 第一行：减少时间
+              Row({ space: 8 }) {
+                Button('-2时辰')
+                  .fontSize(13)
+                  .backgroundColor('#F5F1E8')
+                  .fontColor('#666666')
+                  .layoutWeight(1)
+                  .height(38)
+                  .onClick(() => this.adjustTime(-4))
+                
+                Button('-1时辰')
+                  .fontSize(13)
+                  .backgroundColor('#F5F1E8')
+                  .fontColor('#666666')
+                  .layoutWeight(1)
+                  .height(38)
+                  .onClick(() => this.adjustTime(-2))
+                
+                Button('-1小时')
+                  .fontSize(13)
+                  .backgroundColor('#F5F1E8')
+                  .fontColor('#666666')
+                  .layoutWeight(1)
+                  .height(38)
+                  .onClick(() => this.adjustTime(-1))
+              }
+              .width('100%')
+              
+              // 第二行：增加时间
+              Row({ space: 8 }) {
+                Button('+1小时')
+                  .fontSize(13)
+                  .backgroundColor('#D4A574')
+                  .fontColor('#FFFFFF')
+                  .layoutWeight(1)
+                  .height(38)
+                  .onClick(() => this.adjustTime(1))
+                
+                Button('+1时辰')
+                  .fontSize(13)
+                  .backgroundColor('#D4A574')
+                  .fontColor('#FFFFFF')
+                  .layoutWeight(1)
+                  .height(38)
+                  .onClick(() => this.adjustTime(2))
+                
+                Button('+2时辰')
+                  .fontSize(13)
+                  .backgroundColor('#D4A574')
+                  .fontColor('#FFFFFF')
+                  .layoutWeight(1)
+                  .height(38)
+                  .onClick(() => this.adjustTime(4))
+              }
+              .width('100%')
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16, top: 12, bottom: 12 })
+            .backgroundColor('#ffffff')
+            .borderRadius(12)
+            .shadow({ radius: 8, color: '#22000000', offsetX: 0, offsetY: 2 })
+
             // 九宫格组件
             DunjiaNineGrid({
               panResult: this.panResult,
