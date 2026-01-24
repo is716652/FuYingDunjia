@@ -18,9 +18,10 @@
  */
 
 export interface DayCell {
-  day: number;          // 日期数字
+  day: number;          // 公历日期数字
   isCurrentMonth: boolean;  // 是否当月
   date: Date;           // 完整日期对象
+  lunarDay?: string;    // 农历日期（如“初一”、“十五”）
 }
 
 @Component
@@ -75,14 +76,24 @@ export struct CalendarGrid {
   }
 
   @Builder buildDayCell(dayCell: DayCell) {
-    Stack() {
+    Column({ space: 2 }) {
+      // 公历日期
       Text(dayCell.day.toString())
         .fontSize(16)
         .fontColor(dayCell.isCurrentMonth ? '#2C2416' : '#cccccc')
         .fontWeight(this.isSelectedDate(dayCell) ? FontWeight.Bold : FontWeight.Normal)
+      
+      // 农历日期
+      if (dayCell.lunarDay) {
+        Text(dayCell.lunarDay)
+          .fontSize(10)
+          .fontColor(dayCell.isCurrentMonth ? '#999999' : '#dddddd')
+          .maxLines(1)
+      }
     }
     .width(`${100/7}%`)
-    .height(50)
+    .height(60)
+    .justifyContent(FlexAlign.Center)
     .backgroundColor(this.isSelectedDate(dayCell) ? '#E8F4FD' : '#ffffff')
     .border({
       width: this.isSelectedDate(dayCell) ? 2 : 0,

@@ -35,42 +35,60 @@ struct CalendarPage {
   }
 
   // 生成日历数据
-  generateCalendar(year: number, month: number) {
+  async generateCalendar(year: number, month: number) {
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
     const daysInMonth = lastDay.getDate();
-    
+      
     // 获取月份第一天是周几 (0=周日, 1=周一...6=周六)
     let firstWeekDay = firstDay.getDay();
     // 转换为周一开始 (0=周一, 6=周日)
     firstWeekDay = firstWeekDay === 0 ? 6 : firstWeekDay - 1;
-    
+      
     const days: DayCell[] = [];
-    
+      
     // 填充上月的尾部日期
     if (firstWeekDay > 0) {
       const prevMonthLastDay = new Date(year, month - 1, 0).getDate();
       for (let i = firstWeekDay - 1; i >= 0; i--) {
         const day = prevMonthLastDay - i;
         const date = new Date(year, month - 2, day);
-        days.push({ day, isCurrentMonth: false, date });
+        const lunarDay = await this.getLunarDayText(date);
+        days.push({ day, isCurrentMonth: false, date, lunarDay });
       }
     }
-    
+      
     // 填充当月日期
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month - 1, i);
-      days.push({ day: i, isCurrentMonth: true, date });
+      const lunarDay = await this.getLunarDayText(date);
+      days.push({ day: i, isCurrentMonth: true, date, lunarDay });
     }
-    
-    // 填充下月的开头日期，凑齐4２个格子（6周）
+      
+    // 填充下月的开头日期，凑齐42个格子（6周）
     const remainingCells = 42 - days.length;
     for (let i = 1; i <= remainingCells; i++) {
       const date = new Date(year, month, i);
-      days.push({ day: i, isCurrentMonth: false, date });
+      const lunarDay = await this.getLunarDayText(date);
+      days.push({ day: i, isCurrentMonth: false, date, lunarDay });
     }
-    
+      
     this.calendarDays = days;
+  }
+  
+  // 获取农历日期文本
+  async getLunarDayText(date: Date): Promise<string> {
+    const info = await CalendarManager.getInstance().getDayInfo(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate()
+    );
+    if (!info) return '';
+      
+    const days = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十',
+                  '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十',
+                  '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
+    return days[info.lunar_day - 1] || '';
   }
 
   // 切换月份
