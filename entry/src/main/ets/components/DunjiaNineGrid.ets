@@ -1,5 +1,6 @@
 import { DunjiaPanResult } from '../utils/DunjiaEngine'
 import { GejuPattern } from '../utils/DunjiaEngine'
+import { PalaceInfoCard, PalaceCardConfig } from './PalaceInfoCard'
 
 /**
  * 九宫格显示组件
@@ -62,123 +63,19 @@ export struct DunjiaNineGrid {
   @Builder
   buildPalaceCard(index: number) {
     if (this.panResult && this.panResult.palaces.length > index) {
-      Stack({ alignContent: Alignment.TopEnd }) {
-        Column({ space: 3 }) {
-          // 宫名
-          Text(this.panResult.palaces[index].palaceName)
-            .fontSize(11)
-            .fontColor('#888888')
-            .textAlign(TextAlign.Start)
-            .width('100%')
-          
-          // 九星（主要显示）
-          Text(this.panResult.palaces[index].starName || '')
-            .fontSize(18)
-            .fontWeight(FontWeight.Bold)
-            .fontColor('#2C2416')
-            .textAlign(TextAlign.Center)
-            .width('100%')
-            .margin({ top: 2 })
-          
-          // 八门
-          Text(this.panResult.palaces[index].doorName || '')
-            .fontSize(12)
-            .fontColor('#555555')
-            .textAlign(TextAlign.Center)
-            .width('100%')
-            .margin({ top: 1 })
-          
-          // 分割线
-          Divider()
-            .color('#f0f0f0')
-            .strokeWidth(0.5)
-            .margin({ top: 3, bottom: 3 })
-          
-          // 天盘地盘干支
-          Row({ space: 5 }) {
-            Text('天')
-              .fontSize(9)
-              .fontColor('#999999')
-            Text(this.panResult.palaces[index].tianGan || '')
-              .fontSize(13)
-              .fontWeight(FontWeight.Medium)
-              .fontColor('#D4691A')
-            Text('地')
-              .fontSize(9)
-              .fontColor('#999999')
-            Text(this.panResult.palaces[index].diGan || '')
-              .fontSize(13)
-              .fontWeight(FontWeight.Medium)
-              .fontColor('#2A7A8C')
+      PalaceInfoCard({
+        config: {
+          palace: this.panResult.palaces[index],
+          index: index,
+          isSelected: this.selectedPalace === index,
+          isZhiFu: this.panResult.zhiFuPalace === index,
+          isZhiShi: this.panResult.zhiShiPalace === index,
+          patterns: this.getPalacePatterns(index)
+        },
+        onCardClick: () => {
+          if (this.onPalaceClick) {
+            this.onPalaceClick(index)
           }
-          .width('100%')
-          .justifyContent(FlexAlign.Center)
-          .margin({ top: 1 })
-          
-          // 八神
-          Text(this.panResult.palaces[index].deityName || '')
-            .fontSize(10)
-            .fontColor('#8B6914')
-            .textAlign(TextAlign.Center)
-            .width('100%')
-            .margin({ top: 2 })
-          
-          // 格局徽章
-          if (this.getPalacePatterns(index).length > 0) {
-            Row({ space: 2 }) {
-              ForEach(this.getPalacePatterns(index).slice(0, 2), (patternName: string) => {
-                Text(patternName)
-                  .fontSize(9)
-                  .fontColor('#FFFFFF')
-                  .backgroundColor(this.getPatternColor(patternName))
-                  .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-                  .borderRadius(4)
-              })
-            }
-            .width('100%')
-            .justifyContent(FlexAlign.Center)
-            .margin({ top: 3 })
-          }
-        }
-        .width('100%')
-
-        // 值符/值使角标
-        if (this.panResult.zhiFuPalace === index) {
-          Text('符')
-            .fontSize(11)
-            .fontWeight(FontWeight.Bold)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#D4A574')
-            .padding({ left: 5, right: 5, top: 2, bottom: 2 })
-            .borderRadius({ topRight: 8, bottomLeft: 8 })
-        } else if (this.panResult.zhiShiPalace === index) {
-          Text('使')
-            .fontSize(11)
-            .fontWeight(FontWeight.Bold)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#4A6A8B')
-            .padding({ left: 5, right: 5, top: 2, bottom: 2 })
-            .borderRadius({ topRight: 8, bottomLeft: 8 })
-        }
-      }
-      .width('32%')
-      .height(145)
-      .padding({ left: 8, right: 8, top: 8, bottom: 8 })
-      .backgroundColor(this.selectedPalace === index ? '#FFF8F0' : '#FFFFFF')
-      .borderRadius(8)
-      .border({
-        width: (this.panResult.zhiFuPalace === index || this.panResult.zhiShiPalace === index) ? 2 : 1,
-        color: (this.panResult.zhiFuPalace === index) ? '#D4A574' : (this.panResult.zhiShiPalace === index ? '#4A6A8B' : '#E0E0E0')
-      })
-      .shadow({
-        radius: (this.panResult.zhiFuPalace === index || this.panResult.zhiShiPalace === index) ? 10 : 4,
-        color: (this.panResult.zhiFuPalace === index) ? '#33D4A574' : '#22000000',
-        offsetX: 0,
-        offsetY: 1
-      })
-      .onClick(() => {
-        if (this.onPalaceClick) {
-          this.onPalaceClick(index)
         }
       })
     }
