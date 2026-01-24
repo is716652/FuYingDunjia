@@ -1,7 +1,9 @@
 // DunjiaPanel.ets
 // 遁甲研习台 - 研习模块导航入口页
 
-import router from '@ohos.router';
+import router from '@ohos.router'
+import { NavigationBar } from '../components/NavigationBar'
+import { InfoCard } from '../components/InfoCard'
 
 interface DunjiaSection {
   id: string;
@@ -65,26 +67,7 @@ struct DunjiaPanel {
   build() {
     Column({ space: 0 }) {
       // 顶部导航栏
-      Row() {
-        Text('← 返回')
-          .fontSize(16)
-          .fontColor('#666666')
-          .onClick(() => {
-            router.back();
-          })
-        Text('遁甲研习台')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-        Text(' ')
-          .fontSize(16)
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-      .backgroundColor('#ffffff')
-
-      Divider().color('#eeeeee')
+      NavigationBar({ title: '遁甲研习台' })
 
       Scroll() {
         Column({ space: 16 }) {
@@ -106,65 +89,19 @@ struct DunjiaPanel {
 
           // 研习模块卡片列表
           ForEach(this.sections, (section: DunjiaSection) => {
-            Column({ space: 10 }) {
-              // 标题行
-              Row({ space: 8 }) {
-                Column({ space: 4 }) {
-                  Text(section.title)
-                    .fontSize(16)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor('#2C2416')
-                    .textAlign(TextAlign.Start)
-                  Text(section.subtitle)
-                    .fontSize(13)
-                    .fontColor('#666666')
-                    .lineHeight(18)
-                    .textAlign(TextAlign.Start)
+            InfoCard({
+              title: section.title,
+              subtitle: section.subtitle,
+              summary: section.summary,
+              level: section.level,
+              tags: section.tags,
+              accentColor: section.accentColor,
+              onCardClick: () => {
+                if (section.route) {
+                  router.pushUrl({ url: section.route })
+                } else {
+                  console.info(`[遁甲研习台] 模块 ${section.id} 暂未实现`)
                 }
-                .layoutWeight(1)
-                .alignItems(HorizontalAlign.Start)
-
-                // 等级标签
-                Text(section.level)
-                  .fontSize(11)
-                  .fontColor(section.accentColor || '#D4A574')
-                  .textAlign(TextAlign.Center)
-                  .padding({ left: 8, right: 8, top: 3, bottom: 3 })
-                  .borderRadius(12)
-                  .border({ width: 1, color: section.accentColor || '#D4A574' })
-              }
-
-              // 摘要
-              Text(section.summary)
-                .fontSize(13)
-                .fontColor('#444444')
-                .lineHeight(19)
-                .textAlign(TextAlign.Start)
-
-              // 标签行
-              Row({ space: 6 }) {
-                ForEach(section.tags, (tag: string) => {
-                  Text(tag)
-                    .fontSize(11)
-                    .fontColor('#555555')
-                    .textAlign(TextAlign.Start)
-                    .padding({ left: 8, right: 8, top: 3, bottom: 3 })
-                    .backgroundColor('#F5F1E8')
-                    .borderRadius(12)
-                })
-              }
-            }
-            .width('100%')
-            .padding({ left: 16, right: 16, top: 14, bottom: 14 })
-            .backgroundColor('#ffffff')
-            .borderRadius(12)
-            .shadow({ radius: 8, color: '#22000000', offsetX: 0, offsetY: 2 })
-            .onClick(() => {
-              if (section.route) {
-                router.pushUrl({ url: section.route });
-              } else {
-                // 暂未实现的模块
-                console.info(`[DunjiaPanel] 模块 ${section.id} 暂未实现`);
               }
             })
           })

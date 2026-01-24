@@ -2,6 +2,7 @@ import router from '@ohos.router'
 import { DunjiaEngine, DunjiaPanResult, DunjiaInput, DunjiaSceneType } from '../utils/DunjiaEngine'
 import { DunjiaNineGrid } from '../components/DunjiaNineGrid'
 import { DunjiaPalaceDetail } from '../components/DunjiaPalaceDetail'
+import { NavigationBar } from '../components/NavigationBar'
 
 /**
  * 奇门遁甲九宫盘页面
@@ -65,27 +66,8 @@ struct DunjiaPalacePage {
   build() {
     Column({ space: 0 }) {
       // 顶部导航栏
-      Row() {
-        Text('← 返回')
-          .fontSize(16)
-          .fontColor('#666666')
-          .onClick(() => {
-            router.back()
-          })
-        Text('九宫时空盘')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-        Text(' ')
-          .fontSize(16)
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-      .backgroundColor('#ffffff')
-
-      Divider().color('#eeeeee')
-
+      NavigationBar({ title: '九宬时空盘' })
+  
       if (this.loading) {
         Column() {
           Text('排盘计算中...')

@@ -1,4 +1,5 @@
-import { router } from '@kit.ArkUI';
+import { router } from '@kit.ArkUI'
+import { NavigationBar } from '../components/NavigationBar'
 
 @Entry
 @Component
@@ -104,26 +105,7 @@ struct DocsPage {
   build() {
     Column({ space: 0 }) {
       // 顶部导航栏
-      Row() {
-        Text('← 返回')
-          .fontSize(16)
-          .fontColor('#666666')
-          .onClick(() => {
-            router.back();
-          })
-        Text('真太阳时 / 术数说明')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .layoutWeight(1)
-          .textAlign(TextAlign.Center)
-        Text('   ')
-          .fontSize(16)
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-      .backgroundColor('#ffffff')
-
-      Divider().color('#eeeeee')
+      NavigationBar({ title: '真太阳时 / 术数说明' })
 
       // 文档切换标签
       Row({ space: 12 }) {
