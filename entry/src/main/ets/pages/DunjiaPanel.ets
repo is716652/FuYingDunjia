@@ -52,7 +52,8 @@ struct DunjiaPanel {
       subtitle: '实战应用与时机把握',
       summary: '基于《遁甲三奇应验》和《遁甲择日与应用》，学习三奇到宫的应验现象、干支择日、利客利主判断、五阳五阴时等实战技法。',
       level: '实战演练',
-      tags: ['三奇应验', '择日法', '时机把握']
+      tags: ['三奇应验', '择日法', '时机把握'],
+      route: 'pages/SanqiZheriPage'
     },
     {
       id: 'cases',

@@ -4,6 +4,7 @@
     "pages/Calendar",
     "pages/DocsPage",
     "pages/DunjiaPanel",
-    "pages/DunjiaPalacePage"
+    "pages/DunjiaPalacePage",
+    "pages/SanqiZheriPage"
   ]
 }
