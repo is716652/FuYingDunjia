@@ -155,7 +155,7 @@ export struct PalaceInfoCard {
       }
     }
     .width('32%')
-    .height(165)
+    .height(115)
     .padding({ left: 8, right: 8, top: 8, bottom: 8 })
     .backgroundColor(this.config.isSelected ? '#FFF8F0' : '#FFFFFF')
     .borderRadius(8)

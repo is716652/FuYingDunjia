@@ -1,13 +1,13 @@
 import { DunjiaPanResult, PalaceState, GejuPattern } from '../utils/DunjiaEngine'
 
 /**
- * 宫位详情面板组件（优化版）
+ * 宫位详情面板组件（古籍知识版）
  * 
  * 功能：
- * - 显示选中宫位的完整信息
- * - 格局解析说明
- * - 值符值使详细信息
- * - 宫位生克关系
+ * - 基于《遁甲符应经》的九星八门知识解读
+ * - 格局深度分析与古籍依据
+ * - 天地盘组合吉凶判断
+ * - 应用建议与时机参考
  */
 
 @Component
