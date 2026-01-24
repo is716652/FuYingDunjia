@@ -74,6 +74,15 @@ struct DunjiaPalacePage {
   }
 
   /**
+   * 恢复到当前系统时间
+   */
+  private resetToCurrentTime() {
+    this.currentDateTime = new Date();
+    this.selectedPalace = null;
+    this.computePan();
+  }
+
+  /**
    * 切换时辰（跳转到指定时辰的起始时刻）
    */
   private switchToShichen(shiIndex: number) {
@@ -127,11 +136,22 @@ struct DunjiaPalacePage {
           Column({ space: 16 }) {
             // 时间调整按钮组
             Column({ space: 12 }) {
-              Text('⏰ 时间微调')
-                .fontSize(14)
-                .fontWeight(FontWeight.Bold)
-                .fontColor('#2C2416')
-                .width('100%')
+              Row({ space: 8 }) {
+                Text('⏰ 时间微调')
+                  .fontSize(14)
+                  .fontWeight(FontWeight.Bold)
+                  .fontColor('#2C2416')
+                  .layoutWeight(1)
+                
+                Button('恢复当前')
+                  .fontSize(12)
+                  .backgroundColor('#4A90E2')
+                  .fontColor('#FFFFFF')
+                  .height(32)
+                  .padding({ left: 12, right: 12 })
+                  .onClick(() => this.resetToCurrentTime())
+              }
+              .width('100%')
               
               // 第一行：减少时间
               Row({ space: 8 }) {
