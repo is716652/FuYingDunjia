@@ -1,0 +1,16 @@
+{
+  "id": "san_dun_di_dun",
+  "name": "三遁·地遁",
+  "ruleSource": "中卷·地遁",
+  "category": "三遁格局",
+  "description": "开门与日奇六乙合临地下六己，为地遁，此时得月精之蔽。",
+  "judge": {
+    "door": "开门",
+    "qiTianGan": "乙",
+    "strictConditionNote": "严格依原文需结合六己所在宫位及地盘结构，仅供后续引擎细化。",
+    "simplifiedCondition": "若某宫门为开门，且天盘天干为乙，可视为地遁候选格。"
+  },
+  "tendency": "偏吉",
+  "suitable": "资源布局、基础建设、环境与格局调整类研习主题。",
+  "avoid": "高强度正面冲突型行动，更适合在天遁等主动格局下讨论。"
+}

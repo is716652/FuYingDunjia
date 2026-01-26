@@ -1,0 +1,16 @@
+{
+  "id": "san_dun_tian_dun",
+  "name": "三遁·天遁",
+  "ruleSource": "中卷·释天遁",
+  "category": "三遁格局",
+  "description": "生门与月奇六丙合，并得六丁之助，为天遁，此时得日精之蔽。",
+  "judge": {
+    "door": "生门",
+    "qiTianGan": "丙",
+    "strictConditionNote": "严格依原文需同时考虑六丁所在宫位及直符位置，仅供后续引擎细化。",
+    "simplifiedCondition": "若某宫门为生门，且天盘天干为丙，可视为天遁候选格。"
+  },
+  "tendency": "偏吉",
+  "suitable": "主动出击、公开推进型事项，在研习中可用于观察“天时助力”的窗口。",
+  "avoid": "过于隐秘、完全依赖隐藏行迹的行动，更适合在人遁或太阴类格局下研习。"
+}

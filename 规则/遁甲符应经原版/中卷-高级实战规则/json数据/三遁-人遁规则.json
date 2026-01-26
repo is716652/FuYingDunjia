@@ -1,0 +1,16 @@
+{
+  "id": "san_dun_ren_dun",
+  "name": "三遁·人遁",
+  "ruleSource": "中卷·人遁",
+  "category": "三遁格局",
+  "description": "休门与星奇六丁合于前二太阴中，为人遁，此时得星精之蔽。",
+  "judge": {
+    "door": "休门",
+    "qiTianGan": "丁",
+    "strictConditionNote": "完整人遁需结合太阴位置与直符前后二宫关系，目前仅记录为后续引擎扩展预留。",
+    "simplifiedCondition": "若某宫门为休门，且天盘天干为丁，可视为人遁候选格。"
+  },
+  "tendency": "偏吉",
+  "suitable": "人事筹谋、隐匿行动、内部调整等偏内向的研习主题。",
+  "avoid": "需要强曝光、强对抗的正面硬碰场景，更适合在天遁等格局下观察。"
+}
