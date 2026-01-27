@@ -23,6 +23,43 @@ interface GejuKnowledgeItem {
   source: string;
 }
 
+interface GejuJsonEffects {
+  good?: string[];
+  bad?: string[];
+}
+
+interface GejuJsonConditions {
+  core?: string;
+  door?: string;
+  ganCombination?: string[];
+  deity?: string;
+  notes?: string;
+}
+
+interface GejuJsonSubRule {
+  subId?: string;
+  name?: string;
+  palace?: string;
+  direction?: string;
+  description?: string;
+  effects?: GejuJsonEffects;
+}
+
+interface GejuJsonRule {
+  id?: string;
+  name?: string;
+  category?: string;
+  ruleSource?: string;
+  description?: string;
+  conditions?: GejuJsonConditions;
+  effects?: GejuJsonEffects;
+  sub_rules?: GejuJsonSubRule[];
+}
+
+interface GejuJsonFile {
+  rules?: GejuJsonRule[];
+}
+
 /**
  * 格局识别与判断页面
  * 
@@ -249,7 +286,243 @@ struct GejuKnowledgePage {
       ]
     }
   ]
-
+  
+  aboutToAppear() {
+    this.loadGejuJson()
+  }
+  
+  private loadGejuJson() {
+    try {
+      const context = getContext(this);
+      if (!context || !context.resourceManager || !context.resourceManager.getRawFileContent) {
+        console.error('[GejuKnowledgePage] 无法获取资源管理器');
+        return;
+      }
+  
+      context.resourceManager.getRawFileContent('rules/geju_jixiong_rules.json')
+        .then((data: Uint8Array) => {
+          const jsonStr = this.decodeUtf8(data);
+          let parsed: GejuJsonFile | null = null;
+          try {
+            parsed = JSON.parse(jsonStr) as GejuJsonFile;
+          } catch (e) {
+            console.error('[GejuKnowledgePage] 解析格局 JSON 失败', JSON.stringify(e));
+            return;
+          }
+  
+          if (!parsed || !parsed.rules || !Array.isArray(parsed.rules)) {
+            return;
+          }
+  
+          let newCategories: GejuCategory[] = [];
+          for (let i = 0; i < this.categories.length; i++) {
+            const category = this.categories[i];
+            const copiedPatterns: GejuKnowledgeItem[] = [];
+            for (let j = 0; j < category.patterns.length; j++) {
+              const p = category.patterns[j];
+              copiedPatterns.push({
+                id: p.id,
+                name: p.name,
+                type: p.type,
+                description: p.description,
+                conditions: p.conditions.slice(),
+                effect: p.effect,
+                source: p.source
+              });
+            }
+            newCategories.push({
+              id: category.id,
+              title: category.title,
+              description: category.description,
+              patterns: copiedPatterns
+            });
+          }
+  
+          for (let i = 0; i < parsed.rules.length; i++) {
+            const rule = parsed.rules[i];
+            if (!rule || !rule.id) {
+              continue;
+            }
+            if (rule.sub_rules && Array.isArray(rule.sub_rules) && rule.sub_rules.length > 0) {
+              for (let j = 0; j < rule.sub_rules.length; j++) {
+                const subRule = rule.sub_rules[j];
+                newCategories = this.addOrUpdatePatternFromJson(rule, subRule, newCategories);
+              }
+            } else {
+              newCategories = this.addOrUpdatePatternFromJson(rule, null, newCategories);
+            }
+          }
+  
+          this.categories = newCategories;
+        })
+        .catch((err: Error) => {
+          console.error('[GejuKnowledgePage] 读取格局 JSON 失败', JSON.stringify(err));
+        });
+    } catch (e) {
+      console.error('[GejuKnowledgePage] loadGejuJson 异常', JSON.stringify(e));
+    }
+  }
+  
+  private addOrUpdatePatternFromJson(rule: GejuJsonRule, subRule: GejuJsonSubRule | null, categories: GejuCategory[]): GejuCategory[] {
+    const targetCategoryId: string = this.mapGejuCategoryId(rule.category);
+    if (!targetCategoryId) {
+      return categories;
+    }
+  
+    const itemId: string = (subRule && subRule.subId ? subRule.subId : (rule.id ? rule.id : ''));
+    const itemName: string = (subRule && subRule.name ? subRule.name : (rule.name ? rule.name : ''));
+  
+    const conditions: string[] = [];
+    if (rule.description && typeof rule.description === 'string') {
+      conditions.push(rule.description);
+    }
+    if (rule.conditions) {
+      const cond = rule.conditions;
+      if (cond.core) {
+        conditions.push(cond.core);
+      }
+      if (cond.door) {
+        conditions.push('门：' + cond.door);
+      }
+      if (cond.ganCombination && Array.isArray(cond.ganCombination) && cond.ganCombination.length > 0) {
+        conditions.push('干组合：' + cond.ganCombination.join('、'));
+      }
+      if (cond.deity) {
+        conditions.push('神：' + cond.deity);
+      }
+      if (cond.notes) {
+        conditions.push(cond.notes);
+      }
+    }
+    if (subRule) {
+      if (subRule.palace) {
+        conditions.push('宫位：' + subRule.palace);
+      }
+      if (subRule.direction) {
+        conditions.push('方位：' + subRule.direction);
+      }
+      if (subRule.description && typeof subRule.description === 'string') {
+        conditions.push(subRule.description);
+      }
+    }
+  
+    const effectsList: string[] = [];
+    if (rule.effects) {
+      if (rule.effects.good && Array.isArray(rule.effects.good) && rule.effects.good.length > 0) {
+        effectsList.push('吉：' + rule.effects.good.join('、'));
+      }
+      if (rule.effects.bad && Array.isArray(rule.effects.bad) && rule.effects.bad.length > 0) {
+        effectsList.push('凶：' + rule.effects.bad.join('、'));
+      }
+    }
+    if (subRule && subRule.effects) {
+      if (subRule.effects.good && Array.isArray(subRule.effects.good) && subRule.effects.good.length > 0) {
+        effectsList.push('吉：' + subRule.effects.good.join('、'));
+      }
+      if (subRule.effects.bad && Array.isArray(subRule.effects.bad) && subRule.effects.bad.length > 0) {
+        effectsList.push('凶：' + subRule.effects.bad.join('、'));
+      }
+    }
+    const effectText: string = effectsList.join('；');
+  
+    const item: GejuKnowledgeItem = {
+      id: itemId,
+      name: itemName,
+      type: this.mapGejuType(rule.category),
+      description: rule.description && typeof rule.description === 'string' ? rule.description : '',
+      conditions: conditions,
+      effect: effectText,
+      source: rule.ruleSource || ''
+    };
+  
+    for (let i = 0; i < categories.length; i++) {
+      const category = categories[i];
+      if (category.id === targetCategoryId) {
+        const updatedPatterns: GejuKnowledgeItem[] = [];
+        let found: boolean = false;
+        for (let j = 0; j < category.patterns.length; j++) {
+          const existing = category.patterns[j];
+          if (existing.id === item.id) {
+            updatedPatterns.push(item);
+            found = true;
+          } else {
+            updatedPatterns.push(existing);
+          }
+        }
+        if (!found) {
+          updatedPatterns.push(item);
+        }
+        categories[i] = {
+          id: category.id,
+          title: category.title,
+          description: category.description,
+          patterns: updatedPatterns
+        };
+        break;
+      }
+    }
+  
+    return categories;
+  }
+  
+  private mapGejuCategoryId(category: string | undefined): string {
+    if (category === '吉格') {
+      return 'major_auspicious';
+    }
+    if (category === '凶格') {
+      return 'major_inauspicious';
+    }
+    if (category === '特殊凶象') {
+      return 'minor';
+    }
+    return '';
+  }
+  
+  private mapGejuType(category: string | undefined): 'major_auspicious' | 'minor_auspicious' | 'major_inauspicious' | 'minor_inauspicious' | 'neutral' {
+    if (category === '吉格') {
+      return 'major_auspicious';
+    }
+    if (category === '凶格') {
+      return 'major_inauspicious';
+    }
+    if (category === '特殊凶象') {
+      return 'minor_inauspicious';
+    }
+    return 'neutral';
+  }
+  
+  private decodeUtf8(bytes: Uint8Array): string {
+    let out = '';
+    let i = 0;
+    while (i < bytes.length) {
+      const c = bytes[i++];
+      if (c < 0x80) {
+        out += String.fromCharCode(c);
+      } else if ((c & 0xe0) === 0xc0 && i < bytes.length) {
+        const c2 = bytes[i++];
+        const code = ((c & 0x1f) << 6) | (c2 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf0) === 0xe0 && i + 1 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const code = ((c & 0x0f) << 12) | ((c2 & 0x3f) << 6) | (c3 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf8) === 0xf0 && i + 2 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const c4 = bytes[i++];
+        let codePoint = ((c & 0x07) << 18) | ((c2 & 0x3f) << 12) | ((c3 & 0x3f) << 6) | (c4 & 0x3f);
+        codePoint -= 0x10000;
+        const high = 0xd800 + (codePoint >> 10);
+        const low = 0xdc00 + (codePoint & 0x3ff);
+        out += String.fromCharCode(high, low);
+      } else {
+        out += '?';
+      }
+    }
+    return out;
+  }
+  
   /**
    * 获取格局类型标签
    */

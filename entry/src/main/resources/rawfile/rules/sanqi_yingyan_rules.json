@@ -1,0 +1,294 @@
+{
+  "volume": "中卷",
+  "title": "三奇应验规则",
+  "rules": [
+    {
+      "id": "sanqi_yunxing",
+      "name": "三奇运行规则",
+      "category": "总则",
+      "ruleSource": "中卷·三奇运行规则",
+      "description": "阳遁三奇顺行（一宫至九宫），阴遁三奇逆行（九宫至一宫），判断应验需结合遁局与直符起宫。",
+      "conditions": {
+        "yangDun": "三奇顺行，从一宫依次至九宫。",
+        "yinDun": "三奇逆行，从九宫依次至一宫。",
+        "notes": "结合当天遁局（阳遁/阴遁）与起宫，推算三奇所在宫位。"
+      }
+    },
+    {
+      "id": "riqi_yingyan",
+      "name": "日奇（乙）到宫应验",
+      "category": "三奇到宫",
+      "ruleSource": "中卷·日奇到宫应验",
+      "description": "根据乙奇落入不同宫位，分别有贵人来访、金银到手、田产之喜等不同象应与时间周期。",
+      "sub_rules": [
+        {
+          "subId": "riqi_qianliu",
+          "palace": "乾六",
+          "direction": "西北",
+          "signs": ["穿黄衣的人到来", "带缠钱的人来访"],
+          "timeWindow": "即时",
+          "fortune": "吉",
+          "tips": "主贵人送财，宜接待。"
+        },
+        {
+          "subId": "riqi_kanyi",
+          "palace": "坎一",
+          "direction": "正北",
+          "signs": ["穿黑衣者到来", "听到鼓声"],
+          "timeWindow": "7日内",
+          "fortune": "吉",
+          "tips": "进钱财，注意北方来人。"
+        },
+        {
+          "subId": "riqi_genba",
+          "palace": "艮八",
+          "direction": "东北",
+          "signs": ["青衣人路过", "提铁器者至", "黑鸟成双自北飞来"],
+          "timeWindow": "2–7日",
+          "fortune": "吉",
+          "tips": "进金银，一年内得白马。"
+        },
+        {
+          "subId": "riqi_zhenSan",
+          "palace": "震三",
+          "direction": "正东",
+          "signs": ["武士持枪弩", "雷声或鼓声", "渔夫/猎人带小孩群至"],
+          "timeWindow": "即时",
+          "fortune": "大吉",
+          "tips": "进金银宝物，若见东方妇人生产，则大发。"
+        },
+        {
+          "subId": "riqi_xunsi",
+          "palace": "巽四",
+          "direction": "东南",
+          "signs": ["白衣人骑马至", "小孩来访"],
+          "timeWindow": "三年内",
+          "fortune": "吉",
+          "tips": "生贵子，得外财与庄田。"
+        },
+        {
+          "subId": "riqi_liJiu",
+          "palace": "离九",
+          "direction": "正南",
+          "signs": ["脚眼有病者", "小孩骑牛马", "黑白飞禽自东方来"],
+          "timeWindow": "7日内",
+          "fortune": "吉",
+          "tips": "进猪犬，主生财大发。"
+        },
+        {
+          "subId": "riqi_kuner",
+          "palace": "坤二",
+          "direction": "西南",
+          "signs": ["披孝服者", "西方雷击伤牛马", "鼓声"],
+          "timeWindow": "1或7日",
+          "fortune": "吉",
+          "tips": "进鸡猪，六十或一百日内得契约文书。"
+        },
+        {
+          "subId": "riqi_duiQi",
+          "palace": "兑七",
+          "direction": "正西",
+          "signs": ["二至五女子到来", "鸟鸣报喜"],
+          "timeWindow": "3/7/100日",
+          "fortune": "吉",
+          "tips": "进角羽或金声之财，得田地。"
+        }
+      ]
+    },
+    {
+      "id": "yueqi_yingyan",
+      "name": "月奇（丙）到宫应验",
+      "category": "三奇到宫",
+      "ruleSource": "中卷·月奇到宫应验",
+      "description": "丙奇落入不同宫位时，多伴随鼓乐、啼哭等声音征兆，对财物、人口、田产有不同影响。",
+      "sub_rules": [
+        {
+          "subId": "yueqi_qianliu",
+          "palace": "乾六",
+          "direction": "西北",
+          "signs": ["穿破旧衣者来", "黑鸟成双至"],
+          "timeWindow": "一百日内",
+          "fortune": "吉",
+          "tips": "进南方女人之财，但南方有产妇死亡之凶应。"
+        },
+        {
+          "subId": "yueqi_kanyi",
+          "palace": "坎一",
+          "direction": "正北",
+          "signs": ["有人持杖而来", "黄白鸟自西北至"],
+          "timeWindow": "6/10/1日",
+          "fortune": "吉",
+          "tips": "进契约文书，若东边有大火，则应验。"
+        },
+        {
+          "subId": "yueqi_genba",
+          "palace": "艮八",
+          "direction": "东北",
+          "signs": ["青或黑衣人至", "渔夫带网", "小儿啼哭、铁器经过"],
+          "timeWindow": "7日内",
+          "fortune": "吉",
+          "tips": "进财宝，一年后得白花或生气之物。"
+        },
+        {
+          "subId": "yueqi_zhenSan",
+          "palace": "震三",
+          "direction": "正东",
+          "signs": ["渔夫或猎人至", "小孩成群"],
+          "timeWindow": "7日",
+          "fortune": "吉",
+          "tips": "进生气之物，一年内生贵子，北方雷伤树木时应验。"
+        },
+        {
+          "subId": "yueqi_xunsi",
+          "palace": "巽四",
+          "direction": "东南",
+          "signs": ["乐声或唱喏声", "东南方有惊恐事"],
+          "timeWindow": "1/7月",
+          "fortune": "吉",
+          "tips": "进皂衣人（黑衣人），多主大发。"
+        },
+        {
+          "subId": "yueqi_liJiu",
+          "palace": "离九",
+          "direction": "正南",
+          "signs": ["黄黑鸟成双至"],
+          "timeWindow": "1/7日或60/100日",
+          "fortune": "吉",
+          "tips": "蚕丝丰收，大吉。"
+        },
+        {
+          "subId": "yueqi_kuner",
+          "palace": "坤二",
+          "direction": "西南",
+          "signs": ["皂衣人至", "乌鹊从南或北飞来", "鼓声"],
+          "timeWindow": "7日后",
+          "fortune": "吉",
+          "tips": "进北方女人财物，一年得绝户田；见东方雷声时大发。"
+        },
+        {
+          "subId": "yueqi_duiQi",
+          "palace": "兑七",
+          "direction": "正西",
+          "signs": ["持杖人从东方来", "抱小孩啼哭者至", "鼓声"],
+          "timeWindow": "1/7日",
+          "fortune": "吉",
+          "tips": "进财，一年进人口或田地；坤艮方有老人死时应验。"
+        }
+      ]
+    },
+    {
+      "id": "dingqi_yingyan",
+      "name": "星奇（丁）到宫应验",
+      "category": "三奇到宫",
+      "ruleSource": "中卷·星奇到宫应验",
+      "description": "丁奇应验多与死亡、灾害并存，常为灾后得财之象。",
+      "sub_rules": [
+        {
+          "subId": "dingqi_qianliu",
+          "palace": "乾六",
+          "direction": "西北",
+          "signs": ["有人执刀斧", "牵带角牲畜至"],
+          "timeWindow": "3/7日",
+          "fortune": "吉",
+          "tips": "进金银与白色活物。"
+        },
+        {
+          "subId": "dingqi_kanyi",
+          "palace": "坎一",
+          "direction": "正北",
+          "signs": ["南方人抱小孩至", "黑云聚集"],
+          "timeWindow": "1/7日",
+          "fortune": "吉",
+          "tips": "进黑色飞物，西北有自缢或暴死者时大发。"
+        },
+        {
+          "subId": "dingqi_genba",
+          "palace": "艮八",
+          "direction": "东北",
+          "signs": ["人携文书纸笔", "小儿抱铁器过"],
+          "timeWindow": "2/7日",
+          "fortune": "吉",
+          "tips": "进青黄色物，一百二十日内进人口、契约或白角牛。"
+        },
+        {
+          "subId": "dingqi_zhenSan",
+          "palace": "震三",
+          "direction": "正东",
+          "signs": ["女人成双至", "黑鸟成双至"],
+          "timeWindow": "1/7日",
+          "fortune": "吉",
+          "tips": "进黄白物、酒肉，东方有杀伤时大发。"
+        },
+        {
+          "subId": "dingqi_xunsi",
+          "palace": "巽四",
+          "direction": "东南",
+          "signs": ["小孩骑牛来", "南方黑云至", "见北斗星"],
+          "timeWindow": "一年内",
+          "fortune": "吉",
+          "tips": "有人小产死亡时大发，属凶中藏吉之象。"
+        },
+        {
+          "subId": "dingqi_liJiu",
+          "palace": "离九",
+          "direction": "正南",
+          "signs": ["穿青衣者至"],
+          "timeWindow": "3/7日",
+          "fortune": "大吉",
+          "tips": "进横财，见东方刀兵自害时大发。"
+        },
+        {
+          "subId": "dingqi_kuner",
+          "palace": "坤二",
+          "direction": "西南",
+          "signs": ["青衣人与黑鸟至", "人担水过"],
+          "timeWindow": "2/7日",
+          "fortune": "吉",
+          "tips": "进水产品、海味，见山崩、水灾、田塌时大发。"
+        },
+        {
+          "subId": "dingqi_duiQi",
+          "palace": "兑七",
+          "direction": "正西",
+          "signs": ["人带文书纸笔来", "渔夫过路", "飞禽至"],
+          "timeWindow": "7日",
+          "fortune": "吉",
+          "tips": "进鹅、鸡，坤艮兑方有人暴死或火灾时大发。"
+        }
+      ]
+    },
+    {
+      "id": "sanqi_lu_ying",
+      "name": "奇门路应",
+      "category": "路上预兆",
+      "ruleSource": "中卷·奇门路应",
+      "description": "出门途中根据所见人物、动物等征兆，结合三奇与门类判断所办事情吉凶。",
+      "examples": [
+        {
+          "qi": "乙奇",
+          "door": "生门",
+          "signs": ["两只老鼠打架", "穿孝服者"],
+          "fortune": "吉",
+          "event": "事有竞争，终得财。"
+        },
+        {
+          "qi": "丙奇",
+          "door": "生门",
+          "signs": ["凶眼人", "打架者"],
+          "fortune": "凶",
+          "event": "争斗破财。"
+        },
+        {
+          "qi": "丁奇",
+          "door": "休门",
+          "signs": ["二十里内遇穿黑或白衣妇人"],
+          "fortune": "吉",
+          "event": "阴人暗助。"
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "note": "本文件对应《06-遁甲三奇应验_白话文.md》的核心规则条目，现已补全日奇、月奇、星奇到各宫应验及部分路应示例，便于在研习界面中按结构化方式展示。"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "volume": "下卷",
+  "title": "神煞规则",
+  "rules": [
+    {
+      "id": "jiutian_jiudi_taiyin_liuhe",
+      "name": "九天九地太阴六合定位规则",
+      "category": "核心神煞",
+      "ruleSource": "下卷·九天九地太阴六合",
+      "description": "以直符所在宫位为基准，按阴遁阳遁分别推算九天、九地、太阴、六合落宫，用于择方、布阵与避凶。",
+      "definitions": [
+        {"shenSha": "九天", "meaning": "阳刚之气，利排兵布阵、主动出击。"},
+        {"shenSha": "九地", "meaning": "沉厚之气，利埋伏隐藏、长期潜伏。"},
+        {"shenSha": "太阴", "meaning": "阴柔隐秘，利逃亡、秘密行动。"},
+        {"shenSha": "六合", "meaning": "和合之神，利谈判、签约、嫁娶。"}
+      ],
+      "yangDun": {
+        "rule": "冬至后为阳遁，九天在直符后一宫，九地在直符后二宫，太阴在直符前二宫，六合在直符前三宫。",
+        "example": "阳遁一局，直符在八宫，则九天在七宫，九地在六宫，太阴在一宫，六合在二宫。"
+      },
+      "yinDun": {
+        "rule": "夏至后为阴遁，九天在直符前一宫，九地在直符前二宫，太阴在直符后二宫，六合在直符后三宫。",
+        "example": "阴遁九局，直符在二宫，则九天在三宫，九地在四宫，太阴在九宫，六合在八宫。"
+      },
+      "mnemonic": "九天陈兵，九地伏藏，太阴六合，可以逃亡。"
+    },
+    {
+      "id": "liujia_liugui_liuding_liuji",
+      "name": "六甲六癸六丁六己应用",
+      "category": "六仪能量",
+      "ruleSource": "下卷·六甲六癸六丁六己",
+      "description": "六甲为直符统帅之位，六癸主九地隐遁，六丁为三奇之灵，六己为六合之中，对逃亡、密谋、护身等有专门用法。",
+      "liujia": {
+        "meaning": "六甲为直符，象征最高指挥官，宜背靠直符宫，攻击对宫。",
+        "application": "士众常背直符所临之宫，而击其冲，无不胜也。"
+      },
+      "liugui": {
+        "meaning": "六癸为九地之下，主隐藏与消失。",
+        "application": "凡逃亡绝迹，当以天上六癸所临之方出入，人莫能见。"
+      },
+      "liuding": {
+        "meaning": "六丁为星奇之灵，主护身与灵动。",
+        "usageHint": "斗争出行时，可默念对应六丁神名以求护佑。"
+      },
+      "liuji": {
+        "meaning": "六己为六合之中，主私门与隐秘往来。",
+        "application": "阴谋、密秘、伏隐等事，当从六己所临之方独出独入。"
+      }
+    },
+    {
+      "id": "xunshou_shenming",
+      "name": "六甲旬首神名与应用",
+      "category": "旬首神煞",
+      "ruleSource": "下卷·六甲旬首神名",
+      "description": "每一甲旬对应一位神名，用于开渠修路、入山捕猎、安营打仗、求官赴任、行军讨贼等专门场景。",
+      "table": [
+        {"xunshou": "甲戌", "shenMing": "徐何", "use": "开渠修路", "method": "向其方呼徐何，左转入太阴，道路自通。"},
+        {"xunshou": "甲申", "shenMing": "盖新", "use": "入山捕猎", "method": "呼盖新，行六十步入太阴，野兽不动。"},
+        {"xunshou": "甲午", "shenMing": "灵光", "use": "安营打仗", "method": "呼灵光，行六十步入太阴，军阵得胜。"},
+        {"xunshou": "甲辰", "shenMing": "含章", "use": "求官赴任", "method": "呼含章，左转入太阴，为官不败。"},
+        {"xunshou": "甲寅", "shenMing": "监兵", "use": "行军讨贼", "method": "呼监兵，行六十步入太阴，贼盗不起。"}
+      ]
+    },
+    {
+      "id": "shi2_gan_shenming",
+      "name": "十二干神名出行护佑",
+      "category": "出行神煞",
+      "ruleSource": "下卷·十二干神名",
+      "description": "每日天干各有守护神，出行前呼其名可避灾厄。",
+      "table": [
+        {"gan": "甲", "shenMing": "天福", "shenZi": "王文卿", "attribute": "吉祥"},
+        {"gan": "乙", "shenMing": "天德", "shenZi": "龙文卿", "attribute": "仁德"},
+        {"gan": "丙", "shenMing": "天威", "shenZi": "唐仲卿", "attribute": "威严"},
+        {"gan": "丁", "shenMing": "天玉女", "shenZi": "季田往", "attribute": "护佑"},
+        {"gan": "戊", "shenMing": "天武", "shenZi": "司马羊", "attribute": "武勇"},
+        {"gan": "己", "shenMing": "明堂", "shenZi": "纪游卿", "attribute": "光明"},
+        {"gan": "庚", "shenMing": "天刑", "shenZi": "邹元阳", "attribute": "刑罚"},
+        {"gan": "辛", "shenMing": "天庭", "shenZi": "高于张", "attribute": "公正"},
+        {"gan": "壬", "shenMing": "天宰", "shenZi": "王禄卿", "attribute": "权柄"},
+        {"gan": "癸", "shenMing": "天狱", "shenZi": "受子光", "attribute": "禁锢"}
+      ],
+      "tips": "出行前根据当日天干默念对应神字，可视为仪式感设计，增强安全感。"
+    }
+  ],
+  "meta": {
+    "note": "本文件对应《04-遁甲神煞理论_白话文.md》的核心内容，提取九天九地太阴六合、六甲六癸六丁六己、旬首神名与天干神名等可结构化的神煞规则，便于研习与程序读取。"
+  }
+}

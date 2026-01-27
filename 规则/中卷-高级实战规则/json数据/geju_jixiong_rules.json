@@ -1,0 +1,300 @@
+{
+  "volume": "中卷",
+  "title": "格局与吉凶规则",
+  "rules": [
+    {
+      "id": "sanqi_deshi",
+      "name": "三奇得使格",
+      "category": "吉格",
+      "ruleSource": "中卷·三奇得使格",
+      "description": "三奇（乙、丙、丁）各自落在本旬甲所对应的六仪之上，且配合开门、休门、生门等吉门时，为最上等大吉格局。",
+      "conditions": {
+        "core": "天盘三奇加临地盘旬首所对应的六仪，如甲戌/甲午旬乙临己、甲子/甲申旬丙临戊、甲辰/甲寅旬丁临丁。",
+        "doorsPreferred": ["开门", "休门", "生门"],
+        "starsPreferred": [],
+        "notes": "需结合当前旬首与六仪对应关系，判断三奇是否落在使者之上。"
+      },
+      "effects": {
+        "good": ["百事皆吉", "利求官、求财、见贵"],
+        "bad": []
+      }
+    },
+    {
+      "id": "tian_dun",
+      "name": "天遁",
+      "category": "吉格",
+      "ruleSource": "中卷·三遁格局",
+      "description": "生门与丙奇、丁奇同宫，得天地星光庇护，为大吉格局。",
+      "conditions": {
+        "door": "生门",
+        "ganCombination": ["丙", "丁"],
+        "samePalace": true,
+        "notes": "需三者同宫，且若再得吉星、吉神，其力更大。"
+      },
+      "effects": {
+        "good": ["大吉", "利求官、进见、文书奏请"],
+        "bad": []
+      }
+    },
+    {
+      "id": "di_dun",
+      "name": "地遁",
+      "category": "吉格",
+      "ruleSource": "中卷·三遁格局",
+      "description": "开门与乙奇、己土同宫，得地气护佑，多主安宅、藏匿之吉。",
+      "conditions": {
+        "door": "开门",
+        "ganCombination": ["乙", "己"],
+        "samePalace": true,
+        "notes": "多用于求稳、避祸、修造安宅等情景。"
+      },
+      "effects": {
+        "good": ["大吉", "利藏匿、筑城、安宅"],
+        "bad": []
+      }
+    },
+    {
+      "id": "ren_dun",
+      "name": "人遁",
+      "category": "吉格",
+      "ruleSource": "中卷·三遁格局",
+      "description": "休门与丁奇及太阴同宫，人和之气充足，多主谋划、谈判得助。",
+      "conditions": {
+        "door": "休门",
+        "ganCombination": ["丁"],
+        "deity": "太阴",
+        "samePalace": true,
+        "notes": "现代实务中可理解为谈判桌上得贵人暗助。"
+      },
+      "effects": {
+        "good": ["大吉", "利谈判、策划、求贤"],
+        "bad": []
+      }
+    },
+    {
+      "id": "qinglong_huishou",
+      "name": "青龙回首",
+      "category": "吉格",
+      "ruleSource": "中卷·其他重要吉格",
+      "description": "天盘六戊加临地盘丙奇，青龙回头顾盼，为贵人相助之象。",
+      "conditions": {
+        "tianPan": "戊",
+        "diPan": "丙",
+        "samePalace": true,
+        "notes": "多见于出行、签约、见贵场景，主有贵人回头照应。"
+      },
+      "effects": {
+        "good": ["百事大吉", "贵人相助", "出行签约顺利"],
+        "bad": []
+      }
+    },
+    {
+      "id": "feiniao_dixue",
+      "name": "飞鸟跌穴",
+      "category": "吉格",
+      "ruleSource": "中卷·其他重要吉格",
+      "description": "天盘丙奇加临地盘六戊，飞鸟归巢，为安稳得利之象。",
+      "conditions": {
+        "tianPan": "丙",
+        "diPan": "戊",
+        "samePalace": true,
+        "notes": "多主营造、嫁娶、求财等安稳落袋之事。"
+      },
+      "effects": {
+        "good": ["安稳得利", "利营造", "利婚嫁", "利求财"],
+        "bad": []
+      }
+    },
+    {
+      "id": "tianyi_ge",
+      "name": "天乙诸格",
+      "category": "凶格",
+      "ruleSource": "中卷·天乙格",
+      "description": "庚金与直符或日干等发生组合时，主战斗、伏击、两败俱伤等凶象。",
+      "sub_rules": [
+        {
+          "subId": "tianyi_fugong",
+          "name": "天乙伏宫格",
+          "description": "六庚加临直符所在宫。",
+          "effects": {
+            "bad": ["主客皆不利", "易遭伏击"]
+          }
+        },
+        {
+          "subId": "tianyi_feigong",
+          "name": "天乙飞宫格",
+          "description": "直符加临六庚所在宫。",
+          "effects": {
+            "bad": ["内外受敌", "易有暗箭伤人"]
+          }
+        },
+        {
+          "subId": "tianyi_fugan",
+          "name": "天乙伏干格",
+          "description": "六庚加今日日干。",
+          "effects": {
+            "bad": ["主客交战", "两败俱伤"]
+          }
+        },
+        {
+          "subId": "tianyi_feigan",
+          "name": "飞干格",
+          "description": "今日日干加临六庚。",
+          "effects": {
+            "bad": ["主动出击反被伤", "百事忌用"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "geng_ganzhi_ge",
+      "name": "庚加年/月/日/时干格",
+      "category": "凶格",
+      "ruleSource": "中卷·时干相关凶格",
+      "description": "六庚加临年、月、日、时干之一，多主该时间层面运势受阻。",
+      "conditions": {
+        "tianPan": "庚",
+        "targets": ["年干", "月干", "日干", "时干"],
+        "notes": "统摄岁干格、月干格、日干格、时干格四类。"
+      },
+      "effects": {
+        "bad": ["年运受阻", "月内多事", "当日凶险", "此时不宜行动"]
+      }
+    },
+    {
+      "id": "da_ge_xing_ge",
+      "name": "大格与刑格",
+      "category": "凶格",
+      "ruleSource": "中卷·大格与刑格",
+      "description": "六庚与六癸或六己相遇，主行动中断、折返、逃亡等极端不利情况。",
+      "sub_rules": [
+        {
+          "subId": "da_ge",
+          "name": "大格",
+          "description": "六庚 + 六癸。",
+          "effects": {
+            "bad": ["行动中断", "财物丢失难寻"]
+          }
+        },
+        {
+          "subId": "xing_ge",
+          "name": "刑格",
+          "description": "六庚 + 六己。",
+          "effects": {
+            "bad": ["车马损坏", "中途折返", "部属逃亡"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "liuyi_jixing",
+      "name": "六仪击刑",
+      "category": "凶格",
+      "ruleSource": "中卷·六仪击刑",
+      "description": "六甲在特定方位自刑，自伤其气，多主计划受阻、行程挫折。",
+      "conditions": {
+        "table": [
+          {"xunshou": "甲子(戊)", "zhi": "卯", "palace": "震三", "xing": "子卯刑"},
+          {"xunshou": "甲戌(己)", "zhi": "未", "palace": "坤二", "xing": "戌未刑"},
+          {"xunshou": "甲申(庚)", "zhi": "寅", "palace": "艮八", "xing": "寅巳申三刑"},
+          {"xunshou": "甲辰(壬)", "zhi": "辰", "palace": "巽四", "xing": "辰辰自刑"},
+          {"xunshou": "甲午(辛)", "zhi": "午", "palace": "离九", "xing": "午午自刑"},
+          {"xunshou": "甲寅(癸)", "zhi": "巳", "palace": "巽四", "xing": "寅巳刑"}
+        ],
+        "notes": "具体应验需结合值符所落宫位与旬首对应关系。"
+      },
+      "effects": {
+        "bad": ["大凶", "行程多阻", "不宜启程"]
+      }
+    },
+    {
+      "id": "sanqi_rumu",
+      "name": "三奇入墓",
+      "category": "凶格",
+      "ruleSource": "中卷·三奇入墓",
+      "description": "三奇落入其五行之墓地，能量沉寂难以发挥，应事多迟滞或隐伏。",
+      "conditions": {
+        "timeLevel": [
+          {"qi": "乙奇", "muZhi": "未", "muTime": "乙未时"},
+          {"qi": "丙奇", "muZhi": "戌", "muTime": "丙戌时"}
+        ],
+        "panLevel": [
+          {"qi": "乙奇", "muPalace": "坤二", "reason": "未位在坤"},
+          {"qi": "丙奇", "muPalace": "乾六", "reason": "戌位在乾"},
+          {"qi": "丁奇", "muPalace": "乾六", "reason": "丁属火，与丙同墓"}
+        ],
+        "notes": "入墓后即使名为吉奇，亦无力发挥作用。"
+      },
+      "effects": {
+        "bad": ["吉力被埋", "应事拖延", "成果难显"]
+      }
+    },
+    {
+      "id": "sixing_shen_ge",
+      "name": "四凶神格",
+      "category": "凶格",
+      "ruleSource": "中卷·四凶神格",
+      "description": "青龙、白虎、朱雀、腾蛇四类六干相互制约时形成的典型大凶格局。",
+      "sub_rules": [
+        {
+          "subId": "qinglong_taizou",
+          "name": "青龙逃走",
+          "description": "六乙 + 六辛。",
+          "effects": {
+            "bad": ["贵人逃遁", "百事凶"]
+          }
+        },
+        {
+          "subId": "baihu_changkuang",
+          "name": "白虎猖狂",
+          "description": "六辛 + 六乙。",
+          "effects": {
+            "bad": ["小人得势", "百事凶"]
+          }
+        },
+        {
+          "subId": "zhuque_toujiang",
+          "name": "朱雀投江",
+          "description": "六丁 + 六癸。",
+          "effects": {
+            "bad": ["文书落空", "诉讼不利"]
+          }
+        },
+        {
+          "subId": "tengshe_yaojiao",
+          "name": "腾蛇夭矫",
+          "description": "六癸 + 六丁。",
+          "effects": {
+            "bad": ["虚惊怪异", "百事不利"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "men_po",
+      "name": "门迫",
+      "category": "特殊凶象",
+      "ruleSource": "中卷·门迫",
+      "description": "宫克门为迫，吉门受制则吉事难成，凶门被迫则凶上加凶。",
+      "conditions": {
+        "jiMen": [
+          {"door": "开门", "element": "金", "poGong": ["震三", "巽四"], "result": "开门无力"},
+          {"door": "休门", "element": "水", "poGong": ["离九"], "result": "休门失效"},
+          {"door": "生门", "element": "土", "poGong": ["坎一"], "result": "生财受阻"}
+        ],
+        "xiongMen": [
+          {"door": "伤门/杜门", "element": "木", "poGong": ["坤二", "艮八"], "result": "凶性加剧"},
+          {"door": "死门", "element": "土", "poGong": ["坎一"], "result": "死气更重"},
+          {"door": "惊门", "element": "金", "poGong": ["震三", "巽四"], "result": "惊恐难解"}
+        ],
+        "mnemonic": "宫克门为迫，门克宫为制。"
+      },
+      "effects": {
+        "bad": ["吉事难成", "凶性增强"]
+      }
+    }
+  ],
+  "meta": {
+    "note": "本文件对应《02-遁甲格局与吉凶规则_白话文.md》的核心规则条目，字段ruleSource标明其在中卷中的归属章节。"
+  }
+}

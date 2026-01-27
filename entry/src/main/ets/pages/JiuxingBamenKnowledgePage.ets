@@ -28,6 +28,21 @@ interface DoorKnowledge {
   menpo: string;
 }
 
+interface JiuxingJsonRule {
+  id?: string;
+  name?: string;
+  category?: string;
+  description?: string;
+  meaning?: string;
+  suitable?: string[];
+  taboo?: string[];
+  tips?: string;
+}
+
+interface JiuxingJsonFile {
+  rules?: JiuxingJsonRule[];
+}
+
 /**
  * 九星八门知识解读页面
  * 
@@ -39,6 +54,7 @@ interface DoorKnowledge {
 @Component
 struct JiuxingBamenKnowledgePage {
   @State currentTabIndex: number = 0
+  @State starJsonSummary: Record<string, string> = {}
   
   // 九星知识库
   private stars: StarKnowledge[] = [
@@ -218,7 +234,129 @@ struct JiuxingBamenKnowledgePage {
       menpo: '门迫：开门落乾宫或兑宫（金入金）为门迫，主开拓过度、锋芒太露'
     }
   ]
-
+    
+  aboutToAppear() {
+    this.loadJiuxingJson()
+  }
+  
+  private loadJiuxingJson() {
+    try {
+      const context = getContext(this);
+      if (!context || !context.resourceManager || !context.resourceManager.getRawFileContent) {
+        console.error('[JiuxingBamenKnowledgePage] 无法获取资源管理器');
+        return;
+      }
+  
+      context.resourceManager.getRawFileContent('rules/jiuxing_duanyu_rules.json')
+        .then((data: Uint8Array) => {
+          const jsonStr = this.decodeUtf8(data);
+          let parsed: JiuxingJsonFile | null = null;
+          try {
+            parsed = JSON.parse(jsonStr) as JiuxingJsonFile;
+          } catch (e) {
+            console.error('[JiuxingBamenKnowledgePage] 解析九星 JSON 失败', JSON.stringify(e));
+            return;
+          }
+      
+          if (!parsed || !parsed.rules || !Array.isArray(parsed.rules)) {
+            return;
+          }
+      
+          const summaryMap: Record<string, string> = {};
+          for (let i = 0; i < parsed.rules.length; i++) {
+            const rule = parsed.rules[i];
+            if (!rule || rule.category !== '九星断语') {
+              continue;
+            }
+            const ruleName: string = typeof rule.name === 'string' ? rule.name : '';
+            const starName: string = this.extractStarNameFromRuleName(ruleName);
+            if (!starName) {
+              continue;
+            }
+  
+            const parts: string[] = [];
+            if (rule.description && typeof rule.description === 'string') {
+              parts.push(rule.description);
+            }
+            if (rule.meaning && typeof rule.meaning === 'string') {
+              parts.push('象意：' + rule.meaning);
+            }
+            if (rule.suitable && Array.isArray(rule.suitable) && rule.suitable.length > 0) {
+              parts.push('宜：' + rule.suitable.join('、'));
+            }
+            if (rule.taboo && Array.isArray(rule.taboo) && rule.taboo.length > 0) {
+              parts.push('忌：' + rule.taboo.join('、'));
+            }
+            if (rule.tips && typeof rule.tips === 'string') {
+              parts.push('提示：' + rule.tips);
+            }
+  
+            if (parts.length > 0) {
+              summaryMap[starName] = parts.join('\n');
+            }
+          }
+  
+          this.starJsonSummary = summaryMap;
+        })
+        .catch((err: Error) => {
+          console.error('[JiuxingBamenKnowledgePage] 读取九星 JSON 失败', JSON.stringify(err));
+        });
+    } catch (e) {
+      console.error('[JiuxingBamenKnowledgePage] loadJiuxingJson 异常', JSON.stringify(e));
+    }
+  }
+  
+  private decodeUtf8(bytes: Uint8Array): string {
+    let out = '';
+    let i = 0;
+    while (i < bytes.length) {
+      const c = bytes[i++];
+      if (c < 0x80) {
+        out += String.fromCharCode(c);
+      } else if ((c & 0xe0) === 0xc0 && i < bytes.length) {
+        const c2 = bytes[i++];
+        const code = ((c & 0x1f) << 6) | (c2 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf0) === 0xe0 && i + 1 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const code = ((c & 0x0f) << 12) | ((c2 & 0x3f) << 6) | (c3 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf8) === 0xf0 && i + 2 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const c4 = bytes[i++];
+        let codePoint = ((c & 0x07) << 18) | ((c2 & 0x3f) << 12) | ((c3 & 0x3f) << 6) | (c4 & 0x3f);
+        codePoint -= 0x10000;
+        const high = 0xd800 + (codePoint >> 10);
+        const low = 0xdc00 + (codePoint & 0x3ff);
+        out += String.fromCharCode(high, low);
+      } else {
+        out += '?';
+      }
+    }
+    return out;
+  }
+  
+  private extractStarNameFromRuleName(ruleName: string): string {
+    if (!ruleName) {
+      return '';
+    }
+    if (ruleName.endsWith('星断语')) {
+      const length: number = ruleName.length - 3;
+      if (length > 0) {
+        return ruleName.substring(0, length);
+      }
+    }
+    if (ruleName.endsWith('星')) {
+      const length2: number = ruleName.length - 1;
+      if (length2 > 0) {
+        return ruleName.substring(0, length2);
+      }
+    }
+    return ruleName;
+  }
+  
   /**
    * 获取倾向标签
    */
@@ -290,6 +428,18 @@ struct JiuxingBamenKnowledgePage {
         .fontColor('#2C2416')
         .lineHeight(20)
         .width('100%')
+
+      // 中卷九星断语（来自 JSON）
+      if (this.starJsonSummary[star.name]) {
+        Text(this.starJsonSummary[star.name])
+          .fontSize(12)
+          .fontColor('#4A3B20')
+          .lineHeight(18)
+          .width('100%')
+          .padding({ top: 4 })
+          .backgroundColor('#FFFDF5')
+          .borderRadius(4)
+      }
 
       // 宜
       Column({ space: 4 }) {

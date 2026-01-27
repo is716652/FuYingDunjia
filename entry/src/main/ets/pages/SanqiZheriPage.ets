@@ -21,6 +21,16 @@ interface ShichenTypeInfo {
   color: string;
 }
 
+interface RulesJsonRule {
+  id?: string;
+  name?: string;
+  summary?: string;
+}
+
+interface RulesJsonFile {
+  rules?: RulesJsonRule[];
+}
+
 /**
  * 三奇应验择日页面
  * 
@@ -38,6 +48,9 @@ struct SanqiZheriPage {
   @State selectedPalace: number | null = null
   @State loading: boolean = true
   @State currentDateTime: Date = new Date()
+  @State sanqiJsonSummary: string = ''
+  @State zeriJsonSummary: string = ''
+  @State shenshaJsonSummary: string = ''
   private scroller: Scroller = new Scroller()
   private engine: DunjiaEngine = DunjiaEngine.getInstance()
 
@@ -50,6 +63,8 @@ struct SanqiZheriPage {
     
     // 执行排盘计算
     this.computePan();
+    // 加载中卷/下卷 JSON 规则摘要
+    this.loadZeriAndSanqiJson();
   }
 
   /**
@@ -72,6 +87,132 @@ struct SanqiZheriPage {
       console.error('排盘计算失败', err);
       this.loading = false;
     }
+  }
+
+  private loadZeriAndSanqiJson() {
+    try {
+      const context = getContext(this);
+      if (!context || !context.resourceManager || !context.resourceManager.getRawFileContent) {
+        console.error('[SanqiZheriPage] 无法获取资源管理器');
+        return;
+      }
+
+      context.resourceManager.getRawFileContent('rules/sanqi_yingyan_rules.json')
+        .then((data: Uint8Array) => {
+          const jsonStr = this.decodeUtf8(data);
+          let parsed: RulesJsonFile | null = null;
+          try {
+            parsed = JSON.parse(jsonStr) as RulesJsonFile;
+          } catch (e) {
+            console.error('[SanqiZheriPage] 解析三奇应验 JSON 失败', JSON.stringify(e));
+            return;
+          }
+          if (parsed && parsed.rules && Array.isArray(parsed.rules)) {
+            const names: string[] = [];
+            for (let i = 0; i < parsed.rules.length; i++) {
+              const rule = parsed.rules[i];
+              if (rule && typeof rule.name === 'string') {
+                names.push(rule.name);
+              }
+            }
+            if (names.length > 0) {
+              this.sanqiJsonSummary = '三奇应验 JSON 包含：' + names.join('、') + ' 等规则。';
+            }
+          }
+        })
+        .catch((err: Error) => {
+          console.error('[SanqiZheriPage] 读取三奇应验 JSON 失败', JSON.stringify(err));
+        });
+
+      context.resourceManager.getRawFileContent('rules/zeri_yingyong_rules.json')
+        .then((data: Uint8Array) => {
+          const jsonStr = this.decodeUtf8(data);
+          let parsed: RulesJsonFile | null = null;
+          try {
+            parsed = JSON.parse(jsonStr) as RulesJsonFile;
+          } catch (e) {
+            console.error('[SanqiZheriPage] 解析择日应用 JSON 失败', JSON.stringify(e));
+            return;
+          }
+          if (parsed && parsed.rules && Array.isArray(parsed.rules)) {
+            let summary: string = '';
+            for (let i = 0; i < parsed.rules.length; i++) {
+              const rule = parsed.rules[i];
+              if (rule && rule.id === 'wulei_ri_ji_xiong' && rule.summary) {
+                summary = rule.summary;
+                break;
+              }
+            }
+            if (summary !== '') {
+              this.zeriJsonSummary = summary;
+            }
+          }
+        })
+        .catch((err: Error) => {
+          console.error('[SanqiZheriPage] 读取择日应用 JSON 失败', JSON.stringify(err));
+        });
+
+      context.resourceManager.getRawFileContent('rules/shensha_rules.json')
+        .then((data: Uint8Array) => {
+          const jsonStr = this.decodeUtf8(data);
+          let parsed: RulesJsonFile | null = null;
+          try {
+            parsed = JSON.parse(jsonStr) as RulesJsonFile;
+          } catch (e) {
+            console.error('[SanqiZheriPage] 解析神煞 JSON 失败', JSON.stringify(e));
+            return;
+          }
+          if (parsed && parsed.rules && Array.isArray(parsed.rules)) {
+            const names: string[] = [];
+            for (let i = 0; i < parsed.rules.length; i++) {
+              const rule = parsed.rules[i];
+              if (rule && typeof rule.name === 'string') {
+                names.push(rule.name);
+              }
+            }
+            if (names.length > 0) {
+              this.shenshaJsonSummary = '神煞 JSON 包含：' + names.join('、') + ' 等规则。';
+            }
+          }
+        })
+        .catch((err: Error) => {
+          console.error('[SanqiZheriPage] 读取神煞 JSON 失败', JSON.stringify(err));
+        });
+    } catch (e) {
+      console.error('[SanqiZheriPage] loadZeriAndSanqiJson 异常', JSON.stringify(e));
+    }
+  }
+
+  private decodeUtf8(bytes: Uint8Array): string {
+    let out = '';
+    let i = 0;
+    while (i < bytes.length) {
+      const c = bytes[i++];
+      if (c < 0x80) {
+        out += String.fromCharCode(c);
+      } else if ((c & 0xe0) === 0xc0 && i < bytes.length) {
+        const c2 = bytes[i++];
+        const code = ((c & 0x1f) << 6) | (c2 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf0) === 0xe0 && i + 1 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const code = ((c & 0x0f) << 12) | ((c2 & 0x3f) << 6) | (c3 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf8) === 0xf0 && i + 2 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const c4 = bytes[i++];
+        let codePoint = ((c & 0x07) << 18) | ((c2 & 0x3f) << 12) | ((c3 & 0x3f) << 6) | (c4 & 0x3f);
+        codePoint -= 0x10000;
+        const high = 0xd800 + (codePoint >> 10);
+        const low = 0xdc00 + (codePoint & 0x3ff);
+        out += String.fromCharCode(high, low);
+      } else {
+        out += '?';
+      }
+    }
+    return out;
   }
 
   /**
@@ -321,7 +462,7 @@ struct SanqiZheriPage {
             .backgroundColor(this.checkWuBuGuoShi() ? '#FFEBEE' : '#FFF8F0')
             .borderRadius(8)
             .border({ width: 1, color: this.checkWuBuGuoShi() ? '#FFCDD2' : '#FFE4B5' })
-          
+                   
           // 五不可击宫位提示
           if (this.getWuBuKeJiPalaces().length > 0) {
             Row({ space: 4 }) {
@@ -344,6 +485,37 @@ struct SanqiZheriPage {
             .width('100%')
             .padding(10)
             .backgroundColor('#FFFBF5')
+            .borderRadius(6)
+          }
+        
+          // 中卷/下卷 JSON 规则概览
+          if (this.sanqiJsonSummary !== '' || this.zeriJsonSummary !== '' || this.shenshaJsonSummary !== '') {
+            Column({ space: 4 }) {
+              if (this.sanqiJsonSummary !== '') {
+                Text(this.sanqiJsonSummary)
+                  .fontSize(12)
+                  .fontColor('#4A3B20')
+                  .lineHeight(18)
+                  .width('100%')
+              }
+              if (this.zeriJsonSummary !== '') {
+                Text(this.zeriJsonSummary)
+                  .fontSize(12)
+                  .fontColor('#4A3B20')
+                  .lineHeight(18)
+                  .width('100%')
+              }
+              if (this.shenshaJsonSummary !== '') {
+                Text(this.shenshaJsonSummary)
+                  .fontSize(12)
+                  .fontColor('#4A3B20')
+                  .lineHeight(18)
+                  .width('100%')
+              }
+            }
+            .width('100%')
+            .padding(10)
+            .backgroundColor('#F7F5ED')
             .borderRadius(6)
           }
         }

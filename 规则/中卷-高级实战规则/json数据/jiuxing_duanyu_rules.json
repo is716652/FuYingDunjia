@@ -1,0 +1,255 @@
+{
+  "volume": "中卷",
+  "title": "九星断语规则",
+  "rules": [
+    {
+      "id": "jiuxing_basic",
+      "name": "九星基础属性",
+      "category": "总则",
+      "ruleSource": "中卷·九星基础",
+      "description": "九星对应九宫与五行，各有基础吉凶属性，可作为后续断事与择日的根本依据。",
+      "stars": [
+        {"name": "天蓬", "palace": "坎一", "trigram": "坎", "direction": "正北", "element": "水", "baseFortune": "大凶"},
+        {"name": "天芮", "palace": "坤二", "trigram": "坤", "direction": "西南", "element": "土", "baseFortune": "大凶"},
+        {"name": "天冲", "palace": "震三", "trigram": "震", "direction": "正东", "element": "木", "baseFortune": "次吉"},
+        {"name": "天辅", "palace": "巽四", "trigram": "巽", "direction": "东南", "element": "木", "baseFortune": "上吉"},
+        {"name": "天禽", "palace": "中五", "trigram": "中", "direction": "中央", "element": "土", "baseFortune": "上吉"},
+        {"name": "天心", "palace": "乾六", "trigram": "乾", "direction": "西北", "element": "金", "baseFortune": "上吉"},
+        {"name": "天柱", "palace": "兑七", "trigram": "兑", "direction": "正西", "element": "金", "baseFortune": "小凶"},
+        {"name": "天任", "palace": "艮八", "trigram": "艮", "direction": "东北", "element": "土", "baseFortune": "次吉"},
+        {"name": "天英", "palace": "离九", "trigram": "离", "direction": "正南", "element": "火", "baseFortune": "小凶"}
+      ]
+    },
+    {
+      "id": "jiuxing_wangshuai",
+      "name": "九星旺相休囚死规则",
+      "category": "旺衰",
+      "ruleSource": "中卷·九星旺衰规则",
+      "description": "九星随季节转换而有旺、相、休、囚、死等不同状态，吉凶需结合月令动态判断。",
+      "table": [
+        {
+          "element": "木星",
+          "stars": ["天冲", "天辅"],
+          "wang": "巳午（月令属火）",
+          "xiang": "寅卯（月令属木）",
+          "si": "亥子（月令属水）",
+          "qiu": "申酉（月令属金）",
+          "xiu": "辰戌丑未（月令属土）"
+        },
+        {
+          "element": "火星",
+          "stars": ["天英"],
+          "wang": "辰戌丑未（土月）",
+          "xiang": "巳午（火月）",
+          "si": "寅卯（木月）",
+          "qiu": "亥子（水月）",
+          "xiu": "申酉（金月）"
+        },
+        {
+          "element": "土星",
+          "stars": ["天芮", "天禽", "天任"],
+          "wang": "申酉（金月）",
+          "xiang": "辰戌丑未（土月）",
+          "si": "巳午（火月）",
+          "qiu": "寅卯（木月）",
+          "xiu": "亥子（水月）"
+        },
+        {
+          "element": "金星",
+          "stars": ["天心", "天柱"],
+          "wang": "亥子（水月）",
+          "xiang": "申酉（金月）",
+          "si": "辰戌丑未（土月）",
+          "qiu": "巳午（火月）",
+          "xiu": "寅卯（木月）"
+        },
+        {
+          "element": "水星",
+          "stars": ["天蓬"],
+          "wang": "寅卯（木月）",
+          "xiang": "亥子（水月）",
+          "si": "申酉（金月）",
+          "qiu": "辰戌丑未（土月）",
+          "xiu": "巳午（火月）"
+        }
+      ],
+      "mnemonic": "九星各旺于我生月，相于同类月，死于生我月，囚于官鬼月，休于才月。"
+    },
+    {
+      "id": "tianpeng_duanyu",
+      "name": "天蓬星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天蓬星",
+      "description": "天蓬为水星，主智谋与冒险，同时兼有盗贼、破财、血光之象，多用于军事防御。",
+      "meaning": "智慧、冒险、流动、防御，兼主盗贼、破财、血光。",
+      "suitable": ["安抚边境", "修筑城池", "春夏出兵作战"],
+      "taboo": ["秋冬用事", "嫁娶搬家", "入官经商", "争斗见血", "防火灾"],
+      "seasonFortune": {
+        "spring": "旺，可用，利军事。",
+        "summer": "相，次吉。",
+        "autumn": "囚，大凶。",
+        "winter": "死，极凶。"
+      },
+      "tips": "防守方有利，进攻方不利，非军事用途一般慎用。"
+    },
+    {
+      "id": "tianrui_duanyu",
+      "name": "天芮星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天芮星",
+      "description": "天芮为病星，主疾病与问题聚焦，但用于求医问药、拜师学艺时反可转吉。",
+      "meaning": "疾病、隐患、学习、拜师。",
+      "suitable": ["求医问药", "拜师学艺", "结交修道之友"],
+      "taboo": ["用兵", "嫁娶", "诉讼", "搬家", "盖房"],
+      "seasonFortune": {
+        "spring": "囚，大凶。",
+        "summer": "死，大凶。",
+        "autumn": "旺，相对吉。",
+        "winter": "相，偏吉。"
+      },
+      "tips": "测病时看病灶方位，求学时看老师与学习环境，多用于“以病制病”。"
+    },
+    {
+      "id": "tianchong_duanyu",
+      "name": "天冲星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天冲星",
+      "description": "天冲为雷电与快速行动之星，宜于短期报复性行动，不宜长期经营。",
+      "meaning": "冲动、出击、雷电、迅速行动。",
+      "suitable": ["出兵报仇", "春夏短期作战"],
+      "taboo": ["秋冬用事", "嫁娶", "搬家", "入官", "祭祀", "经商"],
+      "seasonFortune": {
+        "spring": "旺，大吉。",
+        "summer": "相，吉。",
+        "autumn": "囚，凶。",
+        "winter": "死，大凶。"
+      },
+      "tips": "宜快进快出，不宜久战；适合突击性任务。"
+    },
+    {
+      "id": "tianfu_duanyu",
+      "name": "天辅星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天辅星",
+      "description": "天辅为文曲贵人星，主教育、文化与人际协调，是较为万能的吉星。",
+      "meaning": "教育、文化、贵人、道德。",
+      "suitable": ["读书学习", "设立学校", "春夏带兵", "嫁娶", "搬家", "经商", "入官", "盖房"],
+      "taboo": [],
+      "seasonFortune": {
+        "spring": "旺，大吉。",
+        "summer": "相，吉。",
+        "autumn": "囚，中平。",
+        "winter": "死，中平。"
+      },
+      "tips": "适合大多数文明活动，秋冬虽力弱但仍可用。"
+    },
+    {
+      "id": "tianqin_duanyu",
+      "name": "天禽星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天禽星",
+      "description": "天禽居中，为帝王与调和之星，百事皆宜，为最尊贵之星。",
+      "meaning": "中正、稳定、百事皆宜。",
+      "suitable": ["祭祀求福", "四时带兵", "封官授爵", "搬家", "入官", "经商", "嫁娶"],
+      "taboo": [],
+      "seasonFortune": {
+        "spring": "四季皆吉。",
+        "summer": "四季皆吉。",
+        "autumn": "四季皆吉。",
+        "winter": "四季皆吉。"
+      },
+      "tips": "可视为通用大吉星，遇之可不必过多顾忌季节。"
+    },
+    {
+      "id": "tianxin_duanyu",
+      "name": "天心星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天心星",
+      "description": "天心为医星与领导星，主医疗、科技、管理制度，秋冬尤吉。",
+      "meaning": "医疗、科技、领导力、制度。",
+      "suitable": ["治病合药", "秋冬带兵", "嫁娶", "入官", "盖房", "祭祀", "经商"],
+      "taboo": ["春夏小人行事"],
+      "seasonFortune": {
+        "spring": "囚，凶。",
+        "summer": "死，大凶。",
+        "autumn": "旺，大吉。",
+        "winter": "相，吉。"
+      },
+      "tips": "君子用之吉，小人用之反招祸，多用于医疗与管理场景。"
+    },
+    {
+      "id": "tianzhu_duanyu",
+      "name": "天柱星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天柱星",
+      "description": "天柱为破坏与隐士之星，利守不利攻，宜静不宜动。",
+      "meaning": "口舌、破坏、变革、隐藏。",
+      "suitable": ["屯兵自守", "隐居避世", "有限度嫁娶修造祭祀"],
+      "taboo": ["带兵出征", "搬家", "入官", "经商"],
+      "seasonFortune": {
+        "spring": "囚，凶。",
+        "summer": "死，大凶。",
+        "autumn": "旺，小凶但破坏力强。",
+        "winter": "相，中平。"
+      },
+      "tips": "适合防守、躲避与退隐，不宜主动扩张。"
+    },
+    {
+      "id": "tianren_duanyu",
+      "name": "天任星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天任星",
+      "description": "天任为诚信与建筑之星，适合任职、拜访贵人与通财利，不宜移徙建房。",
+      "meaning": "诚信、稳重、建筑、积累。",
+      "suitable": ["拜访贵人", "通财利", "四时带兵", "嫁娶", "入官"],
+      "taboo": ["搬家", "盖房"] ,
+      "seasonFortune": {
+        "spring": "囚，中平。",
+        "summer": "死，中平。",
+        "autumn": "休或相，吉。",
+        "winter": "休或相，吉。",
+        "seasonMonths": "四季月大吉。"
+      },
+      "tips": "适合守成与任职，建造类活动反而与其“止”性相冲。"
+    },
+    {
+      "id": "tianying_duanyu",
+      "name": "天英星断语",
+      "category": "九星断语",
+      "ruleSource": "中卷·天英星",
+      "description": "天英为名声与急躁之星，多主虚名与火灾之象，适合社交娱乐不利务实。",
+      "meaning": "名声、急躁、火灾、虚花。",
+      "suitable": ["出行远行", "饮宴作乐", "嫁娶以求名声"],
+      "taboo": ["出兵", "搬家", "入官", "盖房", "诉讼", "经商"],
+      "seasonFortune": {
+        "spring": "相，中平。",
+        "summer": "旺，小凶但火炎土燥。",
+        "autumn": "囚，凶。",
+        "winter": "死，大凶。"
+      },
+      "tips": "宜求名不宜求实，适合短暂热闹场景，不适合长期投资与重大决策。"
+    },
+    {
+      "id": "jiuxing_chuxing_hushen",
+      "name": "九星出行呼神法",
+      "category": "出行护佑",
+      "ruleSource": "中卷·出行呼神法",
+      "description": "出行前呼唤当值星神名号以求庇护，不同星对应不同方向。",
+      "table": [
+        {"star": "天蓬", "shenZi": "子禽", "direction": "正北"},
+        {"star": "天芮", "shenZi": "子成", "direction": "西南"},
+        {"star": "天冲", "shenZi": "子翘", "direction": "正东"},
+        {"star": "天辅", "shenZi": "子卿", "direction": "东南"},
+        {"star": "天禽", "shenZi": "子公", "direction": "中央或任意"},
+        {"star": "天心", "shenZi": "子襄", "direction": "西北"},
+        {"star": "天柱", "shenZi": "子申/子常", "direction": "正西"},
+        {"star": "天任", "shenZi": "子韦/子金", "direction": "东北"},
+        {"star": "天英", "shenZi": "子威/子然", "direction": "正南"}
+      ],
+      "tips": "现代可作为仪式感或心理暗示设计，增强出行或行动时的信心。"
+    }
+  ],
+  "meta": {
+    "note": "本文件对应《03-遁甲九星断语_白话文.md》的核心内容，以每颗星一条规则的形式整理其象意、宜忌与季节旺衰，便于在研习界面结构化展示。"
+  }
+}
