@@ -750,11 +750,10 @@ export class DunjiaEngine {
     }
     
     // 5. 识别人遁格局
-    // 丁奇临杜门，且临地下六癸
+    // 丁奇临杜门
     for (let i = 0; i < 9; i++) {
       const palace = palaces[i];
-      if (palace.tianGan === '丁' && palace.doorName === '杜门' &&
-          (palace.diGan === '癸')) {
+      if (palace.tianGan === '丁' && palace.doorName === '杜门') {
         patterns.push({
           id: `ren_dun_${i}`,
           name: `人遁`,
