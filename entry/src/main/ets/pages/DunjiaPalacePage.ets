@@ -21,8 +21,10 @@ struct DunjiaPalacePage {
   aboutToAppear() {
     // 从路由参数获取时间信息
     const params = router.getParams() as Record<string, Object>
-    if (params && params['dateTime']) {
-      this.currentDateTime = params['dateTime'] as Date
+    if (params && params['timestamp']) {
+      // 接收时间戳并重建 Date 对象
+      const timestamp = params['timestamp'] as number
+      this.currentDateTime = new Date(timestamp)
     }
     
     // 执行排盘计算

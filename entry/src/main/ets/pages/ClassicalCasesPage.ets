@@ -574,10 +574,11 @@ struct ClassicalCasesPage {
             caseData.datetime.minute
           );
           
+          // 将Date对象转换为时间戳传递，避免序列化问题
           router.pushUrl({
             url: 'pages/DunjiaPalacePage',
             params: {
-              dateTime: targetDate
+              timestamp: targetDate.getTime()
             }
           });
         })
