@@ -217,6 +217,41 @@ struct DunjiaPalacePage {
             .borderRadius(12)
             .shadow({ radius: 8, color: '#22000000', offsetX: 0, offsetY: 2 })
 
+            // 功能导航按钮
+            Row({ space: 8 }) {
+              Button('攻守方位')
+                .fontSize(13)
+                .backgroundColor('#4ECDC4')
+                .fontColor('#FFFFFF')
+                .layoutWeight(1)
+                .height(40)
+                .onClick(() => {
+                  router.pushUrl({
+                    url: 'pages/AttackDefensePage',
+                    params: {
+                      timestamp: this.currentDateTime.getTime()
+                    }
+                  })
+                })
+              
+              Button('值符值使历史')
+                .fontSize(13)
+                .backgroundColor('#9B59B6')
+                .fontColor('#FFFFFF')
+                .layoutWeight(1)
+                .height(40)
+                .onClick(() => {
+                  router.pushUrl({
+                    url: 'pages/ZhiFuZhiShiHistoryPage',
+                    params: {
+                      timestamp: this.currentDateTime.getTime()
+                    }
+                  })
+                })
+            }
+            .width('100%')
+            .padding({ left: 16, right: 16 })
+
             // 九宫格组件
             DunjiaNineGrid({
               panResult: this.panResult,

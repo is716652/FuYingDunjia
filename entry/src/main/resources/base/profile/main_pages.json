@@ -9,6 +9,8 @@
     "pages/GejuKnowledgePage",
     "pages/JiuxingBamenKnowledgePage",
     "pages/ClassicalCasesPage",
-    "pages/BasicKnowledgePage"
+    "pages/BasicKnowledgePage",
+    "pages/AttackDefensePage",
+    "pages/ZhiFuZhiShiHistoryPage"
   ]
 }
