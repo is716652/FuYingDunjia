@@ -79,7 +79,7 @@ struct SanqiZheriPage {
    */
   private getRiGanzhiType(): GanzhiTypeInfo {
     if (!this.panResult || !this.panResult.dayInfo) return { type: '未知', level: 0, color: '#999999' };
-    
+      
     const ganzhiTypes: Record<string, GanzhiTypeInfo> = {
       // 宝日(干生支)
       '甲午': { type: '宝日', level: 5, color: '#FFD700' },
@@ -91,36 +91,36 @@ struct SanqiZheriPage {
       '庚子': { type: '宝日', level: 5, color: '#FFD700' },
       '辛亥': { type: '宝日', level: 5, color: '#FFD700' },
       '壬寅': { type: '宝日', level: 5, color: '#FFD700' },
-      '癸卯': { type: '宝日', level: 5, color: '#FFD700' },
-      
+      '癸卉': { type: '宝日', level: 5, color: '#FFD700' },
+        
       // 伐日(支克干)
       '甲申': { type: '伐日', level: 0, color: '#F44336' },
       '乙酉': { type: '伐日', level: 0, color: '#F44336' },
       '丙子': { type: '伐日', level: 0, color: '#F44336' },
       '丁亥': { type: '伐日', level: 0, color: '#F44336' },
       '戊寅': { type: '伐日', level: 0, color: '#F44336' },
-      '己卯': { type: '伐日', level: 0, color: '#F44336' },
+      '己卉': { type: '伐日', level: 0, color: '#F44336' },
       '庚午': { type: '伐日', level: 0, color: '#F44336' },
       '辛巳': { type: '伐日', level: 0, color: '#F44336' },
       '壬辰': { type: '伐日', level: 0, color: '#F44336' },
       '癸未': { type: '伐日', level: 0, color: '#F44336' }
     };
-      
+        
     // 从排盘结果获取真实日干支
     const riGanzhi = `${this.panResult.dayInfo.day_gan}${this.panResult.dayInfo.day_zhi}`;
     return ganzhiTypes[riGanzhi] || { type: '和日', level: 3, color: '#4CAF50' };
   }
-  
+    
   /**
    * 获取时辰属性(五阳时/五阴时)
    */
   private getShichenType(): ShichenTypeInfo {
     if (!this.panResult || !this.panResult.hourGanZhi) return { type: '未知', desc: '', color: '#999999' };
-      
+        
     // 从排盘结果获取真实时辰天干
     const shiGan = this.panResult.hourGanZhi.charAt(0);
     const yangGan = ['甲', '乙', '丙', '丁', '戊'];
-      
+        
     if (yangGan.includes(shiGan)) {
       return {
         type: '五阳时',
@@ -135,14 +135,82 @@ struct SanqiZheriPage {
       };
     }
   }
-
+    
+  /**
+   * 检查五不过时格局
+   */
+  private checkWuBuGuoShi(): boolean {
+    if (!this.panResult || !this.panResult.dayInfo || !this.panResult.hourGanZhi) return false;
+      
+    const dayGan = this.panResult.dayInfo.day_gan;
+    const hourGan = this.panResult.hourGanZhi.charAt(0);
+      
+    // 五不过时:时干克日干
+    const keMap: Record<string, string> = {
+      '甲': '庚',  // 甲日庚时(庚克甲)
+      '乙': '辛',  // 乙日辛时(辛克乙)
+      '丙': '壬',  // 丙日壬时(壬克丙)
+      '丁': '癸',  // 丁日癸时(癸克丁)
+      '戊': '甲',  // 戊日甲时(甲克戊)
+      '己': '乙',  // 己日乙时(乙克己)
+      '庚': '丙',  // 庚日丙时(丙克庚)
+      '辛': '丁',  // 辛日丁时(丁克辛)
+      '壬': '戊',  // 壬日戊时(戊克壬)
+      '癸': '己'   // 癸日己时(己克癸)
+    };
+      
+    return keMap[dayGan] === hourGan;
+  }
+    
+  /**
+   * 检查五不可击宫位(天乙/九天/生门/九地/直使)
+   */
+  private getWuBuKeJiPalaces(): number[] {
+    if (!this.panResult) return [];
+      
+    const forbiddenPalaces: number[] = [];
+      
+    // 1. 天乙宫(值符宫)
+    forbiddenPalaces.push(this.panResult.zhiFuPalace);
+      
+    // 2. 直使宫
+    forbiddenPalaces.push(this.panResult.zhiShiPalace);
+      
+    // 3. 九天宫
+    const jiuTianPalace = this.panResult.palaces.findIndex(p => p.deityName === '九天');
+    if (jiuTianPalace !== -1) forbiddenPalaces.push(jiuTianPalace);
+      
+    // 4. 九地宫
+    const jiuDiPalace = this.panResult.palaces.findIndex(p => p.deityName === '九地');
+    if (jiuDiPalace !== -1) forbiddenPalaces.push(jiuDiPalace);
+      
+    // 5. 生门宫
+    const shengMenPalace = this.panResult.palaces.findIndex(p => p.doorName === '生门');
+    if (shengMenPalace !== -1) forbiddenPalaces.push(shengMenPalace);
+      
+    // 去重
+    const uniquePalaces: number[] = [];
+    for (const palace of forbiddenPalaces) {
+      if (!uniquePalaces.includes(palace)) {
+        uniquePalaces.push(palace);
+      }
+    }
+    return uniquePalaces;
+  }
+  
   /**
    * 获取择日建议
    */
   private getZheriSuggestion(): string {
     const riType = this.getRiGanzhiType();
     const shiType = this.getShichenType();
-    
+    const wuBuGuoShi = this.checkWuBuGuoShi();
+      
+    // 五不过时强凶警告
+    if (wuBuGuoShi) {
+      return `今日今时犯五不过时格局！时干克日干,纵有吉门亦凶,百事不宜。`;
+    }
+      
     if (riType.level === 5) {
       return `今日${riType.type},百事皆宜。${shiType.desc}。`;
     } else if (riType.level === 0) {
@@ -243,15 +311,42 @@ struct SanqiZheriPage {
         .width('100%')
         
         // 择日建议
-        Text(this.getZheriSuggestion())
-          .fontSize(13)
-          .fontColor('#2C2416')
-          .lineHeight(20)
-          .width('100%')
-          .padding(12)
-          .backgroundColor('#FFF8F0')
-          .borderRadius(8)
-          .border({ width: 1, color: '#FFE4B5' })
+        Column({ space: 8 }) {
+          Text(this.getZheriSuggestion())
+            .fontSize(13)
+            .fontColor(this.checkWuBuGuoShi() ? '#F44336' : '#2C2416')
+            .lineHeight(20)
+            .width('100%')
+            .padding(12)
+            .backgroundColor(this.checkWuBuGuoShi() ? '#FFEBEE' : '#FFF8F0')
+            .borderRadius(8)
+            .border({ width: 1, color: this.checkWuBuGuoShi() ? '#FFCDD2' : '#FFE4B5' })
+          
+          // 五不可击宫位提示
+          if (this.getWuBuKeJiPalaces().length > 0) {
+            Row({ space: 4 }) {
+              Text('⚠️')
+                .fontSize(12)
+              Text('五不可击宫位:')
+                .fontSize(12)
+                .fontColor('#666666')
+              ForEach(this.getWuBuKeJiPalaces(), (palaceIndex: number) => {
+                if (this.panResult && this.panResult.palaces[palaceIndex]) {
+                  Text(this.panResult.palaces[palaceIndex].palaceName)
+                    .fontSize(11)
+                    .fontColor('#FF9800')
+                    .padding({ left: 4, right: 4, top: 2, bottom: 2 })
+                    .backgroundColor('#FFF3E0')
+                    .borderRadius(4)
+                }
+              })
+            }
+            .width('100%')
+            .padding(10)
+            .backgroundColor('#FFFBF5')
+            .borderRadius(6)
+          }
+        }
       }
       .width('100%')
       .padding(16)
