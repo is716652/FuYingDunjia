@@ -21,6 +21,16 @@ interface DunjiaSection {
 struct DunjiaPanel {
   @State sections: DunjiaSection[] = [
     {
+      id: 'basic',
+      title: '奇门基础知识',
+      subtitle: '九星八门三奇阴阳遁基础知识',
+      summary: '系统学习奇门遁甲的基础概念：九星是什么、八门如何分吉凶、三奇的作用、阴阳遁的区别、排盘的流程等。图文并茂，配九宫示意图助理解。',
+      level: '基础必学',
+      tags: ['基础概念', '图文并茂', '入门必备'],
+      accentColor: '#4CAF50',
+      route: 'pages/BasicKnowledgePage'
+    },
+    {
       id: 'palace',
       title: '九宫排盘研习',
       subtitle: '实时查看当前时间的九宫盘面',

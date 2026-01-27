@@ -8,6 +8,7 @@
     "pages/SanqiZheriPage",
     "pages/GejuKnowledgePage",
     "pages/JiuxingBamenKnowledgePage",
-    "pages/ClassicalCasesPage"
+    "pages/ClassicalCasesPage",
+    "pages/BasicKnowledgePage"
   ]
 }
