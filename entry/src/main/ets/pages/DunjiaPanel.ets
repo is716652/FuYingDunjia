@@ -36,7 +36,8 @@ struct DunjiaPanel {
       subtitle: '深入理解九星八门的象意与吉凶',
       summary: '基于《遁甲九星断语》，学习每颗星的能量特征、宜忌事项、季节旺衰；掌握八门的吉凶分类、适用场景、门迫判断等核心知识。',
       level: '进阶研习',
-      tags: ['九星断语', '八门吉凶', '旺相休囚']
+      tags: ['九星断语', '八门吉凶', '旺相休囚'],
+      route: 'pages/JiuxingBamenKnowledgePage'
     },
     {
       id: 'patterns',
@@ -44,7 +45,8 @@ struct DunjiaPanel {
       subtitle: '学会识别吉格凶格及其应用',
       summary: '基于《遁甲格局与吉凶规则》，掌握三奇得使、三遁、青龙回首等大吉之格；学会辨别庚格、击刑、门迫、四凶神等大凶之局。',
       level: '高级分析',
-      tags: ['格局识别', '吉凶判断', '组合分析']
+      tags: ['格局识别', '吉凶判断', '组合分析'],
+      route: 'pages/GejuKnowledgePage'
     },
     {
       id: 'application',
@@ -61,7 +63,8 @@ struct DunjiaPanel {
       subtitle: '重现《遁甲符应经》经典案例',
       summary: '选择宋代官修典籍中的经典案例，逐步重演排盘、格局判断、吉凶推演的完整流程，理解古人如何综合运用各项规则。',
       level: '综合应用',
-      tags: ['古籍案例', '实战推演', '综合运用']
+      tags: ['古籍案例', '实战推演', '综合运用'],
+      route: 'pages/ClassicalCasesPage'
     }
   ];
 

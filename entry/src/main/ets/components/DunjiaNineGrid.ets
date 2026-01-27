@@ -46,18 +46,6 @@ export struct DunjiaNineGrid {
   }
 
   /**
-   * 获取格局颜色
-   */
-  private getPatternColor(patternName: string): string {
-    if (patternName.includes('天遁') || patternName.includes('三奇得使')) {
-      return '#FF6B35'; // 特殊格局，橙色
-    } else if (patternName.includes('地遁') || patternName.includes('人遁')) {
-      return '#D4A574'; // 主要格局，金色
-    }
-    return '#4A90E2'; // 次要格局，蓝色
-  }
-
-  /**
    * 渲染单个宫位卡片
    */
   @Builder
@@ -151,52 +139,6 @@ export struct DunjiaNineGrid {
         .backgroundColor('#ffffff')
         .borderRadius(12)
         .shadow({ radius: 8, color: '#22000000', offsetX: 0, offsetY: 2 })
-
-        // 格局总览
-        if (this.panResult.gejuPatterns && this.panResult.gejuPatterns.length > 0) {
-          Column({ space: 8 }) {
-            Row({ space: 8 }) {
-              Text('🎯')
-                .fontSize(16)
-              Text('识别格局')
-                .fontSize(14)
-                .fontWeight(FontWeight.Bold)
-                .fontColor('#2C2416')
-              Text(`${this.panResult.gejuPatterns.length}个`)
-                .fontSize(12)
-                .fontColor('#999999')
-            }
-            .width('100%')
-
-            // 格局列表
-            Column({ space: 6 }) {
-              ForEach(this.panResult.gejuPatterns, (pattern: GejuPattern) => {
-                Row({ space: 8 }) {
-                  Text(pattern.name)
-                    .fontSize(13)
-                    .fontWeight(FontWeight.Medium)
-                    .fontColor(this.getPatternColor(pattern.name))
-                  Text(pattern.description)
-                    .fontSize(12)
-                    .fontColor('#666666')
-                    .layoutWeight(1)
-                    .maxLines(1)
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })
-                }
-                .width('100%')
-                .padding({ left: 8, right: 8, top: 6, bottom: 6 })
-                .backgroundColor('#F8F8F8')
-                .borderRadius(6)
-              })
-            }
-            .width('100%')
-          }
-          .width('100%')
-          .padding({ left: 16, right: 16, top: 12, bottom: 12 })
-          .backgroundColor('#ffffff')
-          .borderRadius(12)
-          .shadow({ radius: 8, color: '#22000000', offsetX: 0, offsetY: 2 })
-        }
 
         // 九宫格
         Column({ space: 4 }) {

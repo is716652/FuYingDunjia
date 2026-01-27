@@ -5,6 +5,9 @@
     "pages/DocsPage",
     "pages/DunjiaPanel",
     "pages/DunjiaPalacePage",
-    "pages/SanqiZheriPage"
+    "pages/SanqiZheriPage",
+    "pages/GejuKnowledgePage",
+    "pages/JiuxingBamenKnowledgePage",
+    "pages/ClassicalCasesPage"
   ]
 }

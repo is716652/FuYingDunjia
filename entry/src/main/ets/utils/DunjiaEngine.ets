@@ -779,7 +779,7 @@ export class DunjiaEngine {
       }
     }
     
-    // 7. 识别反吟格局
+    // 7. 识别反吹格局
     // 甲子与甲午、甲戌与甲辰、甲申与甲寅相对
     const oppositePairs = [
       ['甲子', '甲午'],
@@ -799,15 +799,160 @@ export class DunjiaEngine {
         if (hasOpposite) {
           patterns.push({
             id: `fan_yin_${i}_${j}`,
-            name: `反吟`,
-            description: `${tianGan1}与${tianGan2}在宫位间反吟，主变动、反复，宜谨慎行事`,
+            name: `反吹`,
+            description: `${tianGan1}与${tianGan2}在宫位间反吹，主变动、反复，宜谨慎行事`,
             palaceIndices: [i, j],
             level: 'minor'
           });
         }
       }
     }
-
+        
+    // 8. 识别青龙返首格局（中卷）
+    // 六甲加六丙：天盘甲（或戊己代甲）加地盘丙
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      const tianGan = palace.tianGan || '';
+      const diGan = palace.diGan || '';
+          
+      // 天盘为甲或戊己（代甲），地盘为丙
+      if (['甲', '戊', '己'].includes(tianGan) && diGan === '丙') {
+        patterns.push({
+          id: `qinglong_huishou_${i}`,
+          name: `青龙返首`,
+          description: `六甲加六丙于${palace.palaceName}，龙回首之象，造举百事皆吉`,
+          palaceIndices: [i],
+          level: 'special'
+        });
+      }
+    }
+        
+    // 9. 识别飞鸟跌穴格局（中卷）
+    // 六丙加六甲：天盘丙加地盘甲（或戊己）
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      const tianGan = palace.tianGan || '';
+      const diGan = palace.diGan || '';
+          
+      // 天盘为丙，地盘为甲或戊己（代甲）
+      if (tianGan === '丙' && ['甲', '戊', '己'].includes(diGan)) {
+        patterns.push({
+          id: `feiniao_diexue_${i}`,
+          name: `飞鸟跌穴`,
+          description: `六丙加六甲于${palace.palaceName}，鸟归巢之象，百事皆吉`,
+          palaceIndices: [i],
+          level: 'special'
+        });
+      }
+    }
+        
+    // 10. 识别三奇入墓格局（中卷）
+    // 乙奇入辰宫（木墓），丙丁奇入戌宫（火墓）
+    const muMuGong = 3;  // 巽宫（辰位）
+    const huoMuGong = 5; // 乾宫（戌位）
+        
+    // 乙奇入辰宫
+    if (palaces[muMuGong].tianGan === '乙') {
+      patterns.push({
+        id: `sanqi_rumu_yi`,
+        name: `三奇入墓`,
+        description: `乙奇入辰宫木墓，精华被掩，吉力大减`,
+        palaceIndices: [muMuGong],
+        level: 'major'
+      });
+    }
+        
+    // 丙丁奇入戌宫
+    if (palaces[huoMuGong].tianGan === '丙' || palaces[huoMuGong].tianGan === '丁') {
+      const qiName = palaces[huoMuGong].tianGan;
+      patterns.push({
+        id: `sanqi_rumu_${qiName}`,
+        name: `三奇入墓`,
+        description: `${qiName}奇入戌宫火墓，精华被掩，吉力大减`,
+        palaceIndices: [huoMuGong],
+        level: 'major'
+      });
+    }
+        
+    // 11. 识别六仪击刑格局(中卷)
+    // 三刑之时:寅巳申三刑、丑戌未三刑、子卯相刑
+    const shiZhi = hourGanZhi.zhi;
+    const sanXing1 = ['寅', '巳', '申'];  // 寅巳申三刑
+    const sanXing2 = ['丑', '戌', '未'];  // 丑戌未三刑
+    const sanXing3 = ['子', '卯'];          // 子卯相刑
+        
+    if (sanXing1.includes(shiZhi)) {
+      patterns.push({
+        id: `liuyi_jixing_1`,
+        name: `六仪击刑`,
+        description: `寅巳申三刑之时,天地不顺,百事不宜`,
+        palaceIndices: [],
+        level: 'major'
+      });
+    } else if (sanXing2.includes(shiZhi)) {
+      patterns.push({
+        id: `liuyi_jixing_2`,
+        name: `六仪击刑`,
+        description: `丑戌未三刑之时,天地不顺,百事不宜`,
+        palaceIndices: [],
+        level: 'major'
+      });
+    } else if (sanXing3.includes(shiZhi)) {
+      patterns.push({
+        id: `liuyi_jixing_3`,
+        name: `六仪击刑`,
+        description: `子卯相刑之时,天地不顺,百事不宜`,
+        palaceIndices: [],
+        level: 'major'
+      });
+    }
+        
+    // 12. 识别太白入荧惑格局（中卷）
+    // 天盘庚加地盘丙
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      if (palace.tianGan === '庚' && palace.diGan === '丙') {
+        patterns.push({
+          id: `taibai_ru_yinghuo_${i}`,
+          name: `太白入荧惑`,
+          description: `庚加丙于${palace.palaceName}，白虎入赤地，利反击、利突袭`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+        
+    // 13. 识别荧惑入太白格局（中卷）
+    // 天盘丙加地盘庚
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      if (palace.tianGan === '丙' && palace.diGan === '庚') {
+        patterns.push({
+          id: `yinghuo_ru_taibai_${i}`,
+          name: `荧惑入太白`,
+          description: `丙加庚于${palace.palaceName}，赤炎遇刚金，敌方退却之象`,
+          palaceIndices: [i],
+          level: 'minor'
+        });
+      }
+    }
+        
+    // 14. 识别天网四张格局(中卷)
+    // 四季尾月(辰戌丑未月)戊己日
+    const sijiYue = ['辰', '戌', '丑', '未'];  // 辰戌丑未月
+    const monthZhi: string = dayInfo.month_zhi || '';  // 使用月支信息
+    const dayGan: string = dayInfo.day_gan;
+        
+    if (sijiYue.includes(monthZhi) && ['戊', '己'].includes(dayGan)) {
+      patterns.push({
+        id: `tianwang_sizhang`,
+        name: `天网四张`,
+        description: `四季尾月戊己日,天罗地网,诸事不宜`,
+        palaceIndices: [],
+        level: 'major'
+      });
+    }
+    
     return patterns;
   }
 }
