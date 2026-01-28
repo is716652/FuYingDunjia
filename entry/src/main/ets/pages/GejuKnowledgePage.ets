@@ -72,6 +72,8 @@ interface GejuJsonFile {
 @Component
 struct GejuKnowledgePage {
   @State currentTabIndex: number = 0
+  @State showDetailDialog: boolean = false
+  @State selectedPattern: GejuKnowledgeItem | null = null
   @State categories: GejuCategory[] = [
     {
       id: 'major_auspicious',
@@ -628,6 +630,163 @@ struct GejuKnowledgePage {
     .backgroundColor('#FFFFFF')
     .borderRadius(8)
     .shadow({ radius: 4, color: '#22000000', offsetX: 0, offsetY: 2 })
+    .onClick(() => {
+      this.selectedPattern = pattern
+      this.showDetailDialog = true
+    })
+  }
+
+  /**
+   * 格局详情弹窗
+   */
+  @Builder
+  buildDetailDialog() {
+    if (this.showDetailDialog && this.selectedPattern) {
+      Column({ space: 0 }) {
+        // 遮罩层
+        Column()
+          .width('100%')
+          .height('100%')
+          .backgroundColor('#80000000')
+          .onClick(() => {
+            this.showDetailDialog = false
+          })
+      }
+      .width('100%')
+      .height('100%')
+      .justifyContent(FlexAlign.Center)
+      .alignItems(HorizontalAlign.Center)
+      .position({ x: 0, y: 0 })
+      .zIndex(1000)
+
+      // 弹窗内容
+      Column({ space: 16 }) {
+        // 标题区
+        Row({ space: 12 }) {
+          Text(this.selectedPattern.name)
+            .fontSize(20)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#2C2416')
+            .layoutWeight(1)
+          
+          Text('×')
+            .fontSize(28)
+            .fontColor('#666666')
+            .onClick(() => {
+              this.showDetailDialog = false
+            })
+        }
+        .width('100%')
+
+        Divider().color('#EEEEEE')
+
+        // 滚动区域
+        Scroll() {
+          Column({ space: 16 }) {
+            // 类型标签
+            Row() {
+              Text(this.getTypeLabel(this.selectedPattern.type))
+                .fontSize(13)
+                .fontColor('#FFFFFF')
+                .backgroundColor(this.getTypeColor(this.selectedPattern.type))
+                .padding({ left: 10, right: 10, top: 5, bottom: 5 })
+                .borderRadius(6)
+            }
+            .width('100%')
+
+            // 描述
+            Column({ space: 8 }) {
+              Text('格局描述')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#2C2416')
+              Text(this.selectedPattern.description)
+                .fontSize(14)
+                .fontColor('#4A3B20')
+                .lineHeight(22)
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Start)
+            .padding(12)
+            .backgroundColor('#FFF8F0')
+            .borderRadius(8)
+
+            // 判定条件
+            Column({ space: 8 }) {
+              Text('判定条件')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#2C2416')
+              
+              ForEach(this.selectedPattern.conditions, (condition: string, index: number) => {
+                Row({ space: 8 }) {
+                  Text(`${index + 1}.`)
+                    .fontSize(13)
+                    .fontColor('#888888')
+                    .width(24)
+                  Text(condition)
+                    .fontSize(13)
+                    .fontColor('#4A3B20')
+                    .lineHeight(20)
+                    .layoutWeight(1)
+                }
+                .width('100%')
+              })
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Start)
+            .padding(12)
+            .backgroundColor('#F7F5ED')
+            .borderRadius(8)
+
+            // 效应说明
+            Column({ space: 8 }) {
+              Text('效应说明')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#2C2416')
+              Text(this.selectedPattern.effect)
+                .fontSize(14)
+                .fontColor('#4A3B20')
+                .lineHeight(22)
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Start)
+            .padding(12)
+            .backgroundColor('#FFF8F0')
+            .borderRadius(8)
+
+            // 来源出处
+            Column({ space: 8 }) {
+              Text('来源出处')
+                .fontSize(14)
+                .fontWeight(FontWeight.Bold)
+                .fontColor('#2C2416')
+              Text(`📖 ${this.selectedPattern.source}`)
+                .fontSize(13)
+                .fontColor('#666666')
+            }
+            .width('100%')
+            .alignItems(HorizontalAlign.Start)
+            .padding(12)
+            .backgroundColor('#F7F5ED')
+            .borderRadius(8)
+          }
+          .width('100%')
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .scrollBar(BarState.Auto)
+      }
+      .width('85%')
+      .height('75%')
+      .padding(20)
+      .backgroundColor('#FFFFFF')
+      .borderRadius(12)
+      .shadow({ radius: 16, color: '#44000000', offsetX: 0, offsetY: 4 })
+      .position({ x: '7.5%', y: '12.5%' })
+      .zIndex(1001)
+    }
   }
 
   build() {
@@ -672,6 +831,9 @@ struct GejuKnowledgePage {
       .onChange((index: number) => {
         this.currentTabIndex = index
       })
+
+      // 格局详情弹窗
+      this.buildDetailDialog()
     }
     .width('100%')
     .height('100%')
