@@ -1,0 +1,509 @@
+{
+  "title": "用神选择映射规则",
+  "version": "1.0",
+  "description": "基于《遁甲符应经》的用神定位与占断指引规则，支持不同事务类型的灵活占断",
+  "categories": [
+    {
+      "id": "find_person",
+      "name": "寻人找人",
+      "icon": "🔍👤",
+      "description": "寻找走失、出走、失联之人",
+      "primaryYongshen": [
+        {
+          "element": "时干宫",
+          "elementType": "tianGan",
+          "reason": "时干代表所求之人的位置与状态",
+          "weight": 5
+        },
+        {
+          "element": "六合神宫",
+          "elementType": "deity",
+          "reason": "六合主合和、相见、团聚",
+          "weight": 4
+        },
+        {
+          "element": "日干宫",
+          "elementType": "tianGan",
+          "reason": "日干代表求测者本人，看与时干关系",
+          "weight": 3
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "太阴神宫",
+          "elementType": "deity",
+          "reason": "太阴主隐藏、女性，用于寻找女性或隐匿之人"
+        },
+        {
+          "element": "九地神宫",
+          "elementType": "deity",
+          "reason": "九地主潜伏、低处，人可能在地下室或偏僻处"
+        }
+      ],
+      "judgmentLogic": [
+        "时干宫与日干宫相生 → 人可寻回，关系融洽",
+        "时干宫与日干宫相克 → 人不愿回，有矛盾",
+        "时干宫临死门或入墓 → 人已远去或处境凶险",
+        "时干宫临六合+吉门 → 人在亲友处，可通过中间人联系",
+        "时干宫临太阴 → 人躲藏不愿见面，可能在女性长辈处",
+        "时干宫临九天 → 人在远方高处或外地",
+        "时干宫临九地 → 人在近处低洼或隐蔽处"
+      ],
+      "directionRule": "时干所在宫位的八卦方位即为人所在方向",
+      "timingHints": [
+        "时干旺相 → 3-7日内可寻回",
+        "时干休囚 → 需30日以上",
+        "时干入墓 → 需等出空之日"
+      ]
+    },
+    {
+      "id": "find_object",
+      "name": "寻物失物",
+      "icon": "🔍📦",
+      "description": "寻找丢失、遗忘的物品",
+      "primaryYongshen": [
+        {
+          "element": "杜门宫",
+          "elementType": "door",
+          "reason": "杜门主闭塞、藏匿、隐藏",
+          "weight": 5
+        },
+        {
+          "element": "六合神宫",
+          "elementType": "deity",
+          "reason": "六合主隐藏之物、暗中收藏",
+          "weight": 4
+        },
+        {
+          "element": "值符宫",
+          "elementType": "special",
+          "reason": "值符为主位，物品可能在主要位置或重要场所",
+          "weight": 3
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "天蓬星宫",
+          "elementType": "star",
+          "reason": "天蓬主盗贼、隐匿、暗中拿走"
+        },
+        {
+          "element": "玄武神宫",
+          "elementType": "deity",
+          "reason": "玄武主盗窃、遗失、暗中流失"
+        }
+      ],
+      "judgmentLogic": [
+        "杜门临值符 → 物在家中某隐蔽处，未丢失",
+        "杜门临吉门 → 物品安全，在固定位置",
+        "杜门临凶门+天蓬 → 物被他人拿走",
+        "天蓬星临玄武 → 物被盗取，难寻回",
+        "六合临吉门 → 物品未丢，在熟悉地方或亲友处",
+        "杜门入墓或临凶格 → 物难寻回或已损坏",
+        "玄武临死门 → 物品已丢失且难复得"
+      ],
+      "directionRule": "杜门或六合所在宫位方位即为物品方向",
+      "itemTypeMapping": {
+        "金属钱财": {
+          "palaces": ["兑宫", "乾宫"],
+          "elements": ["庚", "辛"],
+          "hint": "看庚辛天干所在宫，金属物品在西方或金属柜内"
+        },
+        "文书证件": {
+          "palaces": ["巽宫", "震宫"],
+          "elements": ["乙", "丙", "丁"],
+          "hint": "看三奇所在宫，文书类在书桌、抽屉、文件夹"
+        },
+        "衣物布料": {
+          "palaces": ["坤宫", "艮宫"],
+          "elements": ["己", "戊"],
+          "hint": "看土性宫位，衣物在衣柜、床铺、角落"
+        },
+        "电子产品": {
+          "palaces": ["离宫", "震宫"],
+          "elements": ["丙", "丁"],
+          "hint": "看火性宫位，电子产品在明亮处、插座附近"
+        }
+      },
+      "timingHints": [
+        "杜门旺相 → 当日或3日内可找到",
+        "杜门休囚 → 需7-15日",
+        "杜门入墓 → 物品可能永久遗失"
+      ]
+    },
+    {
+      "id": "travel",
+      "name": "出行远行",
+      "icon": "🚗✈️",
+      "description": "出门、旅行、出差等事务",
+      "primaryYongshen": [
+        {
+          "element": "开门宫",
+          "elementType": "door",
+          "reason": "开门主开通、出行、道路畅通",
+          "weight": 5
+        },
+        {
+          "element": "值使宫",
+          "elementType": "special",
+          "reason": "值使主行动方向、动态事务",
+          "weight": 4
+        },
+        {
+          "element": "时干宫",
+          "elementType": "tianGan",
+          "reason": "时干为天马，主出行动态",
+          "weight": 4
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "九天神宫",
+          "elementType": "deity",
+          "reason": "九天主远行、高飞、长途"
+        },
+        {
+          "element": "休门宫",
+          "elementType": "door",
+          "reason": "休门主休憩、平安顺利"
+        }
+      ],
+      "judgmentLogic": [
+        "开门临三奇 → 出行大吉，一路顺利",
+        "开门临吉星吉神 → 贵人相助，旅途愉快",
+        "开门临凶星凶门 → 路途多阻，不宜出行",
+        "开门克宫 → 交通工具易出问题",
+        "九天临值使 → 宜长途、飞机、高速出行",
+        "九地临值使 → 宜短途、地铁、步行",
+        "杜门临值使 → 不宜出行，多阻滞闭塞",
+        "死门临开门 → 车辆故障或交通意外风险",
+        "时干入墓 → 出行受阻或中途折返"
+      ],
+      "directionRule": "开门或值使宫位方位为最佳出行方向",
+      "timingHints": [
+        "开门旺相 → 即刻出发最佳",
+        "开门休囚 → 延后几日再行",
+        "开门入墓 → 不宜出行"
+      ]
+    },
+    {
+      "id": "marriage",
+      "name": "婚恋姻缘",
+      "icon": "💑💍",
+      "description": "求婚、相亲、婚姻状况、恋爱感情",
+      "primaryYongshen": [
+        {
+          "element": "六合神宫",
+          "elementType": "deity",
+          "reason": "六合主婚姻、合和、姻缘",
+          "weight": 5
+        },
+        {
+          "element": "天禽星宫",
+          "elementType": "star",
+          "reason": "天禽主媒合、姻缘、中宫之神",
+          "weight": 4
+        },
+        {
+          "element": "休门宫",
+          "elementType": "door",
+          "reason": "休门主和谐、美满、安宁",
+          "weight": 3
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "日干宫",
+          "elementType": "tianGan",
+          "reason": "日干代表求测者（男方或主动方）"
+        },
+        {
+          "element": "时干宫",
+          "elementType": "tianGan",
+          "reason": "时干代表对方（女方或被动方）"
+        }
+      ],
+      "genderMapping": {
+        "male": {
+          "self": "日干宫",
+          "partner": "时干宫或乙奇宫（日奇代表女性）",
+          "hint": "看日干与时干或乙奇的生克关系"
+        },
+        "female": {
+          "self": "日干宫",
+          "partner": "时干宫或丙奇宫（月奇代表男性）",
+          "hint": "看日干与时干或丙奇的生克关系"
+        }
+      },
+      "judgmentLogic": [
+        "六合临三奇+吉门 → 婚姻美满，速成",
+        "六合临天禽+休门 → 媒人促成，姻缘天定",
+        "日干宫与时干宫相生 → 双方和睦相爱",
+        "日干宫与时干宫相克 → 多争吵矛盾",
+        "日干宫生时干宫 → 我方付出多，对方受益",
+        "时干宫生日干宫 → 对方付出多，我方受益",
+        "六合入墓 → 婚事难成或拖延",
+        "六合临凶格 → 婚后多波折",
+        "天禽临死门 → 姻缘不顺或媒人不力"
+      ],
+      "directionRule": "六合所在宫位方位为最佳相亲见面方向",
+      "timingHints": [
+        "六合旺相+三奇 → 3-6个月内成婚",
+        "六合休囚 → 需1-2年",
+        "六合入墓 → 婚期不定或难成"
+      ]
+    },
+    {
+      "id": "job_interview",
+      "name": "求职面试",
+      "icon": "💼📄",
+      "description": "应聘、求职、面试、职位晋升",
+      "primaryYongshen": [
+        {
+          "element": "生门宫",
+          "elementType": "door",
+          "reason": "生门主生发、求职、新机会",
+          "weight": 5
+        },
+        {
+          "element": "值符宫",
+          "elementType": "special",
+          "reason": "值符代表求测者当前状态与能量",
+          "weight": 4
+        },
+        {
+          "element": "天辅星宫",
+          "elementType": "star",
+          "reason": "天辅主文职、贵人、上级提拔",
+          "weight": 4
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "开门宫",
+          "elementType": "door",
+          "reason": "开门主开通、录用、签约"
+        },
+        {
+          "element": "六合神宫",
+          "elementType": "deity",
+          "reason": "六合主面试官青睐、合作关系"
+        }
+      ],
+      "judgmentLogic": [
+        "生门临三奇 → 求职顺利，易录用",
+        "生门临天辅+值符 → 贵人相助，直接录用",
+        "天辅临值符 → 上级看重，面试成功率高",
+        "开门生宫 → 面试官满意，门路畅通",
+        "生门临凶格 → 面试不利或不被录用",
+        "生门入墓 → 职位已内定他人",
+        "生门克宫 → 岗位不适合或公司有问题",
+        "六合临死门 → 面试官态度冷淡"
+      ],
+      "directionRule": "生门所在宫位方位为最佳求职方向或面试座位方位",
+      "timingHints": [
+        "生门旺相 → 7-15日内收到offer",
+        "生门休囚 → 需1-3个月",
+        "生门入墓 → 不被录用"
+      ]
+    },
+    {
+      "id": "wealth",
+      "name": "求财经商",
+      "icon": "💰💵",
+      "description": "求财、投资、经商、合作",
+      "primaryYongshen": [
+        {
+          "element": "生门宫",
+          "elementType": "door",
+          "reason": "生门主生财、利润、财源",
+          "weight": 5
+        },
+        {
+          "element": "天任星宫",
+          "elementType": "star",
+          "reason": "天任主财富、稳健、积累",
+          "weight": 4
+        },
+        {
+          "element": "丙奇宫",
+          "elementType": "sanqi",
+          "reason": "丙奇月奇主财运、光明、显达",
+          "weight": 3
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "开门宫",
+          "elementType": "door",
+          "reason": "开门主开张、开业、财路畅通"
+        },
+        {
+          "element": "六合神宫",
+          "elementType": "deity",
+          "reason": "六合主合作、合伙、客户关系"
+        }
+      ],
+      "judgmentLogic": [
+        "生门临丙奇+天任 → 财运亨通，利润丰厚",
+        "生门生宫 → 财源广进，持续获利",
+        "生门克宫 → 求财辛苦或投资有损",
+        "生门入墓 → 财路不通或资金被困",
+        "天任临值符 → 财运稳健，适合长期投资",
+        "丙奇临开门 → 财运显达，宜开业创业",
+        "六合临生门 → 合作生财，客户带来收益"
+      ],
+      "directionRule": "生门所在宫位方位为最佳求财方向或投资方向",
+      "timingHints": [
+        "生门旺相 → 当月即有收益",
+        "生门休囚 → 需3-6个月见效",
+        "生门入墓 → 投资需谨慎，短期无利"
+      ]
+    },
+    {
+      "id": "exam",
+      "name": "考试升学",
+      "icon": "📚🎓",
+      "description": "考试、升学、资格考核、竞赛",
+      "primaryYongshen": [
+        {
+          "element": "天辅星宫",
+          "elementType": "star",
+          "reason": "天辅主文昌、学业、考试",
+          "weight": 5
+        },
+        {
+          "element": "值符宫",
+          "elementType": "special",
+          "reason": "值符代表考生当前状态与发挥",
+          "weight": 4
+        },
+        {
+          "element": "乙奇宫",
+          "elementType": "sanqi",
+          "reason": "乙奇日奇主文书、智慧、贵人",
+          "weight": 4
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "开门宫",
+          "elementType": "door",
+          "reason": "开门主通达、录取、榜上有名"
+        },
+        {
+          "element": "休门宫",
+          "elementType": "door",
+          "reason": "休门主从容、心态平和、正常发挥"
+        }
+      ],
+      "judgmentLogic": [
+        "天辅临乙奇+开门 → 考试优秀，金榜题名",
+        "天辅临值符 → 发挥出色，成绩理想",
+        "乙奇得使 → 贵人相助，考官青睐",
+        "开门生宫 → 顺利录取，门路畅通",
+        "天辅克宫 → 发挥失常或题目超纲",
+        "天辅入墓 → 考试不利或落榜",
+        "值符临凶格 → 心态紧张，失误较多"
+      ],
+      "directionRule": "天辅所在宫位方位为最佳考试座位方位",
+      "timingHints": [
+        "天辅旺相 → 考试当日状态极佳",
+        "天辅休囚 → 发挥一般，需额外努力",
+        "天辅入墓 → 不宜参加此次考试"
+      ]
+    },
+    {
+      "id": "health",
+      "name": "疾病医疗",
+      "icon": "🏥💊",
+      "description": "疾病诊断、治疗、健康状况",
+      "primaryYongshen": [
+        {
+          "element": "天芮星宫",
+          "elementType": "star",
+          "reason": "天芮主疾病、病灶、健康问题",
+          "weight": 5
+        },
+        {
+          "element": "死门宫",
+          "elementType": "door",
+          "reason": "死门主疾病、死亡、病重程度",
+          "weight": 4
+        },
+        {
+          "element": "值符宫",
+          "elementType": "special",
+          "reason": "值符代表患者当前身体状态",
+          "weight": 3
+        }
+      ],
+      "secondaryYongshen": [
+        {
+          "element": "生门宫",
+          "elementType": "door",
+          "reason": "生门主康复、治疗、生机"
+        },
+        {
+          "element": "天心星宫",
+          "elementType": "star",
+          "reason": "天心主医药、医生、治疗方法"
+        }
+      ],
+      "judgmentLogic": [
+        "天芮临死门 → 病情严重，需重视",
+        "天芮临吉门+三奇 → 病情轻微，易康复",
+        "生门临天心 → 医生医术高明，治疗有效",
+        "生门生宫 → 康复顺利，身体恢复快",
+        "死门克宫 → 病情加重或治疗不当",
+        "值符临凶格 → 病人体质虚弱",
+        "天芮入墓 → 病因隐匿，难以诊断"
+      ],
+      "bodyPartMapping": {
+        "头部面部": "离宫、九宫",
+        "胸部心脏": "离宫、坤宫",
+        "腹部脾胃": "坤宫、艮宫",
+        "肝胆": "震宫、巽宫",
+        "肺部呼吸": "兑宫、乾宫",
+        "肾脏泌尿": "坎宫、一宫",
+        "四肢": "震宫（手）、坎宫（足）"
+      },
+      "directionRule": "天芮所在宫位对应身体部位，生门方位为最佳治疗方向",
+      "timingHints": [
+        "生门旺相 → 7-15日内好转",
+        "生门休囚 → 需1-3个月康复",
+        "生门入墓+死门旺 → 病情危重"
+      ]
+    }
+  ],
+  "commonElements": {
+    "timingRules": [
+      "三奇应期：日奇乙1/7日，月奇丙7/49日，星奇丁14/100日",
+      "旬空应期：出空填实之日为应期",
+      "击刑应期：刑年刑月之时为应期",
+      "值符值使应期：符使相合之日时为应期",
+      "门迫应期：门克宫为速应，宫生门为缓应"
+    ],
+    "directionMapping": {
+      "坎宫": "正北（0宫）",
+      "坤宫": "西南（1宫）",
+      "震宫": "正东（2宫）",
+      "巽宫": "东南（3宫）",
+      "中宫": "中央（4宫）",
+      "乾宫": "西北（5宫）",
+      "兑宫": "正西（6宫）",
+      "艮宫": "东北（7宫）",
+      "离宫": "正南（8宫）"
+    },
+    "wuxingRelation": {
+      "sheng": ["木生火", "火生土", "土生金", "金生水", "水生木"],
+      "ke": ["木克土", "土克水", "水克火", "火克金", "金克木"]
+    }
+  },
+  "meta": {
+    "author": "基于《遁甲符应经》整理",
+    "version": "1.0",
+    "lastUpdate": "2026-01-23",
+    "note": "本规则用于项目灵活占断功能扩展，支持同一盘面根据不同事务类型选择不同用神进行分析"
+  }
+}

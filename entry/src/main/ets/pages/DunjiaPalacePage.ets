@@ -5,8 +5,35 @@ import { DunjiaPalaceDetail } from '../components/DunjiaPalaceDetail'
 import { NavigationBar } from '../components/NavigationBar'
 
 /**
+ * 用神信息接口
+ */
+interface YongshenElement {
+  element: string;
+  elementType: string;
+  reason: string;
+  weight?: number;
+}
+
+interface AffairCategory {
+  id: string;
+  name: string;
+  icon?: string;
+  description?: string;
+  primaryYongshen?: YongshenElement[];
+  secondaryYongshen?: YongshenElement[];
+  judgmentLogic?: string[];
+  directionRule?: string;
+  timingHints?: string[];
+}
+
+interface YongshenMappingFile {
+  title?: string;
+  categories?: AffairCategory[];
+}
+
+/**
  * 奇门遁甲九宫盘页面
- * 职责：页面状态管理、组件组合
+ * 职责：页面状态管理、组件组合、用神占断指引
  */
 @Entry
 @Component
@@ -15,6 +42,10 @@ struct DunjiaPalacePage {
   @State selectedPalace: number | null = null
   @State loading: boolean = true
   @State currentDateTime: Date = new Date()
+  @State selectedAffair: string | null = null
+  @State currentAffairInfo: AffairCategory | null = null
+  @State showYongshenPanel: boolean = false
+  @State affairCategories: AffairCategory[] = []
   
   private engine: DunjiaEngine = DunjiaEngine.getInstance()
 
@@ -27,8 +58,77 @@ struct DunjiaPalacePage {
       this.currentDateTime = new Date(timestamp)
     }
     
+    // 加载用神映射规则
+    this.loadYongshenRules()
+    
     // 执行排盘计算
     this.computePan()
+  }
+
+  /**
+   * 加载用神映射规则
+   */
+  private loadYongshenRules() {
+    try {
+      const context = getContext(this);
+      if (!context || !context.resourceManager || !context.resourceManager.getRawFileContent) {
+        console.error('[DunjiaPalacePage] 无法获取资源管理器');
+        return;
+      }
+
+      context.resourceManager.getRawFileContent('rules/yongshen_mapping_rules.json')
+        .then((data: Uint8Array) => {
+          const jsonStr = this.decodeUtf8(data);
+          let parsed: YongshenMappingFile | null = null;
+          try {
+            parsed = JSON.parse(jsonStr) as YongshenMappingFile;
+          } catch (e) {
+            console.error('[DunjiaPalacePage] 解析用神规则 JSON 失败', JSON.stringify(e));
+            return;
+          }
+          if (parsed && parsed.categories && Array.isArray(parsed.categories)) {
+            this.affairCategories = parsed.categories;
+            console.info(`[DunjiaPalacePage] 加载用神规则成功，共 ${this.affairCategories.length} 个事类`);
+          }
+        })
+        .catch((err: Error) => {
+          console.error('[DunjiaPalacePage] 读取用神规则 JSON 失败', JSON.stringify(err));
+        });
+    } catch (e) {
+      console.error('[DunjiaPalacePage] loadYongshenRules 异常', JSON.stringify(e));
+    }
+  }
+
+  private decodeUtf8(bytes: Uint8Array): string {
+    let out = '';
+    let i = 0;
+    while (i < bytes.length) {
+      const c = bytes[i++];
+      if (c < 0x80) {
+        out += String.fromCharCode(c);
+      } else if ((c & 0xe0) === 0xc0 && i < bytes.length) {
+        const c2 = bytes[i++];
+        const code = ((c & 0x1f) << 6) | (c2 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf0) === 0xe0 && i + 1 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const code = ((c & 0x0f) << 12) | ((c2 & 0x3f) << 6) | (c3 & 0x3f);
+        out += String.fromCharCode(code);
+      } else if ((c & 0xf8) === 0xf0 && i + 2 < bytes.length) {
+        const c2 = bytes[i++];
+        const c3 = bytes[i++];
+        const c4 = bytes[i++];
+        let codePoint = ((c & 0x07) << 18) | ((c2 & 0x3f) << 12) | ((c3 & 0x3f) << 6) | (c4 & 0x3f);
+        codePoint -= 0x10000;
+        const high = 0xd800 + (codePoint >> 10);
+        const low = 0xdc00 + (codePoint & 0x3ff);
+        out += String.fromCharCode(high, low);
+      } else {
+        out += '?';
+      }
+    }
+    return out;
   }
 
   /**
@@ -118,6 +218,219 @@ struct DunjiaPalacePage {
     }
   }
 
+  /**
+   * 选择占断事类
+   */
+  private selectAffair(affairId: string) {
+    console.info(`[DunjiaPalacePage] 点击事类：${affairId}`);
+    this.selectedAffair = affairId;
+    const affair = this.affairCategories.find(a => a.id === affairId);
+    if (affair) {
+      console.info(`[DunjiaPalacePage] 找到事类信息：${affair.name}`);
+      this.currentAffairInfo = affair;
+      this.showYongshenPanel = true;
+    } else {
+      console.warn(`[DunjiaPalacePage] 未找到事类：${affairId}`);
+    }
+  }
+
+  /**
+   * 构建事类选择器
+   */
+  @Builder
+  buildAffairSelector() {
+    Column({ space: 12 }) {
+      Row({ space: 8 }) {
+        Text('🎯 选择占断事类')
+          .fontSize(14)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#2C2416')
+          .layoutWeight(1)
+        
+        if (this.showYongshenPanel) {
+          Button('收起')
+            .fontSize(12)
+            .backgroundColor('#F5F1E8')
+            .fontColor('#666666')
+            .height(28)
+            .onClick(() => {
+              this.showYongshenPanel = false;
+            })
+        }
+      }
+      .width('100%')
+      
+      // 常用事类快捷按钮
+      Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+        ForEach(this.affairCategories.slice(0, 8), (affair: AffairCategory) => {
+          Button() {
+            Row({ space: 4 }) {
+              if (affair.icon) {
+                Text(affair.icon)
+                  .fontSize(14)
+              }
+              Text(affair.name)
+                .fontSize(13)
+                .fontColor(this.selectedAffair === affair.id ? '#FFFFFF' : '#2C2416')
+            }
+          }
+          .backgroundColor(this.selectedAffair === affair.id ? '#FFD700' : '#FFFFFF')
+          .borderRadius(8)
+          .padding({ left: 10, right: 10, top: 6, bottom: 6 })
+          .margin({ right: 8, bottom: 8 })
+          .onClick(() => {
+            this.selectAffair(affair.id);
+          })
+        })
+      }
+      .width('100%')
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor('#ffffff')
+    .borderRadius(12)
+    .shadow({ radius: 8, color: '#22000000', offsetX: 0, offsetY: 2 })
+  }
+
+  /**
+   * 构建用神指引面板
+   */
+  @Builder
+  buildYongshenGuidance() {
+    if (this.currentAffairInfo && this.showYongshenPanel) {
+      Column({ space: 16 }) {
+        // 事类说明
+        Row({ space: 8 }) {
+          Text(this.currentAffairInfo.icon || '🔮')
+            .fontSize(20)
+          Column({ space: 4 }) {
+            Text(this.currentAffairInfo.name)
+              .fontSize(16)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#2C2416')
+            if (this.currentAffairInfo.description) {
+              Text(this.currentAffairInfo.description)
+                .fontSize(12)
+                .fontColor('#666666')
+            }
+          }
+          .layoutWeight(1)
+          .alignItems(HorizontalAlign.Start)
+        }
+        .width('100%')
+        
+        // 主用神
+        if (this.currentAffairInfo.primaryYongshen && this.currentAffairInfo.primaryYongshen.length > 0) {
+          Column({ space: 8 }) {
+            Text('📍 主用神（重点观察）')
+              .fontSize(14)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#2C2416')
+            
+            ForEach(this.currentAffairInfo.primaryYongshen, (yong: YongshenElement) => {
+              Row({ space: 10 }) {
+                Text(yong.element)
+                  .fontSize(13)
+                  .fontWeight(FontWeight.Bold)
+                  .fontColor('#FF6B35')
+                  .width(80)
+                Text(yong.reason)
+                  .fontSize(12)
+                  .fontColor('#666666')
+                  .lineHeight(18)
+                  .layoutWeight(1)
+              }
+              .width('100%')
+              .padding(10)
+              .backgroundColor('#FFF8F0')
+              .borderRadius(6)
+            })
+          }
+          .width('100%')
+        }
+        
+        // 次用神
+        if (this.currentAffairInfo.secondaryYongshen && this.currentAffairInfo.secondaryYongshen.length > 0) {
+          Column({ space: 8 }) {
+            Text('🔍 次用神（辅助参考）')
+              .fontSize(13)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#666666')
+            
+            ForEach(this.currentAffairInfo.secondaryYongshen, (yong: YongshenElement) => {
+              Row({ space: 10 }) {
+                Text(yong.element)
+                  .fontSize(12)
+                  .fontColor('#3F51B5')
+                  .width(80)
+                Text(yong.reason)
+                  .fontSize(11)
+                  .fontColor('#999999')
+                  .lineHeight(16)
+                  .layoutWeight(1)
+              }
+              .width('100%')
+              .padding(8)
+              .backgroundColor('#F5F5F5')
+              .borderRadius(6)
+            })
+          }
+          .width('100%')
+        }
+        
+        // 判断逻辑
+        if (this.currentAffairInfo.judgmentLogic && this.currentAffairInfo.judgmentLogic.length > 0) {
+          Column({ space: 8 }) {
+            Text('⚖️ 判断逻辑')
+              .fontSize(14)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#2C2416')
+            
+            ForEach(this.currentAffairInfo.judgmentLogic, (logic: string) => {
+              Row({ space: 6 }) {
+                Text('•')
+                  .fontSize(12)
+                  .fontColor('#FF9800')
+                Text(logic)
+                  .fontSize(12)
+                  .fontColor('#666666')
+                  .lineHeight(20)
+                  .layoutWeight(1)
+              }
+              .width('100%')
+            })
+          }
+          .width('100%')
+          .padding(12)
+          .backgroundColor('#FFFBF0')
+          .borderRadius(8)
+        }
+        
+        // 方位提示
+        if (this.currentAffairInfo.directionRule) {
+          Row({ space: 8 }) {
+            Text('🧭')
+              .fontSize(16)
+            Text(this.currentAffairInfo.directionRule)
+              .fontSize(12)
+              .fontColor('#4A90E2')
+              .lineHeight(18)
+              .layoutWeight(1)
+          }
+          .width('100%')
+          .padding(10)
+          .backgroundColor('#E3F2FD')
+          .borderRadius(6)
+        }
+      }
+      .width('100%')
+      .padding(16)
+      .backgroundColor('#ffffff')
+      .borderRadius(12)
+      .shadow({ radius: 8, color: '#22000000', offsetX: 0, offsetY: 2 })
+    }
+  }
+
   build() {
     Column({ space: 0 }) {
       // 顶部导航栏
@@ -136,6 +449,12 @@ struct DunjiaPalacePage {
         // 主内容区域：使用Scroll包裹，九宫盘和宫位详情垂直排列
         Scroll() {
           Column({ space: 16 }) {
+            // 占断事类选择器
+            this.buildAffairSelector()
+            
+            // 用神指引面板
+            this.buildYongshenGuidance()
+            
             // 时间调整按钮组
             Column({ space: 12 }) {
               Row({ space: 8 }) {
