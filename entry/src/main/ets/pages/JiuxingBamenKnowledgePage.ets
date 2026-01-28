@@ -589,6 +589,22 @@ struct JiuxingBamenKnowledgePage {
                 .backgroundColor('#FFF8F0')
                 .borderRadius(8)
 
+              // 原典九星圆式（缩略预览）
+              Column({ space: 6 }) {
+                Text('原典九星圆式（缩略预览）')
+                  .fontSize(12)
+                  .fontColor('#888888')
+                  .width('100%')
+
+                Image($r('app.media.jiuxingyuantu'))
+                  .width('100%')
+                  .height(140)
+                  .objectFit(ImageFit.Contain)
+                  .borderRadius(8)
+              }
+              .width('100%')
+              .padding({ top: 4, bottom: 4 })
+
               // 九星列表
               ForEach(this.stars, (star: StarKnowledge) => {
                 this.buildStarCard(star)

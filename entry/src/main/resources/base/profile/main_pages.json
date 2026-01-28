@@ -11,6 +11,7 @@
     "pages/ClassicalCasesPage",
     "pages/BasicKnowledgePage",
     "pages/AttackDefensePage",
-    "pages/ZhiFuZhiShiHistoryPage"
+    "pages/ZhiFuZhiShiHistoryPage",
+    "pages/XiajuanStudyPage"
   ]
 }

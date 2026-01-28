@@ -68,6 +68,15 @@ struct DunjiaPanel {
       route: 'pages/SanqiZheriPage'
     },
     {
+      id: 'attack_defense',
+      title: '攻守方位总览',
+      subtitle: '标注五不可击与攻守禁区',
+      summary: '基于当前时空盘，标出天乙、九天、生门、九地、直使等“禁击宫位”，以及三吉门配吉星的优势方位，辅助攻守布局研习。',
+      level: '实战演练',
+      tags: ['五不可击', '攻守方位', '实战布局'],
+      route: 'pages/AttackDefensePage'
+    },
+    {
       id: 'cases',
       title: '古籍案例重演',
       subtitle: '重现《遁甲符应经》经典案例',
@@ -75,6 +84,15 @@ struct DunjiaPanel {
       level: '综合应用',
       tags: ['古籍案例', '实战推演', '综合运用'],
       route: 'pages/ClassicalCasesPage'
+    },
+    {
+      id: 'xiajuan',
+      title: '下卷符咒研习',
+      subtitle: '下卷规则与符咒精读',
+      summary: '研习《景祐遁甲符应经·卷之下》中与攻守禁区、出行闭局、安营布阵相关的规则与符咒，以高对比度符咒块呈现，便于背诵与理解。',
+      level: '高级研习',
+      tags: ['下卷', '符咒', '规则研习'],
+      route: 'pages/XiajuanStudyPage'
     }
   ];
 
