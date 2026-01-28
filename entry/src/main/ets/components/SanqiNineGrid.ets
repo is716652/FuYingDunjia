@@ -135,29 +135,29 @@ export struct SanqiNineGrid {
 
   build() {
     Column({ space: 4 }) {
-      // 第一行：0,1,2
-      Row({ space: 4 }) {
-        this.buildSanqiPalaceCard(0)
-        this.buildSanqiPalaceCard(1)
-        this.buildSanqiPalaceCard(2)
-      }
-      .width('100%')
-      .justifyContent(FlexAlign.SpaceBetween)
-
-      // 第二行：3,4,5
+      // 第一行（上方/南）：巽4, 离9, 坤2
       Row({ space: 4 }) {
         this.buildSanqiPalaceCard(3)
-        this.buildSanqiPalaceCard(4)
-        this.buildSanqiPalaceCard(5)
+        this.buildSanqiPalaceCard(8)
+        this.buildSanqiPalaceCard(1)
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
 
-      // 第三行：6,7,8
+      // 第二行（中间）：震3, 中5, 兑7
       Row({ space: 4 }) {
+        this.buildSanqiPalaceCard(2)
+        this.buildSanqiPalaceCard(4)
         this.buildSanqiPalaceCard(6)
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+
+      // 第三行（下方/北）：艮8, 坎1, 乾6
+      Row({ space: 4 }) {
         this.buildSanqiPalaceCard(7)
-        this.buildSanqiPalaceCard(8)
+        this.buildSanqiPalaceCard(0)
+        this.buildSanqiPalaceCard(5)
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
