@@ -21,10 +21,34 @@ interface ShichenTypeInfo {
   color: string;
 }
 
+interface ZeriRiType {
+  type?: string;
+  alias?: string;
+  level?: string;
+  relation?: string;
+  examples?: string[];
+  suitable?: string[];
+  taboo?: string[];
+  mnemonic?: string;
+}
+
+interface WuyangTimeBlock {
+  scope?: string;
+  stems?: string[];
+  attribute?: string;
+  strategy?: string;
+  suitable?: string[];
+  taboo?: string[];
+  special?: string;
+}
+
 interface RulesJsonRule {
   id?: string;
   name?: string;
   summary?: string;
+  types?: ZeriRiType[];
+  yangTime?: WuyangTimeBlock;
+  yinTime?: WuyangTimeBlock;
 }
 
 interface RulesJsonFile {
@@ -51,6 +75,9 @@ struct SanqiZheriPage {
   @State sanqiJsonSummary: string = ''
   @State zeriJsonSummary: string = ''
   @State shenshaJsonSummary: string = ''
+  private riTypeMapFromJson: Record<string, GanzhiTypeInfo> = {}
+  private yangTimeInfoFromJson: WuyangTimeBlock | null = null
+  private yinTimeInfoFromJson: WuyangTimeBlock | null = null
   private scroller: Scroller = new Scroller()
   private engine: DunjiaEngine = DunjiaEngine.getInstance()
 
@@ -136,15 +163,67 @@ struct SanqiZheriPage {
           }
           if (parsed && parsed.rules && Array.isArray(parsed.rules)) {
             let summary: string = '';
+            const riTypeMap: Record<string, GanzhiTypeInfo> = {};
             for (let i = 0; i < parsed.rules.length; i++) {
-              const rule = parsed.rules[i];
-              if (rule && rule.id === 'wulei_ri_ji_xiong' && rule.summary) {
-                summary = rule.summary;
-                break;
+              const rule: RulesJsonRule | undefined = parsed.rules[i];
+              if (!rule || !rule.id) {
+                continue;
+              }
+              if (rule.id === 'wulei_ri_ji_xiong') {
+                if (rule.summary && typeof rule.summary === 'string') {
+                  summary = rule.summary;
+                }
+                if (rule.types && Array.isArray(rule.types)) {
+                  for (let j = 0; j < rule.types.length; j++) {
+                    const typeInfo: ZeriRiType | undefined = rule.types[j];
+                    if (!typeInfo || !typeInfo.type || !typeInfo.examples || !Array.isArray(typeInfo.examples)) {
+                      continue;
+                    }
+                    const typeName: string = typeInfo.type;
+                    let level: number = 3;
+                    let color: string = '#4CAF50';
+                    if (typeName === '宝日') {
+                      level = 5;
+                      color = '#FFD700';
+                    } else if (typeName === '伐日') {
+                      level = 0;
+                      color = '#F44336';
+                    } else if (typeName === '制日') {
+                      level = 3;
+                      color = '#FF9800';
+                    } else if (typeName === '义日' || typeName === '和日') {
+                      level = 4;
+                      color = '#4CAF50';
+                    }
+                    for (let k = 0; k < typeInfo.examples.length; k++) {
+                      const exampleGanzhi: string = typeInfo.examples[k];
+                      if (typeof exampleGanzhi === 'string' && exampleGanzhi !== '') {
+                        riTypeMap[exampleGanzhi] = {
+                          type: typeName,
+                          level: level,
+                          color: color
+                        };
+                      }
+                    }
+                  }
+                }
+              }
+              if (rule.id === 'wuyang_wuyin_shi') {
+                const yangInfo: WuyangTimeBlock | undefined = rule.yangTime;
+                const yinInfo: WuyangTimeBlock | undefined = rule.yinTime;
+                if (yangInfo) {
+                  this.yangTimeInfoFromJson = yangInfo;
+                }
+                if (yinInfo) {
+                  this.yinTimeInfoFromJson = yinInfo;
+                }
               }
             }
             if (summary !== '') {
               this.zeriJsonSummary = summary;
+            }
+            if (Object.keys(riTypeMap).length > 0) {
+              this.riTypeMapFromJson = riTypeMap;
             }
           }
         })
@@ -220,36 +299,12 @@ struct SanqiZheriPage {
    */
   private getRiGanzhiType(): GanzhiTypeInfo {
     if (!this.panResult || !this.panResult.dayInfo) return { type: '未知', level: 0, color: '#999999' };
-      
-    const ganzhiTypes: Record<string, GanzhiTypeInfo> = {
-      // 宝日(干生支)
-      '甲午': { type: '宝日', level: 5, color: '#FFD700' },
-      '乙巳': { type: '宝日', level: 5, color: '#FFD700' },
-      '丙辰': { type: '宝日', level: 5, color: '#FFD700' },
-      '丁未': { type: '宝日', level: 5, color: '#FFD700' },
-      '戊申': { type: '宝日', level: 5, color: '#FFD700' },
-      '己酉': { type: '宝日', level: 5, color: '#FFD700' },
-      '庚子': { type: '宝日', level: 5, color: '#FFD700' },
-      '辛亥': { type: '宝日', level: 5, color: '#FFD700' },
-      '壬寅': { type: '宝日', level: 5, color: '#FFD700' },
-      '癸卉': { type: '宝日', level: 5, color: '#FFD700' },
-        
-      // 伐日(支克干)
-      '甲申': { type: '伐日', level: 0, color: '#F44336' },
-      '乙酉': { type: '伐日', level: 0, color: '#F44336' },
-      '丙子': { type: '伐日', level: 0, color: '#F44336' },
-      '丁亥': { type: '伐日', level: 0, color: '#F44336' },
-      '戊寅': { type: '伐日', level: 0, color: '#F44336' },
-      '己卉': { type: '伐日', level: 0, color: '#F44336' },
-      '庚午': { type: '伐日', level: 0, color: '#F44336' },
-      '辛巳': { type: '伐日', level: 0, color: '#F44336' },
-      '壬辰': { type: '伐日', level: 0, color: '#F44336' },
-      '癸未': { type: '伐日', level: 0, color: '#F44336' }
-    };
-        
-    // 从排盘结果获取真实日干支
+
     const riGanzhi = `${this.panResult.dayInfo.day_gan}${this.panResult.dayInfo.day_zhi}`;
-    return ganzhiTypes[riGanzhi] || { type: '和日', level: 3, color: '#4CAF50' };
+    if (this.riTypeMapFromJson && this.riTypeMapFromJson[riGanzhi]) {
+      return this.riTypeMapFromJson[riGanzhi];
+    }
+    return { type: '和日', level: 3, color: '#4CAF50' };
   }
     
   /**
@@ -257,21 +312,57 @@ struct SanqiZheriPage {
    */
   private getShichenType(): ShichenTypeInfo {
     if (!this.panResult || !this.panResult.hourGanZhi) return { type: '未知', desc: '', color: '#999999' };
-        
-    // 从排盘结果获取真实时辰天干
-    const shiGan = this.panResult.hourGanZhi.charAt(0);
-    const yangGan = ['甲', '乙', '丙', '丁', '戊'];
-        
-    if (yangGan.includes(shiGan)) {
+
+    const shiGan: string = this.panResult.hourGanZhi.charAt(0);
+    let isYang: boolean | null = null;
+
+    if (this.yangTimeInfoFromJson && this.yangTimeInfoFromJson.stems && Array.isArray(this.yangTimeInfoFromJson.stems)) {
+      if (this.yangTimeInfoFromJson.stems.indexOf(shiGan) >= 0) {
+        isYang = true;
+      }
+    }
+    if (isYang === null && this.yinTimeInfoFromJson && this.yinTimeInfoFromJson.stems && Array.isArray(this.yinTimeInfoFromJson.stems)) {
+      if (this.yinTimeInfoFromJson.stems.indexOf(shiGan) >= 0) {
+        isYang = false;
+      }
+    }
+
+    // 如果 JSON 没有覆盖到当前时干, 退回到原来的干类判断
+    if (isYang === null) {
+      const yangGanFallback: string[] = ['甲', '乙', '丙', '丁', '戊'];
+      isYang = yangGanFallback.includes(shiGan);
+    }
+
+    if (isYang) {
+      let descParts: string[] = [];
+      if (this.yangTimeInfoFromJson) {
+        if (this.yangTimeInfoFromJson.attribute && typeof this.yangTimeInfoFromJson.attribute === 'string') {
+          descParts.push(this.yangTimeInfoFromJson.attribute);
+        }
+        if (this.yangTimeInfoFromJson.strategy && typeof this.yangTimeInfoFromJson.strategy === 'string') {
+          descParts.push(this.yangTimeInfoFromJson.strategy);
+        }
+      }
+      const desc: string = descParts.length > 0 ? descParts.join('，') : '利客先发,高旗鸣鼓';
       return {
         type: '五阳时',
-        desc: '利客先发,高旗鸣鼓',
+        desc: desc,
         color: '#FF9800'
       };
     } else {
+      let descParts2: string[] = [];
+      if (this.yinTimeInfoFromJson) {
+        if (this.yinTimeInfoFromJson.attribute && typeof this.yinTimeInfoFromJson.attribute === 'string') {
+          descParts2.push(this.yinTimeInfoFromJson.attribute);
+        }
+        if (this.yinTimeInfoFromJson.strategy && typeof this.yinTimeInfoFromJson.strategy === 'string') {
+          descParts2.push(this.yinTimeInfoFromJson.strategy);
+        }
+      }
+      const desc2: string = descParts2.length > 0 ? descParts2.join('，') : '利主后动,低旗衔枕';
       return {
         type: '五阴时',
-        desc: '利主后动,低旗衔枕',
+        desc: desc2,
         color: '#3F51B5'
       };
     }
