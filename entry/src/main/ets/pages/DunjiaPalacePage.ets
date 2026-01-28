@@ -11,7 +11,6 @@ interface YongshenElement {
   element: string;
   elementType: string;
   reason: string;
-  weight?: number;
 }
 
 interface AffairCategory {
@@ -32,6 +31,51 @@ interface YongshenMappingFile {
 }
 
 /**
+ * 三奇应验规则接口
+ */
+interface AffairSpecificMeanings {
+  find_person?: string;
+  find_object?: string;
+  travel?: string;
+  marriage?: string;
+  job_interview?: string;
+  wealth?: string;
+  exam?: string;
+  health?: string;
+}
+
+interface SanqiPosition {
+  qi: string;
+  palace: string;
+}
+
+interface SanqiSubRule {
+  subId: string;
+  palace: string;
+  direction: string;
+  signs: string[];
+  timeWindow: string;
+  fortune: string;
+  tips: string;
+  affairSpecificMeanings?: AffairSpecificMeanings;
+}
+
+interface SanqiRule {
+  id: string;
+  name: string;
+  category: string;
+  ruleSource: string;
+  description: string;
+  sub_rules?: SanqiSubRule[];
+}
+
+interface SanqiRulesFile {
+  volume?: string;
+  title?: string;
+  rules?: SanqiRule[];
+}
+
+/**
  * 奇门遁甲九宫盘页面
  * 职责：页面状态管理、组件组合、用神占断指引
  */
@@ -46,6 +90,8 @@ struct DunjiaPalacePage {
   @State currentAffairInfo: AffairCategory | null = null
   @State showYongshenPanel: boolean = false
   @State affairCategories: AffairCategory[] = []
+  @State sanqiRules: SanqiRule[] = []
+  @State currentSanqiMeanings: SanqiSubRule[] = []
   
   private engine: DunjiaEngine = DunjiaEngine.getInstance()
 
@@ -60,6 +106,9 @@ struct DunjiaPalacePage {
     
     // 加载用神映射规则
     this.loadYongshenRules()
+    
+    // 加载三奇应验规则
+    this.loadSanqiRules()
     
     // 执行排盘计算
     this.computePan()
@@ -88,7 +137,6 @@ struct DunjiaPalacePage {
           }
           if (parsed && parsed.categories && Array.isArray(parsed.categories)) {
             this.affairCategories = parsed.categories;
-            console.info(`[DunjiaPalacePage] 加载用神规则成功，共 ${this.affairCategories.length} 个事类`);
           }
         })
         .catch((err: Error) => {
@@ -96,6 +144,39 @@ struct DunjiaPalacePage {
         });
     } catch (e) {
       console.error('[DunjiaPalacePage] loadYongshenRules 异常', JSON.stringify(e));
+    }
+  }
+
+  /**
+   * 加载三奇应验规则
+   */
+  private loadSanqiRules() {
+    try {
+      const context = getContext(this);
+      if (!context || !context.resourceManager || !context.resourceManager.getRawFileContent) {
+        console.error('[DunjiaPalacePage] 无法获取资源管理器');
+        return;
+      }
+
+      context.resourceManager.getRawFileContent('rules/sanqi_yingyan_rules.json')
+        .then((data: Uint8Array) => {
+          const jsonStr = this.decodeUtf8(data);
+          let parsed: SanqiRulesFile | null = null;
+          try {
+            parsed = JSON.parse(jsonStr) as SanqiRulesFile;
+          } catch (e) {
+            console.error('[DunjiaPalacePage] 解析三奇规则 JSON 失败', JSON.stringify(e));
+            return;
+          }
+          if (parsed && parsed.rules && Array.isArray(parsed.rules)) {
+            this.sanqiRules = parsed.rules;
+          }
+        })
+        .catch((err: Error) => {
+          console.error('[DunjiaPalacePage] 读取三奇规则 JSON 失败', JSON.stringify(err));
+        });
+    } catch (e) {
+      console.error('[DunjiaPalacePage] loadSanqiRules 异常', JSON.stringify(e));
     }
   }
 
@@ -222,15 +303,162 @@ struct DunjiaPalacePage {
    * 选择占断事类
    */
   private selectAffair(affairId: string) {
-    console.info(`[DunjiaPalacePage] 点击事类：${affairId}`);
     this.selectedAffair = affairId;
     const affair = this.affairCategories.find(a => a.id === affairId);
     if (affair) {
-      console.info(`[DunjiaPalacePage] 找到事类信息：${affair.name}`);
       this.currentAffairInfo = affair;
       this.showYongshenPanel = true;
-    } else {
-      console.warn(`[DunjiaPalacePage] 未找到事类：${affairId}`);
+      this.filterSanqiMeanings(affairId);
+    }
+  }
+
+  /**
+   * 筛选三奇象意：根据当前事类和盘面中的三奇位置
+   */
+  private filterSanqiMeanings(affairId: string) {
+    this.currentSanqiMeanings = [];
+    
+    if (!this.panResult || !this.panResult.palaces) {
+      return;
+    }
+    
+    // 获取当前盘面中的三奇位置
+    const sanqiPositions: SanqiPosition[] = [];
+    
+    this.panResult.palaces.forEach(palace => {
+      if (palace.tianGan) {
+        const gan = palace.tianGan;
+        if (gan === '乙' || gan === '丙' || gan === '丁') {
+          // 将宫位名转换为规则中的格式（如"一宫坎"转为"坎一"）
+          let palaceName = '';
+          switch(palace.palaceName) {
+            case '一宫坎': palaceName = '坎一'; break;
+            case '二宫坤': palaceName = '坤二'; break;
+            case '三宫震': palaceName = '震三'; break;
+            case '四宫巽': palaceName = '巽四'; break;
+            case '五宫中': palaceName = '中五'; break;
+            case '六宫乾': palaceName = '乾六'; break;
+            case '七宫兑': palaceName = '兑七'; break;
+            case '八宫艮': palaceName = '艮八'; break;
+            case '九宫离': palaceName = '离九'; break;
+          }
+          
+          if (palaceName) {
+            const pos: SanqiPosition = { qi: gan, palace: palaceName };
+            sanqiPositions.push(pos);
+          }
+        }
+      }
+    });
+    
+    if (sanqiPositions.length === 0) {
+      return;
+    }
+    
+    // 根据三奇位置筛选对应的象意
+    this.sanqiRules.forEach(rule => {
+      if (!rule.sub_rules) return;
+      
+      // 确定规则类型：日奇、月奇、星奇
+      let qiType = '';
+      if (rule.id === 'riqi_yingyan') {
+        qiType = '乙'; // 日奇
+      } else if (rule.id === 'yueqi_yingyan') {
+        qiType = '丙'; // 月奇
+      } else if (rule.id === 'dingqi_yingyan') {
+        qiType = '丁'; // 星奇
+      }
+      
+      // 检查该类奇是否在当前盘面中
+      const qiPosition = sanqiPositions.find(p => p.qi === qiType);
+      if (!qiPosition) return;
+      
+      const subRule = rule.sub_rules.find(sr => sr.palace === qiPosition.palace);
+      if (subRule && subRule.affairSpecificMeanings) {
+        const meaning = this.getMeaningByAffairId(subRule.affairSpecificMeanings, affairId);
+        if (meaning) {
+          this.currentSanqiMeanings.push(subRule);
+        }
+      }
+    });
+  }
+
+  /**
+   * 根据subId获取三奇名称
+   */
+  private getSanqiName(subId: string): string {
+    if (subId.startsWith('riqi_')) {
+      return '🌞 日奇（乙）';
+    } else if (subId.startsWith('yueqi_')) {
+      return '🌙 月奇（丙）';
+    } else if (subId.startsWith('dingqi_')) {
+      return '⭐ 星奇（丁）';
+    }
+    return '三奇';
+  }
+
+  /**
+   * 根据事类ID获取象意文本
+   */
+  private getMeaningByAffairId(meanings: AffairSpecificMeanings, affairId: string): string | undefined {
+    switch(affairId) {
+      case 'find_person': return meanings.find_person;
+      case 'find_object': return meanings.find_object;
+      case 'travel': return meanings.travel;
+      case 'marriage': return meanings.marriage;
+      case 'job_interview': return meanings.job_interview;
+      case 'wealth': return meanings.wealth;
+      case 'exam': return meanings.exam;
+      case 'health': return meanings.health;
+      default: return undefined;
+    }
+  }
+
+  /**
+   * 检查是否有象意
+   */
+  private hasMeaning(sanqi: SanqiSubRule): boolean {
+    if (!sanqi.affairSpecificMeanings || !this.selectedAffair) {
+      return false;
+    }
+    const meaning = this.getMeaningByAffairId(sanqi.affairSpecificMeanings, this.selectedAffair);
+    return meaning !== undefined && meaning.length > 0;
+  }
+
+  /**
+   * 构建三奇象意内容
+   */
+  @Builder
+  buildSanqiMeaning(sanqi: SanqiSubRule) {
+    if (sanqi.affairSpecificMeanings && this.selectedAffair) {
+      Text(this.getMeaningByAffairId(sanqi.affairSpecificMeanings, this.selectedAffair) || '')
+        .fontSize(12)
+        .fontColor('#333333')
+        .lineHeight(20)
+        .width('100%')
+        .padding(10)
+        .backgroundColor('#FFF8E1')
+        .borderRadius(6)
+        .visibility(this.hasMeaning(sanqi) ? Visibility.Visible : Visibility.None)
+    }
+  }
+
+  /**
+   * 构建三奇提示
+   */
+  @Builder
+  buildSanqiTips(sanqi: SanqiSubRule) {
+    if (sanqi.tips && !this.hasMeaning(sanqi)) {
+      Row({ space: 6 }) {
+        Text('💡')
+          .fontSize(12)
+        Text(sanqi.tips)
+          .fontSize(11)
+          .fontColor('#666666')
+          .lineHeight(18)
+          .layoutWeight(1)
+      }
+      .width('100%')
     }
   }
 
@@ -421,6 +649,79 @@ struct DunjiaPalacePage {
           .padding(10)
           .backgroundColor('#E3F2FD')
           .borderRadius(6)
+        }
+        
+        // 三奇象意（根据事类动态展示）
+        if (this.currentSanqiMeanings.length > 0) {
+          Column({ space: 12 }) {
+            Text('✨ 三奇象意指引')
+              .fontSize(14)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#2C2416')
+            
+            ForEach(this.currentSanqiMeanings, (sanqi: SanqiSubRule) => {
+              Column({ space: 8 }) {
+                // 标题行：三奇名称 + 宫位方位
+                Row({ space: 8 }) {
+                  // 确定三奇类型
+                  Text(this.getSanqiName(sanqi.subId))
+                    .fontSize(14)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor('#FF6B35')
+                  
+                  Text(`${sanqi.palace}（${sanqi.direction}）`)
+                    .fontSize(12)
+                    .fontColor('#666666')
+                  
+                  Blank()
+                  
+                  Text(sanqi.fortune)
+                    .fontSize(12)
+                    .fontColor(sanqi.fortune === '大吉' ? '#4CAF50' : sanqi.fortune === '吉' ? '#8BC34A' : '#FFC107')
+                    .padding({ left: 8, right: 8, top: 2, bottom: 2 })
+                    .backgroundColor(sanqi.fortune === '大吉' ? '#E8F5E9' : sanqi.fortune === '吉' ? '#F1F8E9' : '#FFF9C4')
+                    .borderRadius(4)
+                }
+                .width('100%')
+                
+                // 应验征兆
+                if (sanqi.signs && sanqi.signs.length > 0) {
+                  Row({ space: 6 }) {
+                    Text('征兆：')
+                      .fontSize(11)
+                      .fontColor('#999999')
+                    Text(sanqi.signs.join('、'))
+                      .fontSize(11)
+                      .fontColor('#666666')
+                      .layoutWeight(1)
+                  }
+                  .width('100%')
+                }
+                
+                // 时间窗口
+                Row({ space: 6 }) {
+                  Text('⏱️')
+                    .fontSize(12)
+                  Text(`时间窗口：${sanqi.timeWindow}`)
+                    .fontSize(11)
+                    .fontColor('#4A90E2')
+                }
+                .width('100%')
+                
+                // 具体事类象意（从affairSpecificMeanings中提取）
+                this.buildSanqiMeaning(sanqi)
+                
+                // 总体提示（如果没有具体事类象意则显示tips）
+                this.buildSanqiTips(sanqi)
+              }
+              .width('100%')
+              .padding(12)
+              .backgroundColor('#FFFBF0')
+              .borderRadius(8)
+              .border({ width: 1, color: '#FFE082' })
+            })
+          }
+          .width('100%')
         }
       }
       .width('100%')
