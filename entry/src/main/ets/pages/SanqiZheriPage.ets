@@ -49,6 +49,14 @@ interface RulesJsonRule {
   types?: ZeriRiType[];
   yangTime?: WuyangTimeBlock;
   yinTime?: WuyangTimeBlock;
+  dailyGates?: DailyGateInfo[];
+}
+
+interface DailyGateInfo {
+  riZhi?: string;
+  tianmen?: string;
+  dihu?: string;
+  yunv?: string;
 }
 
 interface RulesJsonFile {
@@ -75,9 +83,13 @@ struct SanqiZheriPage {
   @State sanqiJsonSummary: string = ''
   @State zeriJsonSummary: string = ''
   @State shenshaJsonSummary: string = ''
+  @State tianmenInfo: string = ''
+  @State dihuInfo: string = ''
+  @State yunvInfo: string = ''
   private riTypeMapFromJson: Record<string, GanzhiTypeInfo> = {}
   private yangTimeInfoFromJson: WuyangTimeBlock | null = null
   private yinTimeInfoFromJson: WuyangTimeBlock | null = null
+  private dailyGatesMap: Record<string, DailyGateInfo> = {}
   private scroller: Scroller = new Scroller()
   private engine: DunjiaEngine = DunjiaEngine.getInstance()
 
@@ -216,6 +228,21 @@ struct SanqiZheriPage {
                 }
                 if (yinInfo) {
                   this.yinTimeInfoFromJson = yinInfo;
+                }
+              }
+              if (rule.id === 'tianmen_dihu_yunv') {
+                if (rule.dailyGates && Array.isArray(rule.dailyGates)) {
+                  const gatesMap: Record<string, DailyGateInfo> = {};
+                  for (let m = 0; m < rule.dailyGates.length; m++) {
+                    const gate: DailyGateInfo | undefined = rule.dailyGates[m];
+                    if (gate && gate.riZhi && typeof gate.riZhi === 'string') {
+                      gatesMap[gate.riZhi] = gate;
+                    }
+                  }
+                  if (Object.keys(gatesMap).length > 0) {
+                    this.dailyGatesMap = gatesMap;
+                    this.updateTianmenDihuYunv();
+                  }
                 }
               }
             }
@@ -431,6 +458,38 @@ struct SanqiZheriPage {
   }
   
   /**
+   * 更新天门地户玉女信息
+   */
+  private updateTianmenDihuYunv() {
+    if (!this.panResult || !this.panResult.dayInfo) {
+      this.tianmenInfo = '';
+      this.dihuInfo = '';
+      this.yunvInfo = '';
+      return;
+    }
+
+    const riZhi: string = this.panResult.dayInfo.day_zhi;
+    const gateInfo: DailyGateInfo | undefined = this.dailyGatesMap[riZhi];
+    if (!gateInfo) {
+      this.tianmenInfo = '';
+      this.dihuInfo = '';
+      this.yunvInfo = '';
+      return;
+    }
+
+    // 天门/地户/玉女可能是天干或地支，需要转换为宫位
+    if (gateInfo.tianmen && typeof gateInfo.tianmen === 'string') {
+      this.tianmenInfo = `天门：${gateInfo.tianmen}`;
+    }
+    if (gateInfo.dihu && typeof gateInfo.dihu === 'string') {
+      this.dihuInfo = `地户：${gateInfo.dihu}`;
+    }
+    if (gateInfo.yunv && typeof gateInfo.yunv === 'string') {
+      this.yunvInfo = `玉女：${gateInfo.yunv}`;
+    }
+  }
+  
+  /**
    * 获取择日建议
    */
   private getZheriSuggestion(): string {
@@ -541,6 +600,37 @@ struct SanqiZheriPage {
           }
         }
         .width('100%')
+        
+        // 天门地户玉女信息
+        if (this.tianmenInfo !== '' || this.dihuInfo !== '' || this.yunvInfo !== '') {
+          Row({ space: 16 }) {
+            if (this.tianmenInfo !== '') {
+              Text(this.tianmenInfo)
+                .fontSize(12)
+                .fontColor('#2C2416')
+                .padding({ left: 6, right: 6, top: 4, bottom: 4 })
+                .backgroundColor('#E8F5E9')
+                .borderRadius(4)
+            }
+            if (this.dihuInfo !== '') {
+              Text(this.dihuInfo)
+                .fontSize(12)
+                .fontColor('#2C2416')
+                .padding({ left: 6, right: 6, top: 4, bottom: 4 })
+                .backgroundColor('#FFF3E0')
+                .borderRadius(4)
+            }
+            if (this.yunvInfo !== '') {
+              Text(this.yunvInfo)
+                .fontSize(12)
+                .fontColor('#2C2416')
+                .padding({ left: 6, right: 6, top: 4, bottom: 4 })
+                .backgroundColor('#F3E5F5')
+                .borderRadius(4)
+            }
+          }
+          .width('100%')
+        }
         
         // 择日建议
         Column({ space: 8 }) {

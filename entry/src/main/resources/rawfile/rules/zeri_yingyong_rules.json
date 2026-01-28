@@ -114,6 +114,28 @@
         "suitable": ["画策密谋", "集结武备", "祷祀祈福"],
         "special": "逃亡者不可得（躲藏易被抓难）。"
       }
+    },
+    {
+      "id": "tianmen_dihu_yunv",
+      "name": "十二日天门地户玉女反闭立成",
+      "category": "玉女反闭局",
+      "ruleSource": "下卷·玉女反闭局",
+      "description": "每日按日支确定天门、地户、玉女对应的地支或天干方位，用于出入吉凶判断和伏匿藏形之术。",
+      "dailyGates": [
+        {"riZhi": "子", "tianmen": "丙", "dihu": "乙", "yunv": "庚"},
+        {"riZhi": "丑", "tianmen": "丙", "dihu": "乙", "yunv": "辛"},
+        {"riZhi": "寅", "tianmen": "丙", "dihu": "庚", "yunv": "乾"},
+        {"riZhi": "卯", "tianmen": "庚", "dihu": "丁", "yunv": "壬"},
+        {"riZhi": "辰", "tianmen": "庚", "dihu": "丁", "yunv": "癸"},
+        {"riZhi": "巳", "tianmen": "庚", "dihu": "壬", "yunv": "艮"},
+        {"riZhi": "午", "tianmen": "壬", "dihu": "辛", "yunv": "甲"},
+        {"riZhi": "未", "tianmen": "壬", "dihu": "辛", "yunv": "乙"},
+        {"riZhi": "申", "tianmen": "壬", "dihu": "甲", "yunv": "巽"},
+        {"riZhi": "酉", "tianmen": "甲", "dihu": "癸", "yunv": "丙"},
+        {"riZhi": "戌", "tianmen": "甲", "dihu": "癸", "yunv": "丁"},
+        {"riZhi": "亥", "tianmen": "甲", "dihu": "丙", "yunv": "坤"}
+      ],
+      "summary": "按日支查天门地户玉女所在方位，出行时出天门入地户乘玉女而行，可避凶趋吉、伏匿藏形。"
     }
   ],
   "meta": {
