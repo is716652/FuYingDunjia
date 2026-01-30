@@ -30,6 +30,13 @@ struct Index {
     });
   }
 
+  navigateToLegal(url: string) {
+    if (this.timer !== -1) {
+      clearInterval(this.timer);
+    }
+    router.pushUrl({ url: url });
+  }
+
   build() {
     Stack() {
       // 背景图片层
@@ -57,8 +64,9 @@ struct Index {
         .width('100%')
         .justifyContent(FlexAlign.Center)
 
-        // 底部文字链接
-        Column() {
+        // 底部区域
+        Column({ space: 20 }) {
+          // 进入按钮
           Text('点击进入')
             .fontSize(18)
             .fontColor('#ffffff')
@@ -67,6 +75,34 @@ struct Index {
             .onClick(() => {
               this.navigateToCalendar();
             })
+          
+          // 协议链接
+          Row({ space: 12 }) {
+            Text('用户协议')
+              .fontSize(14)
+              .fontColor('#ffffff')
+              .opacity(0.8)
+              .textShadow({ radius: 4, color: '#000000', offsetX: 1, offsetY: 1 })
+              .onClick(() => {
+                this.navigateToLegal('pages/Legal/UserAgreement');
+              })
+            
+            Text('|')
+              .fontSize(14)
+              .fontColor('#ffffff')
+              .opacity(0.6)
+              .textShadow({ radius: 3, color: '#000000', offsetX: 1, offsetY: 1 })
+            
+            Text('隐私政策')
+              .fontSize(14)
+              .fontColor('#ffffff')
+              .opacity(0.8)
+              .textShadow({ radius: 4, color: '#000000', offsetX: 1, offsetY: 1 })
+              .onClick(() => {
+                this.navigateToLegal('pages/Legal/PrivacyPolicy');
+              })
+          }
+          .justifyContent(FlexAlign.Center)
         }
         .width('100%')
         .padding({ bottom: 50 })

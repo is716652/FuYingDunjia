@@ -12,6 +12,8 @@
     "pages/BasicKnowledgePage",
     "pages/AttackDefensePage",
     "pages/ZhiFuZhiShiHistoryPage",
-    "pages/XiajuanStudyPage"
+    "pages/XiajuanStudyPage",
+    "pages/Legal/UserAgreement",
+    "pages/Legal/PrivacyPolicy"
   ]
 }

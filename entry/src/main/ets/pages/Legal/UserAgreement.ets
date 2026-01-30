@@ -28,7 +28,7 @@ struct UserAgreementPage {
       // 内容区（替换为正式《用户协议》全文）
       Scroll() {
         Column() {
-          Text('万物类象APP用户协议')
+          Text('遁甲符应经研习APP用户协议')
             .fontSize(18)
             .fontWeight(FontWeight.Bold)
             .fontColor('#4A4A4A')
@@ -38,7 +38,7 @@ struct UserAgreementPage {
             .fontWeight(FontWeight.Bold)
             .fontColor('#333333')
             .margin({ top: 8, bottom: 4 })
-          Text('万物类象APP由独立开发者（以下简称"我们"）提供。本协议是你（以下简称"用户"）与我们之间就使用本软件与服务达成的约定。你开始使用或继续使用，视为已阅读并同意本协议。当前版本无需账号即可浏览信息。')
+          Text('遁甲符应经研习APP由独立开发者（以下简称“我们”）提供。本协议是你（以下简称“用户”）与我们之间就使用本软件与服务达成的约定。你开始使用或继续使用，视为已阅读并同意本协议。当前版本无需账号即可浏览信息。')
             .fontSize(14)
             .fontColor('#333333')
             .lineHeight(22)
