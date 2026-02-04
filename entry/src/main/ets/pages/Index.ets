@@ -3,37 +3,13 @@ import { router } from '@kit.ArkUI';
 @Entry
 @Component
 struct Index {
-  @State countdown: number = 5;
-  private timer: number = -1;
-
-  aboutToAppear() {
-    this.timer = setInterval(() => {
-      this.countdown--;
-      if (this.countdown <= 0) {
-        this.navigateToCalendar();
-      }
-    }, 1000);
-  }
-
-  aboutToDisappear() {
-    if (this.timer !== -1) {
-      clearInterval(this.timer);
-    }
-  }
-
   navigateToCalendar() {
-    if (this.timer !== -1) {
-      clearInterval(this.timer);
-    }
     router.pushUrl({
       url: 'pages/Calendar'
     });
   }
 
   navigateToLegal(url: string) {
-    if (this.timer !== -1) {
-      clearInterval(this.timer);
-    }
     router.pushUrl({ url: url });
   }
 
@@ -54,11 +30,6 @@ struct Index {
             .fontWeight(FontWeight.Bold)
             .fontColor('#ffffff')
             .textShadow({ radius: 8, color: '#000000', offsetX: 2, offsetY: 2 })
-
-          Text(`${this.countdown}秒后自动进入`)
-            .fontSize(18)
-            .fontColor('#ffffff')
-            .textShadow({ radius: 4, color: '#000000', offsetX: 1, offsetY: 1 })
         }
         .layoutWeight(1)
         .width('100%')
@@ -105,7 +76,7 @@ struct Index {
           .justifyContent(FlexAlign.Center)
         }
         .width('100%')
-        .padding({ bottom: 50 })
+        .padding({ bottom: 80 })
         .alignItems(HorizontalAlign.Center)
       }
       .width('100%')
