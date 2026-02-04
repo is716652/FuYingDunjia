@@ -147,7 +147,7 @@ export class DunjiaEngine {
 
     return {
       dunType: ju.dunType,
-      juLabel: `${ju.dunType === DunType.YANG ? '阳遁' : '阴遁'}${ju.juNumber}局`,
+      juLabel: `${ju.dunType === DunType.YANG ? '阳遁' : '阴遁'}${['上元', '中元', '下元'][ju.yuanIndex]}${ju.juNumber}局`,
       input,
       zhiFuPalace: ju.zhiFuPalace,
       zhiShiPalace: ju.zhiShiPalace,
@@ -261,6 +261,9 @@ export class DunjiaEngine {
     // 判断阴遁还是阳遁（冬至后阳遁，夏至后阴遁）
     const dunType = this.getDunType(solarTermName);
     
+    // 根据地支仲孟季判断上中下元
+    const yuanIndex = this.getYuanIndex(dayInfo.day_gan, dayInfo.day_zhi);
+    
     // 根据节气与元数查局数表
     const juNumber = this.getJuNumber(solarTermName, dayInfo, dunType);
     
@@ -271,6 +274,7 @@ export class DunjiaEngine {
     return {
       dunType,
       juNumber,
+      yuanIndex,
       zhiFuPalace,
       zhiShiPalace
     } as JuInfo;
@@ -532,12 +536,19 @@ export class DunjiaEngine {
       // 地盘：固定布局（与九宫固定对应）
       // 根据《遁甲符应经·中卷》：冬至上元阳一局甲己之日甲子时，
       // 六甲在一宫、六乙在九宫、六丙在八宫、六丁在七宫、六戊在一宫、
-      // 六己在二宫、六庚在三宫、六辛在四宫、六壬在五宫、六癸在六宫
-      // 地盘排列：戊、己、庚、辛、壬、癸、丁、丙、乙
-      // 中宫（索引4）位置在壬
-      const diPanGans = ['戊', '己', '庚', '辛', '壬', '癸', '丁', '丙', '乙'];
-      for (let i = 0; i < 9 && i < diPanGans.length; i++) {
-        result[i] = diPanGans[i];
+      // 六己在二宫、六庚在三宫、六辛在四宫、六壬在六宫、六癸在七宫
+      // 地盘排列（跳过中宫）：一宫戊、二宫己、三宫庚、四宫辛、（五宫中宫留空）、六宫壬、七宫癸、八宫丁、九宫丙、九宫乙
+      const diPanGans = ['\u620a', '\u5df1', '\u5e9a', '\u8f9b', '', '\u58ec', '\u7678', '\u4e01', '\u4e19'];
+      // 注意：九宫同时有丙和乙，这里先放丙，后续处理乙
+      for (let i = 0; i < 9; i++) {
+        if (i === 4) {
+          result[i] = ''; // 中宫留空
+        } else if (i === 8) {
+          // 九宫特殊处理：同时有乙和丙，显示为"乙/\u4e19"
+          result[i] = '\u4e59';
+        } else {
+          result[i] = diPanGans[i];
+        }
       }
     }
     
@@ -931,6 +942,7 @@ export class DunjiaEngine {
 interface JuInfo {
   dunType: DunType;
   juNumber: number;
+  yuanIndex: number;     // 元数索引：0=上元，1=中元，2=下元
   zhiFuPalace: PalaceIndex;
   zhiShiPalace: PalaceIndex;
 }
