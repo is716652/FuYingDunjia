@@ -254,9 +254,9 @@ export class DunjiaEngine {
    * 注意：只返回阴阳遁类型和局数，值符值使位置需要时辰信息，在computePan中单独计算
    */
   private calculateJu(date: Date, dayInfo: CalendarDayInfo): JuInfo {
-    // 获取最近节气
-    const solarTerm = SolarTermCalculator.getInstance().getSolarTermByDate(date);
-    const solarTermName = solarTerm ? solarTerm.name : dayInfo.solar_term;
+    // 获取最近的前一个节气（用于判断阴阳遁和局数）
+    const solarTerm = SolarTermCalculator.getInstance().getNearestPrevSolarTerm(date);
+    const solarTermName = solarTerm ? solarTerm.name : (dayInfo.solar_term || '冬至'); // 默认冬至
     
     // 判断阴遁还是阳遁（冬至后阳遁，夏至后阴遁）
     const dunType = this.getDunType(solarTermName);

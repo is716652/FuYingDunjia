@@ -19,6 +19,34 @@ interface DunjiaSection {
 @Entry
 @Component
 struct DunjiaPanel {
+  // 接收从万年历传来的日期参数
+  @State receivedTimestamp: number = 0;
+  @State receivedDate: string = '';
+  @State receivedYearGan: string = '';
+  @State receivedYearZhi: string = '';
+  @State receivedMonthGan: string = '';
+  @State receivedMonthZhi: string = '';
+  @State receivedDayGan: string = '';
+  @State receivedDayZhi: string = '';
+  @State receivedShizhu: string = '';
+  @State receivedShichenIndex: number = -1;
+  
+  aboutToAppear() {
+    const params = router.getParams() as Record<string, Object>;
+    if (params) {
+      this.receivedTimestamp = params['timestamp'] as number || 0;
+      this.receivedDate = params['date'] as string || '';
+      this.receivedYearGan = params['year_gan'] as string || '';
+      this.receivedYearZhi = params['year_zhi'] as string || '';
+      this.receivedMonthGan = params['month_gan'] as string || '';
+      this.receivedMonthZhi = params['month_zhi'] as string || '';
+      this.receivedDayGan = params['day_gan'] as string || '';
+      this.receivedDayZhi = params['day_zhi'] as string || '';
+      this.receivedShizhu = params['shizhu'] as string || '';
+      this.receivedShichenIndex = params['shichen_index'] as number ?? -1;
+    }
+  }
+  
   @State sections: DunjiaSection[] = [
     {
       id: 'basic',
@@ -130,9 +158,19 @@ struct DunjiaPanel {
               accentColor: section.accentColor,
               onCardClick: () => {
                 if (section.route) {
-                  router.pushUrl({ url: section.route })
+                  // 如果是九宫排盘/三奇应验与择日/攻守方位且有传入日期，则将timestamp传递过去
+                  if ((section.id === 'palace' || section.id === 'application' || section.id === 'attack_defense') && this.receivedTimestamp > 0) {
+                    router.pushUrl({
+                      url: section.route,
+                      params: {
+                        timestamp: this.receivedTimestamp
+                      }
+                    });
+                  } else {
+                    router.pushUrl({ url: section.route });
+                  }
                 } else {
-                  console.info(`[遁甲研习台] 模块 ${section.id} 暂未实现`)
+                  console.info(`[遁甲研习台] 模块 ${section.id} 暂未实现`);
                 }
               }
             })

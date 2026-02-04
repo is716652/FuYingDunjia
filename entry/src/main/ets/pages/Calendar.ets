@@ -271,9 +271,25 @@ struct CalendarPage {
 
   navigateToDunjia() {
     if (!this.dayInfo) return;
+    
+    // 根据时辰索引计算起始小时（23:00算子时，其他依次推算）
+    const shichenStartHours = [23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
+    const startHour = shichenStartHours[this.selectedShichenIndex] || 0;
+    
+    // 构建完整的Date对象（包含选中的日期和时辰）
+    const targetDate = new Date(
+      this.selectedDate.getFullYear(),
+      this.selectedDate.getMonth(),
+      this.selectedDate.getDate(),
+      startHour,
+      0,
+      0
+    );
+    
     router.pushUrl({
       url: 'pages/DunjiaPanel',
       params: {
+        timestamp: targetDate.getTime(),
         date: this.dayInfo.date,
         year_gan: this.dayInfo.year_gan,
         year_zhi: this.dayInfo.year_zhi,

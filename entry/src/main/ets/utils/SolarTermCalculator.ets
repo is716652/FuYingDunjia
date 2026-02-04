@@ -136,6 +136,29 @@ export class SolarTermCalculator {
   }
 
   /**
+   * 获取指定日期最近的前一个节气（用于排盘）
+   * @param date 日期
+   * @returns 最近的前一个节气信息
+   */
+  getNearestPrevSolarTerm(date: Date): SolarTermInfo | null {
+    const year = date.getFullYear();
+    const terms = this.calculate24Terms(year);
+    const prevYearTerms = this.calculate24Terms(year - 1);
+    
+    // 合并前一年和当年的节气
+    const allTerms = [...prevYearTerms, ...terms];
+    
+    // 从后往前查找，找到第一个 <= date 的节气
+    for (let i = allTerms.length - 1; i >= 0; i--) {
+      if (allTerms[i].time <= date) {
+        return allTerms[i];
+      }
+    }
+    
+    return null;
+  }
+
+  /**
    * 计算单个节气的精确时刻
    * @param year 年份
    * @param index 节气索引（0=小寒，1=大寒...23=冬至）
