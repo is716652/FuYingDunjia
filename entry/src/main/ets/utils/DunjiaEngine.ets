@@ -295,18 +295,39 @@ export class DunjiaEngine {
     const juMap = dunType === DunType.YANG ? yangJuMap : yinJuMap;
     const juArray = juMap[solarTermName] || [1, 1, 1];
     
-    // 简化：根据日干判断上中下元（甲己日判断仲孟季）
-    const yuanIndex = this.getYuanIndex(dayInfo.day_gan);
+    // 根据《遁甲符应经》规则：按地支仲孟季判断上中下元
+    const yuanIndex = this.getYuanIndex(dayInfo.day_gan, dayInfo.day_zhi);
     return juArray[yuanIndex];
   }
 
   /**
    * 获取上中下元索引（0=上，1=中，2=下）
+   * 根据《遁甲符应经》规则：甲己日按地支仲孟季判断
+   * - 仲日（子午卯酉）→ 上元
+   * - 孟日（寅申巳亥）→ 中元
+   * - 季日（辰戌丑未）→ 下元
    */
-  private getYuanIndex(dayGan: string): number {
-    // 简化实现：根据日干粗略判断
-    const ganIndex = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'].indexOf(dayGan);
-    return ganIndex % 3;
+  private getYuanIndex(dayGan: string, dayZhi: string): number {
+    // 只有甲日或己日才是符头
+    if (dayGan !== '甲' && dayGan !== '己') {
+      // 非符头日：暂时返回上元（严格算法需往前找最近符头）
+      return 0;
+    }
+    
+    // 根据地支判断仲孟季
+    const zhongZhi = ['子', '午', '卯', '酉'];  // 仲 → 上元
+    const mengZhi = ['寅', '申', '巳', '亥'];   // 孟 → 中元
+    const jiZhi = ['辰', '戌', '丑', '未'];     // 季 → 下元
+    
+    if (zhongZhi.includes(dayZhi)) {
+      return 0;  // 上元
+    } else if (mengZhi.includes(dayZhi)) {
+      return 1;  // 中元
+    } else if (jiZhi.includes(dayZhi)) {
+      return 2;  // 下元
+    }
+    
+    return 0;  // 默认上元
   }
 
   /**
