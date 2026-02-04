@@ -96,7 +96,12 @@ struct SanqiZheriPage {
   aboutToAppear() {
     // 从路由参数获取时间信息
     const params = router.getParams() as Record<string, Object>;
-    if (params && params['dateTime']) {
+    if (params && params['timestamp']) {
+      // 接收时间戳并重建 Date 对象
+      const timestamp = params['timestamp'] as number;
+      this.currentDateTime = new Date(timestamp);
+    } else if (params && params['dateTime']) {
+      // 兼容旧版dateTime参数
       this.currentDateTime = params['dateTime'] as Date;
     }
     
