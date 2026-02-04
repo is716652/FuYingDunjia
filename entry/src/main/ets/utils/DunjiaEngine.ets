@@ -633,8 +633,8 @@ export class DunjiaEngine {
   private identifyGejuPatterns(ju: JuInfo, palaces: PalaceState[], dayInfo: CalendarDayInfo, hourGanZhi: HourGanZhi): GejuPattern[] {
     const patterns: GejuPattern[] = [];
     
-    // 1. 识别三奇得使格局
-    // 三奇（乙丙丁）临八门之一，且该门为值使门
+    // 1. 识别三奇得使格局（简化版：三奇临值使门）
+    // TODO 后续可结合当前甲旬（旬首）与六仪（戊己庚辛壬癸）关系，按“天盘三奇加临地盘六仪”精细化判断
     const sanQiGan = ['乙', '丙', '丁'];
     for (const gan of sanQiGan) {
       const ganPalaceIndex = palaces.findIndex(p => p.tianGan === gan);
@@ -649,11 +649,45 @@ export class DunjiaEngine {
       }
     }
     
-    // 2. 识别三奇合格局
-    // 三奇（乙丙丁）同在一宫
+    // 2. 识别三遁格局（天遁、地遁、人遁候选）
     for (let i = 0; i < 9; i++) {
       const palace = palaces[i];
-      // 检查一个宫位中是否同时有乙丙丁三个天干
+      // 天遁候选：生门 + 丙奇
+      if (palace.doorName === '生门' && palace.tianGan === '丙') {
+        patterns.push({
+          id: `san_dun_tian_dun_${i}`,
+          name: '三遁·天遁',
+          description: `生门遇丙奇于${palace.palaceName}，为天遁候选格，得日精之蔽`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+      // 地遁候选：开门 + 乙奇
+      if (palace.doorName === '开门' && palace.tianGan === '乙') {
+        patterns.push({
+          id: `san_dun_di_dun_${i}`,
+          name: '三遁·地遁',
+          description: `开门遇乙奇于${palace.palaceName}，为地遁候选格，得月精之蔽`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+      // 人遁候选：休门 + 丁奇
+      if (palace.doorName === '休门' && palace.tianGan === '丁') {
+        patterns.push({
+          id: `san_dun_ren_dun_${i}`,
+          name: '三遁·人遁',
+          description: `休门遇丁奇于${palace.palaceName}，为人遁候选格，得星精之蔽`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+    
+    // 3. 识别三奇合格局
+    // 三奇（乙丙丁）同在一宫（天盘+地盘合看）
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
       const allGanInPalace: string[] = [];
       if (palace.tianGan) allGanInPalace.push(palace.tianGan);
       if (palace.diGan) allGanInPalace.push(palace.diGan);
@@ -668,54 +702,7 @@ export class DunjiaEngine {
       }
     }
     
-    // 3. 识别天遁格局
-    // 丙奇临开、休、生三吉门，且临天上六甲
-    for (let i = 0; i < 9; i++) {
-      const palace = palaces[i];
-      if (palace.tianGan === '丙' && ['开门', '休门', '生门'].includes(palace.doorName || '') &&
-          (palace.diGan === '甲' || palace.diGan === '戊' || palace.diGan === '己')) {
-        patterns.push({
-          id: `tian_dun_${i}`,
-          name: `天遁`,
-          description: `丙奇临${palace.doorName}，得天时之利，宜争讼、陈诉、上书、献策等`,
-          palaceIndices: [i],
-          level: 'major'
-        });
-      }
-    }
-    
-    // 4. 识别地遁格局
-    // 乙奇临开门或杜门，且临地下六己
-    for (let i = 0; i < 9; i++) {
-      const palace = palaces[i];
-      if (palace.tianGan === '乙' && ['开门', '杜门'].includes(palace.doorName || '') &&
-          (palace.diGan === '己')) {
-        patterns.push({
-          id: `di_dun_${i}`,
-          name: `地遁`,
-          description: `乙奇临${palace.doorName}，得地利之便，宜埋葬、修造、建厂、藏兵等`,
-          palaceIndices: [i],
-          level: 'major'
-        });
-      }
-    }
-    
-    // 5. 识别人遁格局
-    // 丁奇临杜门
-    for (let i = 0; i < 9; i++) {
-      const palace = palaces[i];
-      if (palace.tianGan === '丁' && palace.doorName === '杜门') {
-        patterns.push({
-          id: `ren_dun_${i}`,
-          name: `人遁`,
-          description: `丁奇临杜门，得人和之助，宜潜藏、匿形、和谈、密谋等`,
-          palaceIndices: [i],
-          level: 'major'
-        });
-      }
-    }
-    
-    // 6. 识别伏吟格局
+    // 4. 识别伏吟格局
     // 天盘地盘相同
     for (let i = 0; i < 9; i++) {
       if (palaces[i].tianGan && palaces[i].diGan && palaces[i].tianGan === palaces[i].diGan) {
@@ -729,7 +716,7 @@ export class DunjiaEngine {
       }
     }
     
-    // 7. 识别反吹格局
+    // 5. 识别反吹格局
     // 甲子与甲午、甲戌与甲辰、甲申与甲寅相对
     const oppositePairs = [
       ['甲子', '甲午'],
@@ -825,36 +812,37 @@ export class DunjiaEngine {
     }
         
     // 11. 识别六仪击刑格局(中卷)
-    // 三刑之时:寅巳申三刑、丑戌未三刑、子卯相刑
-    const shiZhi = hourGanZhi.zhi;
-    const sanXing1 = ['寅', '巳', '申'];  // 寅巳申三刑
-    const sanXing2 = ['丑', '戌', '未'];  // 丑戌未三刑
-    const sanXing3 = ['子', '卯'];          // 子卯相刑
-        
-    if (sanXing1.includes(shiZhi)) {
-      patterns.push({
-        id: `liuyi_jixing_1`,
-        name: `六仪击刑`,
-        description: `寅巳申三刑之时,天地不顺,百事不宜`,
-        palaceIndices: [],
-        level: 'major'
-      });
-    } else if (sanXing2.includes(shiZhi)) {
-      patterns.push({
-        id: `liuyi_jixing_2`,
-        name: `六仪击刑`,
-        description: `丑戌未三刑之时,天地不顺,百事不宜`,
-        palaceIndices: [],
-        level: 'major'
-      });
-    } else if (sanXing3.includes(shiZhi)) {
-      patterns.push({
-        id: `liuyi_jixing_3`,
-        name: `六仪击刑`,
-        description: `子卯相刑之时,天地不顺,百事不宜`,
-        palaceIndices: [],
-        level: 'major'
-      });
+    // 简化版：只按「甲某日 + 直符加到相应刑位」给出强凶时段警告
+    const dayGan = dayInfo.day_gan;
+    const dayZhi = dayInfo.day_zhi;
+    // 仅在甲日系列时考虑六仪击刑
+    if (dayGan === '甲') {
+      const zhiIndex = hourGanZhi.zhiIndex; // 直符随时干运行，此处用时支索引近似其加临宫位
+      const zhiList = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+      const shiZhi = zhiList[zhiIndex];
+      let hit = false;
+      // 甲子日直符加卯（子刑卯、卯刑子）
+      if (dayZhi === '子' && shiZhi === '卯') hit = true;
+      // 甲戌日直符加未（丑戌未三刑）
+      if (dayZhi === '戌' && shiZhi === '未') hit = true;
+      // 甲申日直符加寅（寅申巳三刑）
+      if (dayZhi === '申' && shiZhi === '寅') hit = true;
+      // 甲辰日直符加辰（辰午酉未自刑）
+      if (dayZhi === '辰' && shiZhi === '辰') hit = true;
+      // 甲午日直符加午（午自刑）
+      if (dayZhi === '午' && shiZhi === '午') hit = true;
+      // 甲寅日直符加巳（对应寅巳刑，原文作“己”此处采工程校勘意见）
+      if (dayZhi === '寅' && shiZhi === '巳') hit = true;
+      
+      if (hit) {
+        patterns.push({
+          id: `liuyi_jixing`,
+          name: `六仪击刑`,
+          description: `当前为六仪击刑时段，依据《遁甲符应经》凡举大事多凶不可用`,
+          palaceIndices: [],
+          level: 'major'
+        });
+      }
     }
         
     // 12. 识别太白入荧惑格局（中卷）
@@ -888,16 +876,12 @@ export class DunjiaEngine {
     }
         
     // 14. 识别天网四张格局(中卷)
-    // 四季尾月(辰戌丑未月)戊己日
-    const sijiYue = ['辰', '戌', '丑', '未'];  // 辰戌丑未月
-    const monthZhi: string = dayInfo.month_zhi || '';  // 使用月支信息
-    const dayGan: string = dayInfo.day_gan;
-        
-    if (sijiYue.includes(monthZhi) && ['戊', '己'].includes(dayGan)) {
+    // 简化版：以“时干为癸”近似“时下得六癸之时”
+    if (hourGanZhi.gan === '癸') {
       patterns.push({
         id: `tianwang_sizhang`,
         name: `天网四张`,
-        description: `四季尾月戊己日,天罗地网,诸事不宜`,
+        description: `时干癸，近似《遁甲符应经》所述“天网四张，万物尽伤，此时不可举造百事”的强凶时段`,
         palaceIndices: [],
         level: 'major'
       });
