@@ -164,11 +164,14 @@ struct GejuKnowledgePage {
           id: 'liuyi_jixing',
           name: '六仪击刑',
           type: 'major_inauspicious',
-          description: '三刑之时，天地不顺',
+          description: '甲子、甲戌、甲申、甲辰、甲午、甲寅等日直符加到相应“相刑”地支时，为六仪击刑，凡举大事多凶不可用。',
           conditions: [
-            '寅巳申三刑（时支为寅/巳/申）',
-            '丑戌未三刑（时支为丑/戌/未）',
-            '子卯相刑（时支为子/卯）'
+            '甲子日直符加卯（子卯相刑）',
+            '甲戌日直符加未（丑戌未三刑）',
+            '甲申日直符加寅（寅巳申三刑）',
+            '甲辰日直符加辰（辰午酉未自刑）',
+            '甲午日直符加午（午自刑）',
+            '甲寅日直符加巳（工程简化采寅巳刑）'
           ],
           effect: '百事不宜，主反复、阻滞、刑伤',
           source: '中卷·六仪击刑条'
@@ -177,10 +180,10 @@ struct GejuKnowledgePage {
           id: 'tianwang_sizhang',
           name: '天网四张',
           type: 'major_inauspicious',
-          description: '四季尾月（辰戌丑未月）戊己日，天罗地网',
+          description: '“时下得六癸之时”为天网四张，万物尽伤，此时不可举造百事。',
           conditions: [
-            '月支为辰/戌/丑/未',
-            '日干为戊或己'
+            '原文：时下得六癸之时',
+            '工程实现：以时干为癸近似触发“天网四张”强凶警告'
           ],
           effect: '强凶时段，诸事不宜，主困顿、羁绊',
           source: '中卷·天网四张条'
@@ -202,8 +205,8 @@ struct GejuKnowledgePage {
           type: 'major_inauspicious',
           description: '三奇落入墓地，精华被掩',
           conditions: [
-            '乙奇在辰宫（木墓）',
-            '丙丁奇在戌宫（火墓）'
+            '乙奇在坤二（土墓，未位在坤）',
+            '丙丁奇在乾六（火墓，戌位在乾）'
           ],
           effect: '吉力大减，主谋事不遂、贵人难得',
           source: '中卷·三奇入墓条'

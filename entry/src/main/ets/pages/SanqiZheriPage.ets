@@ -422,6 +422,34 @@ struct SanqiZheriPage {
   }
     
   /**
+   * 检查是否触发六仪击刑
+   */
+  private hasLiuyiJixing(): boolean {
+    if (!this.panResult || !this.panResult.gejuPatterns) return false;
+    for (let i = 0; i < this.panResult.gejuPatterns.length; i++) {
+      const p = this.panResult.gejuPatterns[i];
+      if (p && p.id === 'liuyi_jixing') {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * 检查是否触发天网四张
+   */
+  private hasTianwangSizhang(): boolean {
+    if (!this.panResult || !this.panResult.gejuPatterns) return false;
+    for (let i = 0; i < this.panResult.gejuPatterns.length; i++) {
+      const p = this.panResult.gejuPatterns[i];
+      if (p && p.id === 'tianwang_sizhang') {
+        return true;
+      }
+    }
+    return false;
+  }
+    
+  /**
    * 检查五不可击宫位(天乙/九天/生门/九地/直使)
    */
   private getWuBuKeJiPalaces(): number[] {
@@ -634,6 +662,45 @@ struct SanqiZheriPage {
         
         // 择日建议
         Column({ space: 8 }) {
+          // 强凶时段提示（六仪击刑 / 天网四张）
+          if (this.hasLiuyiJixing() || this.hasTianwangSizhang()) {
+            Column({ space: 6 }) {
+              if (this.hasLiuyiJixing()) {
+                Row({ space: 6 }) {
+                  Text('⚠️ 六仪击刑')
+                    .fontSize(12)
+                    .fontColor('#F44336')
+                    .fontWeight(FontWeight.Bold)
+                  Text('当前为六仪击刑时段，凡举大事多凶，不宜发动关键性行动。')
+                    .fontSize(12)
+                    .fontColor('#F44336')
+                    .lineHeight(18)
+                    .layoutWeight(1)
+                }
+                .width('100%')
+              }
+              if (this.hasTianwangSizhang()) {
+                Row({ space: 6 }) {
+                  Text('⚠️ 天网四张')
+                    .fontSize(12)
+                    .fontColor('#F44336')
+                    .fontWeight(FontWeight.Bold)
+                  Text('当前为“天网四张”强凶时段，万物尽伤，不宜举造百事。')
+                    .fontSize(12)
+                    .fontColor('#F44336')
+                    .lineHeight(18)
+                    .layoutWeight(1)
+                }
+                .width('100%')
+              }
+            }
+            .width('100%')
+            .padding(10)
+            .backgroundColor('#FFEBEE')
+            .borderRadius(6)
+            .border({ width: 1, color: '#FFCDD2' })
+          }
+          
           Text(this.getZheriSuggestion())
             .fontSize(13)
             .fontColor(this.checkWuBuGuoShi() ? '#F44336' : '#2C2416')

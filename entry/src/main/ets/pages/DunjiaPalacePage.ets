@@ -218,23 +218,51 @@ struct DunjiaPalacePage {
   private async computePan() {
     try {
       this.loading = true
-      
+        
       const input: DunjiaInput = {
         dateTime: this.currentDateTime,
         longitude: 116.4074,  // 北京经度，实际应从配置或定位获取
         sceneType: DunjiaSceneType.GENERAL_STUDY  // 普通研习
       }
-      
+        
       // 调用排盘引擎（异步）
       this.panResult = await this.engine.computePan(input)
-      
+        
       this.loading = false
     } catch (err) {
       console.error('排盘计算失败', err)
       this.loading = false
     }
   }
-
+    
+  /**
+   * 检查是否触发六仪击刑
+   */
+  private hasLiuyiJixingPattern(): boolean {
+    if (!this.panResult || !this.panResult.gejuPatterns) return false;
+    for (let i = 0; i < this.panResult.gejuPatterns.length; i++) {
+      const p = this.panResult.gejuPatterns[i];
+      if (p && p.id === 'liuyi_jixing') {
+        return true;
+      }
+    }
+    return false;
+  }
+    
+  /**
+   * 检查是否触发天网四张
+   */
+  private hasTianwangSizhangPattern(): boolean {
+    if (!this.panResult || !this.panResult.gejuPatterns) return false;
+    for (let i = 0; i < this.panResult.gejuPatterns.length; i++) {
+      const p = this.panResult.gejuPatterns[i];
+      if (p && p.id === 'tianwang_sizhang') {
+        return true;
+      }
+    }
+    return false;
+  }
+   
   /**
    * 宫位点击回调
    */
@@ -853,7 +881,7 @@ struct DunjiaPalacePage {
                     }
                   })
                 })
-              
+                          
               Button('值符值使历史')
                 .fontSize(13)
                 .backgroundColor('#9B59B6')
@@ -871,7 +899,46 @@ struct DunjiaPalacePage {
             }
             .width('100%')
             .padding({ left: 16, right: 16 })
-
+                        
+            // 强凶时段提示（六仪击刑 / 天网四张）
+            if (this.hasLiuyiJixingPattern() || this.hasTianwangSizhangPattern()) {
+              Column({ space: 6 }) {
+                if (this.hasLiuyiJixingPattern()) {
+                  Row({ space: 6 }) {
+                    Text('⚠️ 六仪击刑')
+                      .fontSize(13)
+                      .fontColor('#F44336')
+                      .fontWeight(FontWeight.Bold)
+                    Text('当前为六仪击刑时段，凡举大事多凶，不宜发动关键性行动。')
+                      .fontSize(12)
+                      .fontColor('#F44336')
+                      .lineHeight(18)
+                      .layoutWeight(1)
+                  }
+                  .width('100%')
+                }
+                if (this.hasTianwangSizhangPattern()) {
+                  Row({ space: 6 }) {
+                    Text('⚠️ 天网四张')
+                      .fontSize(13)
+                      .fontColor('#F44336')
+                      .fontWeight(FontWeight.Bold)
+                    Text('当前为“天网四张”强凶时段，万物尽伤，不宜举造百事。')
+                      .fontSize(12)
+                      .fontColor('#F44336')
+                      .lineHeight(18)
+                      .layoutWeight(1)
+                  }
+                  .width('100%')
+                }
+              }
+              .width('100%')
+              .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+              .backgroundColor('#FFEBEE')
+              .borderRadius(8)
+              .border({ width: 1, color: '#FFCDD2' })
+            }
+             
             // 九宫格组件
             DunjiaNineGrid({
               panResult: this.panResult,

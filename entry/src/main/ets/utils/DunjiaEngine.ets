@@ -207,15 +207,33 @@ export class DunjiaEngine {
     const ganList = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
     
     // 1. 计算值符宫：根据时干偏移量
+    // 根据《遁甲符应经二》：以旬头所守宫星为直符，寻卧盘甲子戊即是
+    // 时干相对甲的偏移量
     const baseGanIndex = ganList.indexOf('甲'); // 0
-    const offset = (hourGanZhi.ganIndex - baseGanIndex + 10) % 10;
+    const ganOffset = hourGanZhi.ganIndex - baseGanIndex; // 甲=0, 乙=1, 丙=2...
     
-    // 阳遁顺飞，阴遁逆飞
-    let zhiFuPalace: number;
+    // 从局数宫开始飞布，根据阴阳遁顺逆飞，跳过中宫
+    const startPalace = ju.juNumber - 1; // 阳一局从0（一宫）起，阳二局从1（二宫）起
+    let zhiFuPalace = startPalace;
+    
     if (ju.dunType === DunType.YANG) {
-      zhiFuPalace = (ju.juNumber - 1 + offset) % 9;
+      // 阳遁顺飞，跳过中宫
+      for (let i = 0; i < ganOffset; i++) {
+        zhiFuPalace = (zhiFuPalace + 1) % 9;
+        // 跳过中宫（索引4）
+        if (zhiFuPalace === 4) {
+          zhiFuPalace = (zhiFuPalace + 1) % 9;
+        }
+      }
     } else {
-      zhiFuPalace = (ju.juNumber - 1 - offset + 90) % 9;
+      // 阴遁逆飞，跳过中宫
+      for (let i = 0; i < ganOffset; i++) {
+        zhiFuPalace = (zhiFuPalace - 1 + 9) % 9;
+        // 跳过中宫（索引4）
+        if (zhiFuPalace === 4) {
+          zhiFuPalace = (zhiFuPalace - 1 + 9) % 9;
+        }
+      }
     }
     
     // 2. 计算值使宫：根据时支确定（使用calculateZhiShiPalace方法）
@@ -233,6 +251,7 @@ export class DunjiaEngine {
 
   /**
    * 计算局数（根据节气与元数）
+   * 注意：只返回阴阳遁类型和局数，值符值使位置需要时辰信息，在computePan中单独计算
    */
   private calculateJu(date: Date, dayInfo: CalendarDayInfo): JuInfo {
     // 获取最近节气
@@ -245,8 +264,8 @@ export class DunjiaEngine {
     // 根据节气与元数查局数表
     const juNumber = this.getJuNumber(solarTermName, dayInfo, dunType);
     
-    // 计算值符值使位置（简化版：先返回固定位置）
-    const zhiFuPalace = 4; // 临时：中宫
+    // 值符值使位置临时设为中宫，将在computePan中通过calculateZhiFuZhiShi重新计算
+    const zhiFuPalace = 4; // 占位值，后续会被覆盖
     const zhiShiPalace = 4;
     
     return {
@@ -408,17 +427,31 @@ export class DunjiaEngine {
     // 阳遁：直使起于一宫（休门），顺行
     // 阴遁：直使起于九宫（景门），逆行
     
-    // 计算时支在当前旬中的偏移量（从甲开始计算）
-    // 假定旬首为甲子旬，则甲子时=0, 乙丑时=1, 丙寅时=2...
-    const offset = hourGanZhi.ganIndex;
+    // 计算时干相对甲的偏移量（用时干索引）
+    // 甲=0, 乙=1, 丙=2, 丁=3, 戊=4...
+    const ganOffset = hourGanZhi.ganIndex;
     
     let zhiShiPalace: number;
     if (dunType === DunType.YANG) {
-      // 阳遁：从一宫（0）开始顺飞
-      zhiShiPalace = (0 + offset) % 9;
+      // 阳遁：从一宫（0）开始顺飞，跳过中宫
+      zhiShiPalace = 0; // 从一宫起
+      for (let i = 0; i < ganOffset; i++) {
+        zhiShiPalace = (zhiShiPalace + 1) % 9;
+        // 跳过中宫（索引4）
+        if (zhiShiPalace === 4) {
+          zhiShiPalace = (zhiShiPalace + 1) % 9;
+        }
+      }
     } else {
-      // 阴遁：从九宫（8）开始逆飞
-      zhiShiPalace = (8 - offset + 90) % 9;
+      // 阴遁：从九宫（8）开始逆飞，跳过中宫
+      zhiShiPalace = 8; // 从九宫起
+      for (let i = 0; i < ganOffset; i++) {
+        zhiShiPalace = (zhiShiPalace - 1 + 9) % 9;
+        // 跳过中宫（索引4）
+        if (zhiShiPalace === 4) {
+          zhiShiPalace = (zhiShiPalace - 1 + 9) % 9;
+        }
+      }
     }
     
     return zhiShiPalace as PalaceIndex;
@@ -501,8 +534,9 @@ export class DunjiaEngine {
       // 六甲在一宫、六乙在九宫、六丙在八宫、六丁在七宫、六戊在一宫、
       // 六己在二宫、六庚在三宫、六辛在四宫、六壬在五宫、六癸在六宫
       // 地盘排列：戊、己、庚、辛、壬、癸、丁、丙、乙
+      // 中宫（索引4）位置在壬
       const diPanGans = ['戊', '己', '庚', '辛', '壬', '癸', '丁', '丙', '乙'];
-      for (let i = 0; i < 9; i++) {
+      for (let i = 0; i < 9 && i < diPanGans.length; i++) {
         result[i] = diPanGans[i];
       }
     }
@@ -784,16 +818,16 @@ export class DunjiaEngine {
     }
         
     // 10. 识别三奇入墓格局（中卷）
-    // 乙奇入辰宫（木墓），丙丁奇入戌宫（火墓）
-    const muMuGong = 3;  // 巽宫（辰位）
+    // 乙奇入坤宫（土墓，对应未位在坤），丙丁奇入戌宫（火墓）
+    const muMuGong = 1;  // 坤宫（二宫，木墓未位在坤）
     const huoMuGong = 5; // 乾宫（戌位）
         
-    // 乙奇入辰宫
+    // 乙奇入坤宫
     if (palaces[muMuGong].tianGan === '乙') {
       patterns.push({
         id: `sanqi_rumu_yi`,
         name: `三奇入墓`,
-        description: `乙奇入辰宫木墓，精华被掩，吉力大减`,
+        description: `乙奇入坤宫木墓（未位在坤），精华被掩，吉力大减`,
         palaceIndices: [muMuGong],
         level: 'major'
       });
