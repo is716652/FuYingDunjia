@@ -288,17 +288,18 @@ struct CalendarPage {
   }
 
   build() {
-    Column({ space: 0 }) {
-      // 顶部导航栏
-      NavigationBar({
-        title: '遁甲符应经',
-        rightActionText: '说明',
-        onRightAction: () => {
-          router.pushUrl({
-            url: 'pages/DocsPage'
-          });
-        }
-      });
+    Stack() {
+      Column({ space: 0 }) {
+        // 顶部导航栏
+        NavigationBar({
+          title: '遁甲符应经',
+          rightActionText: '说明',
+          onRightAction: () => {
+            router.pushUrl({
+              url: 'pages/DocsPage'
+            });
+          }
+        });
 
       Scroll() {
         Column({ space: 16 }) {
@@ -449,12 +450,35 @@ struct CalendarPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#FAFAFA')
-    .bindContentCover(this.showYearPicker, this.buildYearPicker(), {
-      modalTransition: ModalTransition.DEFAULT
-    })
-    .bindContentCover(this.showMonthPicker, this.buildMonthPicker(), {
-      modalTransition: ModalTransition.DEFAULT
-    })
+    
+    // 年份选择器過罩层
+    if (this.showYearPicker) {
+      Column()
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.5)')
+        .onClick(() => {
+          this.showYearPicker = false;
+        })
+      
+      this.buildYearPicker()
+    }
+    
+    // 月份选择器過罩层
+    if (this.showMonthPicker) {
+      Column()
+        .width('100%')
+        .height('100%')
+        .backgroundColor('rgba(0, 0, 0, 0.5)')
+        .onClick(() => {
+          this.showMonthPicker = false;
+        })
+      
+      this.buildMonthPicker()
+    }
+  }
+  .width('100%')
+  .height('100%')
   }
 
   @Builder buildYearPicker() {
@@ -506,6 +530,7 @@ struct CalendarPage {
     .padding(20)
     .backgroundColor('#FFFFFF')
     .borderRadius({ topLeft: 16, topRight: 16 })
+    .alignSelf(ItemAlign.End)
   }
 
   @Builder buildMonthPicker() {
@@ -555,5 +580,6 @@ struct CalendarPage {
     .padding(20)
     .backgroundColor('#FFFFFF')
     .borderRadius({ topLeft: 16, topRight: 16 })
+    .alignSelf(ItemAlign.End)
   }
 }

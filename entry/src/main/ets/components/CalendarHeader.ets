@@ -50,6 +50,10 @@ export struct CalendarHeader {
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
           .fontColor('#D4A574')
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .backgroundColor('#FFF9E6')
+          .borderRadius(6)
+          .border({ width: 1, color: '#FFE082' })
           .onClick(() => {
             if (this.onYearClick) {
               this.onYearClick();
@@ -59,6 +63,10 @@ export struct CalendarHeader {
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
           .fontColor('#D4A574')
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .backgroundColor('#FFF9E6')
+          .borderRadius(6)
+          .border({ width: 1, color: '#FFE082' })
           .onClick(() => {
             if (this.onMonthClick) {
               this.onMonthClick();

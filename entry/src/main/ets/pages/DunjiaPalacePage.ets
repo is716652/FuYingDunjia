@@ -262,6 +262,17 @@ struct DunjiaPalacePage {
     }
     return false;
   }
+  
+  /**
+   * 根据宫位索引获取宫位名称
+   */
+  private getPalaceName(palaceIndex: number): string {
+    const names = ['一宫坎', '二宫坤', '三宫震', '四宫巽', '五宫中', '六宫乾', '七宫兑', '八宫艮', '九宫离'];
+    if (palaceIndex >= 0 && palaceIndex < names.length) {
+      return names[palaceIndex];
+    }
+    return '未知';
+  }
    
   /**
    * 宫位点击回调
@@ -937,6 +948,43 @@ struct DunjiaPalacePage {
               .backgroundColor('#FFEBEE')
               .borderRadius(8)
               .border({ width: 1, color: '#FFCDD2' })
+            }
+             
+            // 值符值使验证信息（调试用）
+            if (this.panResult) {
+              Column({ space: 4 }) {
+                Text('🔍 值符值使验证')
+                  .fontSize(12)
+                  .fontWeight(FontWeight.Bold)
+                  .fontColor('#333333')
+                
+                Row({ space: 12 }) {
+                  Text(`局数：${this.panResult.juLabel}`)
+                    .fontSize(11)
+                    .fontColor('#666666')
+                  Text(`时辰：${this.panResult.hourGanZhi || ''}`)
+                    .fontSize(11)
+                    .fontColor('#666666')
+                }
+                .width('100%')
+                
+                Row({ space: 12 }) {
+                  Text(`值符宫：${this.getPalaceName(this.panResult.zhiFuPalace)}`)
+                    .fontSize(11)
+                    .fontColor('#E67E22')
+                    .fontWeight(FontWeight.Bold)
+                  Text(`值使宫：${this.getPalaceName(this.panResult.zhiShiPalace)}`)
+                    .fontSize(11)
+                    .fontColor('#3498DB')
+                    .fontWeight(FontWeight.Bold)
+                }
+                .width('100%')
+              }
+              .width('100%')
+              .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+              .backgroundColor('#FFF9E6')
+              .borderRadius(6)
+              .border({ width: 1, color: '#FFE082' })
             }
              
             // 九宫格组件
