@@ -28,12 +28,50 @@ export struct PalaceInfoCard {
    * 获取格局颜色
    */
   private getPatternColor(patternName: string): string {
+    // 凶格特殊颜色
+    if (this.isXiongGe(patternName)) {
+      return '#FF4444'; // 红色警示
+    }
+    
     if (patternName.includes('天遁') || patternName.includes('三奇得使')) {
       return '#FF6B35';
     } else if (patternName.includes('地遁') || patternName.includes('人遁')) {
       return '#D4A574';
     }
     return '#4A90E2';
+  }
+  
+  /**
+   * 判断是否为凶神格或凶格
+   */
+  private isXiongGe(patternName: string): boolean {
+    const xiongPatterns = ['青龙逃走', '白虎猖狂', '朱雀投江', '玄武吐雾', '门迫'];
+    return xiongPatterns.some(xiong => patternName.includes(xiong));
+  }
+  
+  /**
+   * 获取宫位背景色（凶神格特殊处理）
+   */
+  private getPalaceBackgroundColor(): string {
+    const hasXiong = this.config.patterns.some(pattern => this.isXiongGe(pattern));
+    if (hasXiong) {
+      return this.config.isSelected ? '#FFF0F0' : '#FFEEEE'; // 浅红色背景
+    }
+    return this.config.isSelected ? '#FFF8F0' : '#FFFFFF';
+  }
+  
+  /**
+   * 获取宫位边框颜色（凶神格特殊处理）
+   */
+  private getPalaceBorderColor(): string {
+    const hasXiong = this.config.patterns.some(pattern => this.isXiongGe(pattern));
+    if (hasXiong) {
+      return '#FF4444'; // 红色边框
+    }
+    
+    if (this.config.isZhiFu) return '#D4A574';
+    if (this.config.isZhiShi) return '#4A6A8B';
+    return '#E0E0E0';
   }
 
   /**
@@ -153,15 +191,23 @@ export struct PalaceInfoCard {
           .padding({ left: 5, right: 5, top: 2, bottom: 2 })
           .borderRadius({ topRight: 8, bottomLeft: 8 })
       }
+      
+      // 凶格警告图标
+      if (this.config.patterns.some(p => this.isXiongGe(p))) {
+        Text('⚠')
+          .fontSize(16)
+          .fontColor('#FF4444')
+          .position({ x: 4, y: 4 })
+      }
     }
     .width('32%')
     .height(115)
     .padding({ left: 8, right: 8, top: 8, bottom: 8 })
-    .backgroundColor(this.config.isSelected ? '#FFF8F0' : '#FFFFFF')
+    .backgroundColor(this.getPalaceBackgroundColor())
     .borderRadius(8)
     .border({
-      width: (this.config.isZhiFu || this.config.isZhiShi) ? 2 : 1,
-      color: this.config.isZhiFu ? '#D4A574' : (this.config.isZhiShi ? '#4A6A8B' : '#E0E0E0')
+      width: (this.config.isZhiFu || this.config.isZhiShi || this.config.patterns.some(p => this.isXiongGe(p))) ? 2 : 1,
+      color: this.getPalaceBorderColor()
     })
     .shadow({
       radius: (this.config.isZhiFu || this.config.isZhiShi) ? 10 : 4,

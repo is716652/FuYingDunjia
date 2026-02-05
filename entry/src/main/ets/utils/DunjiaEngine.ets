@@ -979,6 +979,58 @@ export class DunjiaEngine {
       });
     }
     
+    // 15. 识别四凶神格（青龙逃走、白虎猖狂、朱雀投江、玄武吐雾）
+    // 青龙逃走：天盘乙加地盘辛
+    // 白虎猖狂：天盘辛加地盘乙  
+    // 朱雀投江：天盘丁加地盘壬
+    // 玄武吐雾：天盘壬加地盘丁
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      const tianGan: string = palace.tianGan || '';
+      const diGan: string = palace.diGan || '';
+      
+      // 青龙逃走
+      if (tianGan === '乙' && diGan === '辛') {
+        patterns.push({
+          id: `qinglong_taozou_${i}`,
+          name: `青龙逃走`,
+          description: `天盘乙加地盘辛于${palace.palaceName}，青龙逃走，主失财、失物、文书不利`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+      // 白虎猖狂
+      else if (tianGan === '辛' && diGan === '乙') {
+        patterns.push({
+          id: `baihu_changkuang_${i}`,
+          name: `白虎猖狂`,
+          description: `天盘辛加地盘乙于${palace.palaceName}，白虎猖狂，主斗讼、官非、血光之灾`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+      // 朱雀投江
+      else if (tianGan === '丁' && diGan === '壬') {
+        patterns.push({
+          id: `zhuque_toujiang_${i}`,
+          name: `朱雀投江`,
+          description: `天盘丁加地盘壬于${palace.palaceName}，朱雀投江，主文书沉溺、口舌是非`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+      // 玄武吐雾
+      else if (tianGan === '壬' && diGan === '丁') {
+        patterns.push({
+          id: `xuanwu_tuwu_${i}`,
+          name: `玄武吐雾`,
+          description: `天盘壬加地盘丁于${palace.palaceName}，玄武吐雾，主盗贼、暧昧不明之事`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+    
     return patterns;
   }
 }
