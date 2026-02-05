@@ -91,7 +91,14 @@ export interface GejuPattern {
   name: string;  // 格局名称，如"三奇得使"、"天遁"
   description: string;  // 格局说明
   palaceIndices: number[];  // 涉及的宫位索引
-  level: 'minor' | 'major' | 'special';  // 次要、主要、特殊格局
+  level: 'minor' | 'major' | 'special' | 'moderate';  // 次要、主要、特殊、中等格局
+}
+
+// 旬首信息接口
+export interface XunShouInfo {
+  shouGan: string;  // 旬首天干（总是甲）
+  shouZhi: string;  // 旬首地支
+  xunIndex: number; // 旬索引（0-5）
 }
 
 // 核心引擎：负责从时间/地点计算出完整的遁甲盘与结构化分析
@@ -320,6 +327,44 @@ export class DunjiaEngine {
     // 根据《遁甲符应经》规则：按地支仲孟季判断上中下元
     const yuanIndex = this.getYuanIndex(dayInfo.day_gan, dayInfo.day_zhi);
     return juArray[yuanIndex];
+  }
+
+  /**
+   * 计算当前旬首（甲子、甲戌、甲申、甲午、甲辰、甲寅）
+   * @param dayGan 日干
+   * @param dayZhi 日支
+   * @returns 旬首信息
+   */
+  private getXunShou(dayGan: string, dayZhi: string): XunShouInfo {
+    const ganList = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+    const zhiList = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+    
+    const ganIndex = ganList.indexOf(dayGan);
+    const zhiIndex = zhiList.indexOf(dayZhi);
+    
+    if (ganIndex === -1 || zhiIndex === -1) {
+      return { shouGan: '甲', shouZhi: '子', xunIndex: 0 }; // 默认甲子旬
+    }
+    
+    // 计算旬首：甲子、甲戌、甲申、甲午、甲辰、甲寅
+    // 甲子旬：甲子-癸酉（0-9）
+    // 甲戌旬：甲戌-癸未（10-19）
+    // 甲申旬：甲申-癸巳（20-29）
+    // 甲午旬：甲午-癸卯（30-39）
+    // 甲辰旬：甲辰-癸丑（40-49）
+    // 甲寅旬：甲寅-癸亥（50-59）
+    
+    const position = (ganIndex * 12 + zhiIndex) % 60; // 在六十甲子中的位置
+    const xunIndex = Math.floor(position / 10); // 0-5
+    
+    const shouGanIndex = 0; // 旬首都是甲
+    const shouZhiIndex = (xunIndex * 2 + 11) % 12; // 子(0)、戌(10)、申(8)、午(6)、辰(4)、寅(2)
+    
+    return {
+      shouGan: ganList[shouGanIndex],
+      shouZhi: zhiList[shouZhiIndex],
+      xunIndex: xunIndex
+    };
   }
 
   /**
@@ -761,32 +806,23 @@ export class DunjiaEngine {
       }
     }
     
-    // 5. 识别反吹格局
-    // 甲子与甲午、甲戌与甲辰、甲申与甲寅相对
-    const oppositePairs = [
-      ['甲子', '甲午'],
-      ['甲戌', '甲辰'],
-      ['甲申', '甲寅']
-    ];
+    // 5. 识别反吟格局（中卷第237行定义）
+    // 子来加午为反吟，门符冲对皆是
+    // 即：天盘子加地盘午，或天盘午加地盘子
     for (let i = 0; i < 9; i++) {
-      for (let j = i + 1; j < 9; j++) {
-        const tianGan1 = palaces[i].tianGan || '';
-        const tianGan2 = palaces[j].tianGan || '';
-        const diGan1 = palaces[i].diGan || '';
-        const diGan2 = palaces[j].diGan || '';
-        const hasOpposite = oppositePairs.some(pair => 
-          (pair.includes(tianGan1) && pair.includes(diGan2)) || 
-          (pair.includes(diGan1) && pair.includes(tianGan2))
-        );
-        if (hasOpposite) {
-          patterns.push({
-            id: `fan_yin_${i}_${j}`,
-            name: `反吹`,
-            description: `${tianGan1}与${tianGan2}在宫位间反吹，主变动、反复，宜谨慎行事`,
-            palaceIndices: [i, j],
-            level: 'minor'
-          });
-        }
+      const palace = palaces[i];
+      const tianGan = palace.tianGan || '';
+      const diGan = palace.diGan || '';
+      
+      // 判断是否为子午相加
+      if ((tianGan === '子' && diGan === '午') || (tianGan === '午' && diGan === '子')) {
+        patterns.push({
+          id: `fan_yin_${i}`,
+          name: `反吟`,
+          description: `天盘${tianGan}加地盘${diGan}，为反吟格局，主变动反复，不利举兵动众，利散恤仓廪之事`,
+          palaceIndices: [i],
+          level: 'moderate'
+        });
       }
     }
         
