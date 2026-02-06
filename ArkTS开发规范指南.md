@@ -728,7 +728,423 @@ function updateItemsBatch(items: DataItem[]): void {
 }
 ```
 
-## 📋 检查清单
+## 🎯 实际开发案例与解决方案
+
+### 8. 枚举类型扩展与接口同步
+
+#### 场景：新增枚举值导致的编译错误
+```typescript
+// 原始接口定义
+export interface GejuPattern {
+  id: string;
+  name: string;
+  description: string;
+  palaceIndices: number[];
+  level: 'minor' | 'major' | 'special';  // 原始枚举值
+}
+
+// ❌ 新增'moderate'值时报错
+const pattern: GejuPattern = {
+  id: 'test',
+  name: '测试',
+  description: '描述',
+  palaceIndices: [0],
+  level: 'moderate'  // 编译错误：Type '"moderate"' is not assignable to type '"minor" | "major" | "special"'
+};
+```
+
+#### ✅ 正确解决方案
+```typescript
+// 更新接口定义，扩展枚举值
+export interface GejuPattern {
+  id: string;
+  name: string;
+  description: string;
+  palaceIndices: number[];
+  level: 'minor' | 'major' | 'special' | 'moderate';  // 扩展枚举值
+}
+
+// 或使用类型别名
+type GejuLevel = 'minor' | 'major' | 'special' | 'moderate';
+export interface GejuPattern {
+  id: string;
+  name: string;
+  description: string;
+  palaceIndices: number[];
+  level: GejuLevel;
+}
+```
+
+### 9. 对象属性访问的安全处理
+
+#### 场景：处理可选属性的null/undefined检查
+```typescript
+interface PalaceState {
+  palace: number;
+  palaceName: string;
+  doorName?: string;  // 可选属性
+  tianGan?: string;
+  diGan?: string;
+}
+
+// ❌ 直接访问可选属性可能导致运行时错误
+function processPalace(palace: PalaceState) {
+  const door = palace.doorName;  // 可能为undefined
+  if (door.includes('休')) {     // 运行时错误：Cannot read property 'includes' of undefined
+    // 处理逻辑
+  }
+}
+
+// ✅ 安全的属性访问方式
+function processPalaceSafe(palace: PalaceState) {
+  const door: string = palace.doorName || '';  // 提供默认值
+  if (door && door.includes('休')) {           // 先检查是否存在
+    // 处理逻辑
+  }
+}
+
+// ✅ 使用类型守卫
+function isValidDoor(door: string | undefined): door is string {
+  return door !== undefined && door !== null && door.length > 0;
+}
+
+function processPalaceGuard(palace: PalaceState) {
+  if (isValidDoor(palace.doorName)) {
+    const door = palace.doorName;  // TypeScript知道这里door是string类型
+    if (door.includes('休')) {
+      // 处理逻辑
+    }
+  }
+}
+```
+
+### 10. 数组操作的安全模式
+
+#### 场景：数组遍历和查找操作
+```typescript
+interface Pattern {
+  id: string;
+  name: string;
+  palaceIndices: number[];
+}
+
+// ❌ 不安全的数组访问
+function findPatternById(patterns: Pattern[], id: string): Pattern {
+  for (let i = 0; i < patterns.length; i++) {
+    if (patterns[i].id === id) {
+      return patterns[i];
+    }
+  }
+  return patterns[0];  // 可能返回undefined元素的风险
+}
+
+// ✅ 安全的数组操作
+function findPatternByIdSafe(patterns: Pattern[], id: string): Pattern | undefined {
+  for (let i = 0; i < patterns.length; i++) {
+    if (patterns[i].id === id) {
+      return patterns[i];
+    }
+  }
+  return undefined;  // 明确返回undefined
+}
+
+// ✅ 使用工具类方法
+class ArrayUtils {
+  static find<T>(items: T[], predicate: (item: T) => boolean): T | undefined {
+    for (let i = 0; i < items.length; i++) {
+      if (predicate(items[i])) {
+        return items[i];
+      }
+    }
+    return undefined;
+  }
+  
+  static filter<T>(items: T[], predicate: (item: T) => boolean): T[] {
+    const result: T[] = [];
+    for (let i = 0; i < items.length; i++) {
+      if (predicate(items[i])) {
+        result.push(items[i]);
+      }
+    }
+    return result;
+  }
+}
+
+// 使用示例
+const foundPattern = ArrayUtils.find(patterns, p => p.id === targetId);
+```
+
+### 11. 字符串处理的安全模式
+
+#### 场景：字符串包含检查和格式化
+```typescript
+// ❌ 不安全的字符串操作
+function containsPattern(patternName: string, target: string): boolean {
+  return patternName.includes(target);  // 如果patternName为undefined会报错
+}
+
+// ✅ 安全的字符串处理
+function containsPatternSafe(patternName: string, target: string): boolean {
+  if (!patternName || !target) {
+    return false;
+  }
+  return patternName.includes(target);
+}
+
+// ✅ 使用类型守卫
+function isValidString(str: string | undefined): str is string {
+  return typeof str === 'string' && str.length > 0;
+}
+
+function containsPatternGuard(patternName: string | undefined, target: string): boolean {
+  if (!isValidString(patternName) || !isValidString(target)) {
+    return false;
+  }
+  return patternName.includes(target);
+}
+```
+
+### 12. 条件渲染的最佳实践
+
+#### 场景：UI组件中的条件显示
+```typescript
+// ❌ 不清晰的条件判断
+@Builder
+buildConditionally() {
+  if (this.showWarning) {
+    Text('警告信息')
+  }
+  // 其他组件...
+}
+
+// ✅ 清晰的条件渲染
+@Builder
+buildWarningSection() {
+  if (this.showWarning) {
+    Column() {
+      Text('⚠️ 警告')
+        .fontColor('#FF4444')
+        .fontSize(16)
+      Text(this.warningMessage)
+        .fontColor('#666666')
+        .fontSize(14)
+    }
+    .padding(12)
+    .backgroundColor('#FFF0F0')
+    .border({ width: 1, color: '#FF4444' })
+  }
+}
+
+@Builder
+buildMainContent() {
+  Column() {
+    this.buildWarningSection()
+    // 主要内容...
+  }
+}
+```
+
+### 13. 状态管理的安全模式
+
+#### 场景：组件状态更新
+```typescript
+// ❌ 不安全的状态更新
+@Component
+struct MyComponent {
+  @State count: number = 0;
+  
+  increment() {
+    this.count++;  // 直接修改状态
+  }
+}
+
+// ✅ 安全的状态管理
+@Component
+struct MyComponent {
+  @State count: number = 0;
+  @State isLoading: boolean = false;
+  
+  private updateCount(newValue: number): void {
+    if (newValue >= 0) {  // 添加验证
+      this.count = newValue;
+    }
+  }
+  
+  async loadData(): Promise<void> {
+    this.isLoading = true;
+    try {
+      const data = await fetchData();
+      this.updateCount(data.count);
+    } catch (error) {
+      // 错误处理
+    } finally {
+      this.isLoading = false;
+    }
+  }
+}
+```
+
+### 14. 错误处理模式
+
+#### 场景：异步操作的错误处理
+```typescript
+// ❌ 不完善的错误处理
+async function loadUserData(userId: string) {
+  const response = await fetch(`/api/users/${userId}`);
+  const data = await response.json();
+  return data;
+}
+
+// ✅ 完善的错误处理
+interface ApiResult<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
+async function loadUserDataSafe(userId: string): Promise<ApiResult<User>> {
+  try {
+    if (!userId) {
+      return { success: false, error: '用户ID不能为空' };
+    }
+    
+    const response = await fetch(`/api/users/${userId}`);
+    
+    if (!response.ok) {
+      return { 
+        success: false, 
+        error: `HTTP ${response.status}: ${response.statusText}` 
+      };
+    }
+    
+    const data = await response.json();
+    return { success: true, data };
+    
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : '未知错误' 
+    };
+  }
+}
+
+// 使用示例
+const result = await loadUserDataSafe('123');
+if (result.success && result.data) {
+  // 处理成功情况
+  processUser(result.data);
+} else {
+  // 处理错误情况
+  showError(result.error || '加载失败');
+}
+```
+
+### 15. 性能优化实践
+
+#### 场景：避免重复计算和渲染
+```typescript
+@Component
+struct OptimizedComponent {
+  @State items: string[] = [];
+  @State searchTerm: string = '';
+  
+  // ❌ 每次渲染都重新计算
+  private get filteredItems(): string[] {
+    return this.items.filter(item => 
+      item.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+  
+  // ✅ 使用记忆化计算
+  private memoizedFilteredItems: string[] | null = null;
+  private lastSearchTerm: string = '';
+  
+  private getFilteredItems(): string[] {
+    if (this.memoizedFilteredItems === null || this.lastSearchTerm !== this.searchTerm) {
+      this.memoizedFilteredItems = this.items.filter(item => 
+        item.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+      this.lastSearchTerm = this.searchTerm;
+    }
+    return this.memoizedFilteredItems;
+  }
+  
+  // ✅ 使用防抖优化输入处理
+  private debounceTimer: number | null = null;
+  
+  private debouncedSearch(term: string): void {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    
+    this.debounceTimer = setTimeout(() => {
+      this.searchTerm = term;
+      this.memoizedFilteredItems = null;  // 清除缓存
+    }, 300);
+  }
+}
+```
+
+## 🚨 最新编译错误及解决方案
+
+### Error: Object literals cannot be used as type declarations
+**原因**：函数返回对象字面量而没有定义接口
+**解决**：预定义返回类型接口
+```typescript
+// ❌ 错误示例
+private getXunShou(dayGan: string, dayZhi: string) {
+  return { 
+    shouGan: '甲', 
+    shouZhi: '子', 
+    xunIndex: 0 
+  };
+}
+
+// ✅ 正确做法
+interface XunShouInfo {
+  shouGan: string;
+  shouZhi: string;
+  xunIndex: number;
+}
+
+private getXunShou(dayGan: string, dayZhi: string): XunShouInfo {
+  return { 
+    shouGan: '甲', 
+    shouZhi: '子', 
+    xunIndex: 0 
+  };
+}
+```
+
+### Error: Use explicit types instead of "any", "unknown"
+**原因**：变量或参数使用了any/unknown类型
+**解决**：使用明确的类型注解
+```typescript
+// ❌ 错误示例
+let data: any = {};
+let result: unknown;
+
+// ✅ 正确做法
+interface DataStructure {
+  name: string;
+  value: number;
+}
+
+let data: DataStructure = { name: '', value: 0 };
+let result: string | number | null = null;
+```
+
+### Error: The comma operator "," is supported only in "for" loops
+**原因**：在非循环语句中使用了逗号操作符
+**解决**：使用分号分隔多个语句
+```typescript
+// ❌ 错误示例
+let a = 1, b = 2;  // 在某些上下文中不被允许
+
+// ✅ 正确做法
+let a = 1;
+let b = 2;
+```
 
 在提交代码前，请确认：
 

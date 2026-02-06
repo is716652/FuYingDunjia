@@ -2,14 +2,21 @@
 
 ## 项目概述
 
-本项目为传统奇门遁甲应用，集成了万年历数据、真太阳时计算、节气精确时刺等功能，
-为用户提供专业的历法推演工具。
+本项目为传统术数应用基础框架，以万年历数据为核心，集成了真太阳时计算等基础功能，
+为各种术数应用（奇门遁甲、大六壬、四柱八字等）提供统一的数据支撑。
 
 **核心特性**：
 - 📅 162年万年历数据（1900-2061）
 - ⚡ 真太阳时精确计算（基于VSOP87算法）
-- 🌸 24节气精确时刺（牛顿迭代法求解）
-- 🎯 四柱八字自动排盘
+- 🌸 24节气精确时刻（牛顿迭代法求解）
+- 🎯 四柱八字基础数据
+- 🔧 模块化架构设计（便于各术数系统集成）
+
+**设计原则**：
+- ✅ 专注基础数据服务
+- ✅ 算法模块独立可移植
+- ✅ UI组件通用化设计
+- ✅ 便于各术数系统集成使用
 
 
 
@@ -18,18 +25,21 @@
 ## 项目结构
 
 ```
-FuYingDunjia/
+[项目根目录]/                              # 通用项目名称占位符
 ├── AppScope/                                # 应用级配置
 │   ├── resources/base/
-│   │   ├── element/string.json              # 应用名称：遁甲符应经
+│   │   ├── element/string.json              # 应用名称配置文件
 │   │   └── media/layered_image.json         # 应用图标配置
 │   └── app.json5
 ├── entry/
 │   └── src/main/
 │       ├── ets/
+│       │   ├── components/                  # 通用UI组件
+│       │   │   ├── NavigationBar.ets        # 通用导航栏
+│       │   │   └── InfoCard.ets             # 信息卡片
 │       │   ├── pages/
-│       │   │   ├── Index.ets                   # 引导页
-│       │   │   └── Calendar.ets                # 万年历主页面
+│       │   │   ├── Index.ets                # 引导页
+│       │   │   └── Calendar.ets             # 万年历主页面
 │       │   └── utils/
 │       │       ├── CalendarManager.ets      # 万年历数据管理
 │       │       ├── SolarTimeHelper.ets      # 真太阳时计算
@@ -139,6 +149,13 @@ function getFileIndex(year: number): string {
 | `holiday_name` | string | 节假日名称 | 节假日显示 |
 | `solar_term` | string | 节气名称 | 24节气显示 |
 | `festivals` | string | 传统节日 | 节日提示 |
+
+**新增扩展字段**：
+| 字段 | 类型 | 说明 | 应用 |
+|------|------|------|-------|
+| `shichen` | string | 时辰名称 | 时辰显示 |
+| `hour_gan` | string | 时天干 | 时柱计算 |
+| `selected_shichen` | string | 选中时辰 | UI交互状态 |
 
 ---
 
@@ -251,7 +268,7 @@ helper.getTimeDifferenceDescription(new Date());  // "快2分钟"
 - 完整代码实现
 - 应用示例与验证
 
-关于“**哪些术数需要使用真太阳时**”的系统说明，请参阅：
+关于"**哪些术数需要使用真太阳时**"的系统说明，请参阅：
 **[术数与真太阳时.md](./术数与真太阳时.md)**
 
 术数文档包括：
@@ -259,6 +276,64 @@ helper.getTimeDifferenceDescription(new Date());  // "快2分钟"
 - 奇门遁甲、紫微斗数、大六壬、金口诀等的具体说明
 - 四柱八字、六爻、河洛理数、二十八宿等的适用建议
 - 不同地区（东西部）时差对术数精度的影响
+
+### 2.6 应用集成说明
+
+本模块作为基础数据服务，可被各种术数系统集成使用：
+
+#### 集成方式示例
+
+1. **大六壬系统集成**
+```typescript
+// 获取基础时间数据
+const calendarData = CalendarManager.getInstance()
+  .getDayInfo(year, month, day);
+
+const solarTime = SolarTimeHelper.getInstance()
+  .getTrueSolarTime(selectedDate);
+
+const shichen = ShichenHelper.getShichenByTime(selectedDate);
+```
+
+2. **四柱八字系统集成**
+```typescript
+// 直接使用万年历JSON数据
+const dayInfo = CalendarManager.getInstance()
+  .getDayInfo(birthYear, birthMonth, birthDay);
+
+// 年柱、月柱、日柱直接来自JSON
+const yearPillar = `${dayInfo.year_gan}${dayInfo.year_zhi}`;
+const monthPillar = `${dayInfo.month_gan}${dayInfo.month_zhi}`;
+const dayPillar = `${dayInfo.day_gan}${dayInfo.day_zhi}`;
+
+// 时柱通过时辰工具计算
+const hourGan = ShichenHelper.calculateHourGan(
+  dayInfo.day_gan, 
+  selectedShichen
+);
+```
+
+3. **奇门遁甲系统集成**
+```typescript
+// 结合万年历数据进行排盘
+const input = {
+  dateTime: selectedDate,
+  calendarData: CalendarManager.getInstance().getDayInfo(/*...*/),
+  trueSolarTime: SolarTimeHelper.getInstance().getTrueSolarTime(selectedDate)
+};
+
+// 传递给具体的遁甲排盘引擎处理
+```
+
+#### 移植建议
+
+- ✅ **数据模块**：CalendarManager可直接复用
+- ✅ **时间模块**：SolarTimeHelper算法独立，便于移植
+- ✅ **时辰模块**：ShichenHelper通用性强
+- ⚠️ **UI组件**：NavigationBar、InfoCard等通用组件可根据需要选择性使用
+- 🚫 **业务逻辑**：具体术数算法应另行实现，避免耦合
+
+**核心价值**：提供标准化的时间数据基础，各术数系统在此基础上构建专业功能。
 
 ---
 
@@ -488,15 +563,15 @@ SolarTimeHelper.getTrueSolarTime()
 
 ## 5. 技术总结
 
-### 5.1 核心技术
+### 5.1 核心技术栈
 
-| 技术点 | 实现方案 | 精度 |
-|---------|----------|------|
-| 万年历数据 | JSON文件 + 内存缓存 | 100% |
-| 真太阳时 | VSOP87算法 | ±1分钟 |
-| 节气时刻 | 牛顿迭代法 | ±2分钟 |
-| 四柱八字 | 万年历JSON | 100% |
-| 时辰计算 | 五鼠遁法 | 100% |
+| 技术点 | 实现方案 | 精度 | 应用范围 |
+|---------|----------|------|----------|
+| 万年历数据 | JSON文件 + 内存缓存 | 100% | 所有术数系统 |
+| 真太阳时 | VSOP87算法 | ±1分钟 | 需要精确时间的术数 |
+| 节气时刻 | 牛顿迭代法 | ±2分钟 | 节气相关分析 |
+| 四柱八字 | 万年历JSON + 时辰工具 | 100% | 八字排盘系统 |
+| 时辰计算 | 五鼠遁法 | 100% | 时辰分析系统 |
 
 ### 5.2 性能优化
 
@@ -512,19 +587,45 @@ SolarTimeHelper.getTrueSolarTime()
    - 真太阳时：< 1ms
    - 节气计算：< 50ms（5次迭代）
 
-### 5.3 未来扩展
+### 5.3 移植性设计
 
-✅ 已实现：
-- 万年历基本功能
+**高可移植模块**：
+- ✅ CalendarManager（万年历数据管理）
+- ✅ SolarTimeHelper（真太阳时计算）
+- ✅ ShichenHelper（时辰工具）
+- ✅ SolarTermCalculator（节气计算）
+
+**通用UI组件**：
+- ✅ NavigationBar（导航栏）
+- ✅ InfoCard（信息卡片）
+
+**集成建议**：
+1. 直接复用数据管理模块
+2. 根据需要选择性使用UI组件
+3. 业务逻辑模块独立开发
+4. 保持接口一致性便于升级
+
+### 5.4 未来扩展方向
+
+✅ **已实现基础功能**：
+- 万年历数据服务
 - 真太阳时计算
 - 节气精确时刻
-- 四柱八字排盘
+- 时辰工具支持
 
-📑 计划中：
+📑 **可扩展应用场景**：
+- 四柱八字排盘系统
+- 大六壬起课系统
+- 奇门遁甲排盘系统
+- 六爻卜卦系统
+- 择日吉凶分析
+- 风水罗盘计算
+
+🔧 **技术扩展建议**：
 - GPS定位自动获取经度
 - 日出日落时间计算
 - 月相计算
-- 奇门遁甲排盘功能
+- 星座位置计算
 
 ---
 
