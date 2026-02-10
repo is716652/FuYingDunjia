@@ -941,7 +941,22 @@ export class DunjiaEngine {
       }
     }
     
-    // 13. 识别二遁直符合乎中宫（中卷第93、107行）
+    // 13. 识别击刑格局（刑格）
+    // 六庚加六己为刑格，车破马伤，中道而止
+    for (let i = 0; i < 9; i++) {
+      const palace = palaces[i];
+      if (palace.tianGan === '庚' && palace.diGan === '己') {
+        patterns.push({
+          id: `ji_xing_${i}`,
+          name: `击刑`,
+          description: `天盘庚加地盘己于${palace.palaceName}，车破马伤，中道而止，士卒逃亡`,
+          palaceIndices: [i],
+          level: 'major'
+        });
+      }
+    }
+    
+    // 14. 识别二遁直符合乎中宫（中卷第93、107行）
     // 注：现代遁甲算法普遍跳过中宫，但古法记载此为凶格需避忌
     // 此规则作为知识性提示，告知用户中宫为禁忌之地
     patterns.push({
