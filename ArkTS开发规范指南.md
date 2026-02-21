@@ -1085,6 +1085,1481 @@ struct OptimizedComponent {
 }
 ```
 
+### 16. 组件通信模式
+
+#### 场景：父子组件间的数据传递
+```typescript
+// 子组件
+@Component
+struct ChildComponent {
+  @Prop title: string;
+  @Link count: number;
+  @Provide('theme') theme: string = 'light';
+  
+  build() {
+    Column() {
+      Text(this.title)
+      Button('增加')
+        .onClick(() => {
+          this.count++;
+        })
+    }
+  }
+}
+
+// 父组件
+@Component
+struct ParentComponent {
+  @State childTitle: string = '子组件标题';
+  @State counter: number = 0;
+  @Consume('theme') appTheme: string;
+  
+  build() {
+    Column() {
+      Text(`计数器: ${this.counter}`)
+      ChildComponent({
+        title: this.childTitle,
+        count: this.$counter
+      })
+    }
+  }
+}
+```
+
+### 17. 网络请求封装模式
+
+#### 场景：统一的API请求处理
+```typescript
+interface ApiResponse<T> {
+  code: number;
+  message: string;
+  data: T;
+}
+
+class HttpClient {
+  private static baseUrl = 'https://api.example.com';
+  
+  static async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
+    try {
+      const url = new URL(endpoint, this.baseUrl);
+      if (params) {
+        Object.keys(params).forEach(key => {
+          url.searchParams.append(key, params[key]);
+        });
+      }
+      
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return data;
+      
+    } catch (error) {
+      throw new Error(`请求失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    }
+  }
+  
+  static async post<T>(endpoint: string, body: any): Promise<ApiResponse<T>> {
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return data;
+      
+    } catch (error) {
+      throw new Error(`请求失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    }
+  }
+}
+
+// 使用示例
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+async function loadUsers(): Promise<User[]> {
+  try {
+    const response = await HttpClient.get<User[]>('/users');
+    if (response.code === 200) {
+      return response.data;
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error) {
+    console.error('加载用户失败:', error);
+    return [];
+  }
+}
+```
+
+### 18. 本地存储管理
+
+#### 场景：应用数据持久化
+```typescript
+interface StorageKeys {
+  USER_PREFERENCES: 'user_preferences';
+  RECENT_SEARCHES: 'recent_searches';
+  APP_SETTINGS: 'app_settings';
+}
+
+class StorageManager {
+  private static readonly PREFIX = 'fu_ying_';
+  
+  static setItem<T>(key: keyof StorageKeys, value: T): void {
+    try {
+      const fullKey = `${this.PREFIX}${key}`;
+      const serializedValue = JSON.stringify(value);
+      Preferences.set(fullKey, serializedValue);
+    } catch (error) {
+      console.error('存储数据失败:', error);
+    }
+  }
+  
+  static getItem<T>(key: keyof StorageKeys, defaultValue: T): T {
+    try {
+      const fullKey = `${this.PREFIX}${key}`;
+      const storedValue = Preferences.get(fullKey, '');
+      
+      if (storedValue) {
+        return JSON.parse(storedValue);
+      }
+      return defaultValue;
+    } catch (error) {
+      console.error('读取数据失败:', error);
+      return defaultValue;
+    }
+  }
+  
+  static removeItem(key: keyof StorageKeys): void {
+    try {
+      const fullKey = `${this.PREFIX}${key}`;
+      Preferences.delete(fullKey);
+    } catch (error) {
+      console.error('删除数据失败:', error);
+    }
+  }
+  
+  static clearAll(): void {
+    try {
+      const keys = Object.values(StorageKeys);
+      keys.forEach(key => {
+        const fullKey = `${this.PREFIX}${key}`;
+        Preferences.delete(fullKey);
+      });
+    } catch (error) {
+      console.error('清空数据失败:', error);
+    }
+  }
+}
+
+// 使用示例
+interface UserPreferences {
+  theme: 'light' | 'dark';
+  fontSize: number;
+  notifications: boolean;
+}
+
+// 保存用户偏好
+const preferences: UserPreferences = {
+  theme: 'dark',
+  fontSize: 16,
+  notifications: true
+};
+StorageManager.setItem('USER_PREFERENCES', preferences);
+
+// 读取用户偏好
+const savedPreferences = StorageManager.getItem('USER_PREFERENCES', {
+  theme: 'light',
+  fontSize: 14,
+  notifications: false
+});
+```
+
+### 19. 事件总线模式
+
+#### 场景：跨组件通信
+```typescript
+interface EventBusEvent {
+  type: string;
+  data?: any;
+}
+
+type EventCallback = (event: EventBusEvent) => void;
+
+class EventBus {
+  private static listeners: Map<string, EventCallback[]> = new Map();
+  
+  static on(eventType: string, callback: EventCallback): void {
+    const callbacks = this.listeners.get(eventType);
+    if (callbacks) {
+      callbacks.push(callback);
+    } else {
+      this.listeners.set(eventType, [callback]);
+    }
+  }
+  
+  static off(eventType: string, callback: EventCallback): void {
+    const callbacks = this.listeners.get(eventType);
+    if (callbacks) {
+      const index = callbacks.indexOf(callback);
+      if (index > -1) {
+        callbacks.splice(index, 1);
+      }
+    }
+  }
+  
+  static emit(eventType: string, data?: any): void {
+    const event: EventBusEvent = { type: eventType, data };
+    const callbacks = this.listeners.get(eventType);
+    
+    if (callbacks) {
+      callbacks.forEach(callback => {
+        try {
+          callback(event);
+        } catch (error) {
+          console.error('事件处理出错:', error);
+        }
+      });
+    }
+  }
+  
+  static once(eventType: string, callback: EventCallback): void {
+    const onceCallback: EventCallback = (event) => {
+      callback(event);
+      this.off(eventType, onceCallback);
+    };
+    this.on(eventType, onceCallback);
+  }
+}
+
+// 使用示例
+// 组件A - 发送事件
+@Component
+struct ComponentA {
+  private sendData(): void {
+    EventBus.emit('data_updated', {
+      timestamp: Date.now(),
+      data: '新数据'
+    });
+  }
+  
+  build() {
+    Button('发送数据')
+      .onClick(() => this.sendData())
+  }
+}
+
+// 组件B - 接收事件
+@Component
+struct ComponentB {
+  @State receivedData: string = '';
+  
+  aboutToAppear() {
+    EventBus.on('data_updated', (event) => {
+      this.receivedData = event.data.data;
+    });
+  }
+  
+  aboutToDisappear() {
+    EventBus.off('data_updated');
+  }
+  
+  build() {
+    Text(`收到数据: ${this.receivedData}`)
+  }
+}
+```
+
+### 20. 国际化支持模式
+
+#### 场景：多语言支持
+```typescript
+interface LanguageResources {
+  zh: Record<string, string>;
+  en: Record<string, string>;
+}
+
+class I18n {
+  private static currentLanguage: 'zh' | 'en' = 'zh';
+  private static resources: LanguageResources = {
+    zh: {
+      'welcome': '欢迎使用遁甲研习台',
+      'settings': '设置',
+      'save': '保存',
+      'cancel': '取消'
+    },
+    en: {
+      'welcome': 'Welcome to Dunjia Study Platform',
+      'settings': 'Settings',
+      'save': 'Save',
+      'cancel': 'Cancel'
+    }
+  };
+  
+  static setLanguage(lang: 'zh' | 'en'): void {
+    this.currentLanguage = lang;
+    // 可以在这里触发语言切换事件
+    EventBus.emit('language_changed', { language: lang });
+  }
+  
+  static getCurrentLanguage(): 'zh' | 'en' {
+    return this.currentLanguage;
+  }
+  
+  static t(key: string, params?: Record<string, any>): string {
+    const translation = this.resources[this.currentLanguage][key] || key;
+    
+    if (params) {
+      return translation.replace(/\{([^}]+)\}/g, (match, paramKey) => {
+        return params[paramKey] || match;
+      });
+    }
+    
+    return translation;
+  }
+  
+  static addTranslations(lang: 'zh' | 'en', translations: Record<string, string>): void {
+    this.resources[lang] = { ...this.resources[lang], ...translations };
+  }
+}
+
+// 使用示例
+@Component
+struct SettingsPage {
+  @State currentLang: 'zh' | 'en' = I18n.getCurrentLanguage();
+  
+  private switchLanguage(): void {
+    const newLang = this.currentLang === 'zh' ? 'en' : 'zh';
+    I18n.setLanguage(newLang);
+    this.currentLang = newLang;
+  }
+  
+  build() {
+    Column() {
+      Text(I18n.t('settings'))
+        .fontSize(20)
+        .margin({ bottom: 20 })
+      
+      Button(`${I18n.t('switch_to')} ${this.currentLang === 'zh' ? 'English' : '中文'}`)
+        .onClick(() => this.switchLanguage())
+    }
+    .padding(20)
+  }
+}
+
+// 动态文本示例
+const welcomeMessage = I18n.t('welcome_user', { name: '张三' });
+// 如果翻译是 '欢迎 {name}'，结果就是 '欢迎 张三'
+```
+
+### 21. 主题系统实现
+
+#### 场景：应用主题切换
+```typescript
+interface ThemeColors {
+  primary: string;
+  secondary: string;
+  background: string;
+  text: string;
+  border: string;
+}
+
+interface Theme {
+  name: 'light' | 'dark';
+  colors: ThemeColors;
+}
+
+class ThemeManager {
+  private static themes: Record<'light' | 'dark', Theme> = {
+    light: {
+      name: 'light',
+      colors: {
+        primary: '#007AFF',
+        secondary: '#34C759',
+        background: '#FFFFFF',
+        text: '#000000',
+        border: '#E5E5EA'
+      }
+    },
+    dark: {
+      name: 'dark',
+      colors: {
+        primary: '#0A84FF',
+        secondary: '#32D74B',
+        background: '#000000',
+        text: '#FFFFFF',
+        border: '#3A3A3C'
+      }
+    }
+  };
+  
+  private static currentTheme: Theme = this.themes.light;
+  
+  static setTheme(themeName: 'light' | 'dark'): void {
+    this.currentTheme = this.themes[themeName];
+    StorageManager.setItem('APP_THEME', themeName);
+    EventBus.emit('theme_changed', { theme: this.currentTheme });
+  }
+  
+  static getCurrentTheme(): Theme {
+    return this.currentTheme;
+  }
+  
+  static getColor(colorName: keyof ThemeColors): string {
+    return this.currentTheme.colors[colorName];
+  }
+  
+  static initialize(): void {
+    const savedTheme = StorageManager.getItem('APP_THEME', 'light' as 'light' | 'dark');
+    this.setTheme(savedTheme);
+  }
+}
+
+// 使用示例
+@Component
+struct ThemedButton {
+  @Prop text: string;
+  @Prop onPress: () => void;
+  
+  build() {
+    Button(this.text)
+      .backgroundColor(ThemeManager.getColor('primary'))
+      .fontColor(ThemeManager.getColor('background'))
+      .borderRadius(8)
+      .padding({ left: 16, right: 16, top: 12, bottom: 12 })
+      .onClick(this.onPress)
+  }
+}
+
+@Component
+struct MainPage {
+  @State theme: Theme = ThemeManager.getCurrentTheme();
+  
+  aboutToAppear() {
+    ThemeManager.initialize();
+    EventBus.on('theme_changed', (event) => {
+      this.theme = event.data.theme;
+    });
+  }
+  
+  private toggleTheme(): void {
+    const newTheme = this.theme.name === 'light' ? 'dark' : 'light';
+    ThemeManager.setTheme(newTheme);
+  }
+  
+  build() {
+    Column() {
+      Text('遁甲研习台')
+        .fontColor(this.theme.colors.text)
+        .fontSize(24)
+        .margin({ bottom: 20 })
+      
+      ThemedButton({
+        text: '切换主题',
+        onPress: () => this.toggleTheme()
+      })
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor(this.theme.colors.background)
+  }
+}
+```
+
+### 22. 表单验证模式
+
+#### 场景：用户输入验证
+```typescript
+interface ValidationRule {
+  validator: (value: string) => boolean;
+  message: string;
+}
+
+interface FormField {
+  name: string;
+  value: string;
+  rules: ValidationRule[];
+  error?: string;
+}
+
+class FormValidator {
+  static validateField(field: FormField): boolean {
+    for (const rule of field.rules) {
+      if (!rule.validator(field.value)) {
+        field.error = rule.message;
+        return false;
+      }
+    }
+    field.error = undefined;
+    return true;
+  }
+  
+  static validateForm(fields: FormField[]): boolean {
+    let isValid = true;
+    for (const field of fields) {
+      if (!this.validateField(field)) {
+        isValid = false;
+      }
+    }
+    return isValid;
+  }
+  
+  static getErrorMessage(field: FormField): string | undefined {
+    return field.error;
+  }
+}
+
+// 预定义验证规则
+class ValidationRules {
+  static required(message: string = '此字段为必填项'): ValidationRule {
+    return {
+      validator: (value: string) => value.trim().length > 0,
+      message
+    };
+  }
+  
+  static minLength(length: number, message?: string): ValidationRule {
+    return {
+      validator: (value: string) => value.length >= length,
+      message: message || `长度不能少于${length}个字符`
+    };
+  }
+  
+  static maxLength(length: number, message?: string): ValidationRule {
+    return {
+      validator: (value: string) => value.length <= length,
+      message: message || `长度不能超过${length}个字符`
+    };
+  }
+  
+  static email(message: string = '请输入有效的邮箱地址'): ValidationRule {
+    return {
+      validator: (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      message
+    };
+  }
+  
+  static phone(message: string = '请输入有效的手机号码'): ValidationRule {
+    return {
+      validator: (value: string) => /^1[3-9]\d{9}$/.test(value),
+      message
+    };
+  }
+}
+
+// 使用示例
+@Component
+struct RegistrationForm {
+  @State username: FormField = {
+    name: 'username',
+    value: '',
+    rules: [
+      ValidationRules.required('用户名不能为空'),
+      ValidationRules.minLength(3, '用户名至少3个字符'),
+      ValidationRules.maxLength(20, '用户名不能超过20个字符')
+    ]
+  };
+  
+  @State email: FormField = {
+    name: 'email',
+    value: '',
+    rules: [
+      ValidationRules.required('邮箱不能为空'),
+      ValidationRules.email('请输入有效的邮箱地址')
+    ]
+  };
+  
+  @State phone: FormField = {
+    name: 'phone',
+    value: '',
+    rules: [
+      ValidationRules.required('手机号不能为空'),
+      ValidationRules.phone('请输入有效的手机号码')
+    ]
+  };
+  
+  private validateAndSubmit(): void {
+    const fields = [this.username, this.email, this.phone];
+    
+    if (FormValidator.validateForm(fields)) {
+      // 表单验证通过，提交数据
+      console.log('表单提交成功');
+    } else {
+      // 显示错误信息
+      console.log('表单验证失败');
+    }
+  }
+  
+  private updateField(field: FormField, value: string): void {
+    field.value = value;
+    FormValidator.validateField(field);
+  }
+  
+  @Builder
+  buildInputField(field: FormField, placeholder: string) {
+    Column({ space: 4 }) {
+      TextInput({
+        placeholder: placeholder,
+        text: field.value
+      })
+      .onChange((value: string) => this.updateField(field, value))
+      .border({ width: 1, color: field.error ? '#FF3B30' : '#CCCCCC' })
+      .borderRadius(4)
+      .padding(12)
+      
+      if (field.error) {
+        Text(field.error)
+          .fontColor('#FF3B30')
+          .fontSize(12)
+      }
+    }
+  }
+  
+  build() {
+    Column({ space: 16 }) {
+      this.buildInputField(this.username, '用户名')
+      this.buildInputField(this.email, '邮箱')
+      this.buildInputField(this.phone, '手机号')
+      
+      Button('注册')
+        .onClick(() => this.validateAndSubmit())
+        .backgroundColor('#007AFF')
+        .fontColor('#FFFFFF')
+        .borderRadius(8)
+        .padding({ left: 20, right: 20, top: 12, bottom: 12 })
+    }
+    .padding(20)
+  }
+}
+```
+
+### 23. 数据缓存策略
+
+#### 场景：提升应用性能
+```typescript
+interface CacheItem<T> {
+  data: T;
+  timestamp: number;
+  ttl: number; // Time to live in milliseconds
+}
+
+class CacheManager {
+  private static cache: Map<string, CacheItem<any>> = new Map();
+  
+  static set<T>(key: string, data: T, ttl: number = 300000): void { // 默认5分钟
+    const cacheItem: CacheItem<T> = {
+      data,
+      timestamp: Date.now(),
+      ttl
+    };
+    this.cache.set(key, cacheItem);
+  }
+  
+  static get<T>(key: string): T | null {
+    const cacheItem = this.cache.get(key);
+    
+    if (!cacheItem) {
+      return null;
+    }
+    
+    // 检查是否过期
+    if (Date.now() - cacheItem.timestamp > cacheItem.ttl) {
+      this.cache.delete(key);
+      return null;
+    }
+    
+    return cacheItem.data;
+  }
+  
+  static has(key: string): boolean {
+    return this.cache.has(key) && this.get(key) !== null;
+  }
+  
+  static remove(key: string): void {
+    this.cache.delete(key);
+  }
+  
+  static clear(): void {
+    this.cache.clear();
+  }
+  
+  static getSize(): number {
+    return this.cache.size;
+  }
+  
+  // 清理过期缓存
+  static cleanupExpired(): void {
+    const now = Date.now();
+    for (const [key, cacheItem] of this.cache.entries()) {
+      if (now - cacheItem.timestamp > cacheItem.ttl) {
+        this.cache.delete(key);
+      }
+    }
+  }
+  
+  // 定期清理过期缓存
+  static startCleanupInterval(interval: number = 60000): void { // 默认每分钟清理一次
+    setInterval(() => {
+      this.cleanupExpired();
+    }, interval);
+  }
+}
+
+// 使用示例
+class DataService {
+  private static CACHE_KEYS = {
+    USER_LIST: 'user_list',
+    SETTINGS: 'app_settings',
+    RECENT_DATA: 'recent_data'
+  };
+  
+  static async getUserList(forceRefresh: boolean = false): Promise<User[]> {
+    // 检查缓存
+    if (!forceRefresh) {
+      const cached = CacheManager.get<User[]>(this.CACHE_KEYS.USER_LIST);
+      if (cached) {
+        return cached;
+      }
+    }
+    
+    // 从网络获取
+    try {
+      const response = await HttpClient.get<User[]>('/users');
+      const users = response.data;
+      
+      // 缓存数据（10分钟）
+      CacheManager.set(this.CACHE_KEYS.USER_LIST, users, 600000);
+      
+      return users;
+    } catch (error) {
+      console.error('获取用户列表失败:', error);
+      return [];
+    }
+  }
+  
+  static async getSettings(): Promise<AppSettings> {
+    // 设置通常变化较少，可以缓存较长时间
+    const cached = CacheManager.get<AppSettings>(this.CACHE_KEYS.SETTINGS);
+    if (cached) {
+      return cached;
+    }
+    
+    try {
+      const response = await HttpClient.get<AppSettings>('/settings');
+      const settings = response.data;
+      
+      // 缓存24小时
+      CacheManager.set(this.CACHE_KEYS.SETTINGS, settings, 86400000);
+      
+      return settings;
+    } catch (error) {
+      console.error('获取设置失败:', error);
+      return getDefaultSettings();
+    }
+  }
+}
+
+// 应用启动时初始化缓存管理
+@Component
+struct App {
+  aboutToAppear() {
+    // 启动定期清理
+    CacheManager.startCleanupInterval();
+    
+    // 预加载一些常用数据
+    DataService.getSettings();
+  }
+  
+  build() {
+    // 应用根组件
+  }
+}
+```
+
+### 24. 日志管理系统
+
+#### 场景：应用日志记录和调试
+```typescript
+enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3
+}
+
+interface LogEntry {
+  level: LogLevel;
+  message: string;
+  timestamp: number;
+  stack?: string;
+}
+
+class Logger {
+  private static minLevel: LogLevel = LogLevel.INFO;
+  private static maxEntries: number = 1000;
+  private static logs: LogEntry[] = [];
+  private static isDevMode: boolean = false;
+  
+  static setLogLevel(level: LogLevel): void {
+    this.minLevel = level;
+  }
+  
+  static setDevMode(isDev: boolean): void {
+    this.isDevMode = isDev;
+  }
+  
+  static debug(message: string, ...optionalParams: any[]): void {
+    this.log(LogLevel.DEBUG, message, ...optionalParams);
+  }
+  
+  static info(message: string, ...optionalParams: any[]): void {
+    this.log(LogLevel.INFO, message, ...optionalParams);
+  }
+  
+  static warn(message: string, ...optionalParams: any[]): void {
+    this.log(LogLevel.WARN, message, ...optionalParams);
+  }
+  
+  static error(message: string, error?: Error, ...optionalParams: any[]): void {
+    const stack = error ? error.stack : undefined;
+    this.log(LogLevel.ERROR, message, stack, ...optionalParams);
+  }
+  
+  private static log(level: LogLevel, message: string, ...params: any[]): void {
+    // 检查日志级别
+    if (level < this.minLevel) {
+      return;
+    }
+    
+    const entry: LogEntry = {
+      level,
+      message: this.formatMessage(message, params),
+      timestamp: Date.now(),
+      stack: params.find(param => param instanceof Error)?.stack
+    };
+    
+    // 添加到日志数组
+    this.logs.push(entry);
+    
+    // 限制日志数量
+    if (this.logs.length > this.maxEntries) {
+      this.logs.shift();
+    }
+    
+    // 输出到控制台
+    this.outputToConsole(entry);
+    
+    // 在开发模式下可能输出到其他地方
+    if (this.isDevMode) {
+      this.outputToDevTools(entry);
+    }
+  }
+  
+  private static formatMessage(message: string, params: any[]): string {
+    if (params.length === 0) {
+      return message;
+    }
+    
+    try {
+      return `${message} ${params.map(param => 
+        typeof param === 'object' ? JSON.stringify(param) : String(param)
+      ).join(' ')}`;
+    } catch (error) {
+      return `${message} [参数序列化失败]`;
+    }
+  }
+  
+  private static outputToConsole(entry: LogEntry): void {
+    const timestamp = new Date(entry.timestamp).toISOString();
+    const levelStr = LogLevel[entry.level];
+    
+    const consoleMessage = `[${timestamp}] [${levelStr}] ${entry.message}`;
+    
+    switch (entry.level) {
+      case LogLevel.DEBUG:
+        console.debug(consoleMessage);
+        break;
+      case LogLevel.INFO:
+        console.info(consoleMessage);
+        break;
+      case LogLevel.WARN:
+        console.warn(consoleMessage);
+        break;
+      case LogLevel.ERROR:
+        console.error(consoleMessage);
+        if (entry.stack) {
+          console.error(entry.stack);
+        }
+        break;
+    }
+  }
+  
+  private static outputToDevTools(entry: LogEntry): void {
+    // 可以在这里添加发送到远程调试工具的逻辑
+    // 例如发送到WebSocket服务器或写入文件
+  }
+  
+  static getLogs(level?: LogLevel): LogEntry[] {
+    if (level !== undefined) {
+      return this.logs.filter(log => log.level >= level);
+    }
+    return [...this.logs];
+  }
+  
+  static clearLogs(): void {
+    this.logs = [];
+  }
+  
+  static exportLogs(): string {
+    return JSON.stringify(this.logs, null, 2);
+  }
+  
+  static async saveLogsToFile(): Promise<void> {
+    try {
+      const logs = this.exportLogs();
+      // 这里可以实现保存到文件的逻辑
+      // 例如使用文件系统API
+      console.log('日志已保存');
+    } catch (error) {
+      this.error('保存日志失败', error as Error);
+    }
+  }
+}
+
+// 使用示例
+@Component
+struct LoginPage {
+  @State username: string = '';
+  @State password: string = '';
+  
+  private async login(): Promise<void> {
+    Logger.info('开始登录流程', { username: this.username });
+    
+    try {
+      if (!this.username || !this.password) {
+        Logger.warn('用户名或密码为空');
+        return;
+      }
+      
+      const response = await HttpClient.post<LoginResponse>('/login', {
+        username: this.username,
+        password: this.password
+      });
+      
+      if (response.code === 200) {
+        Logger.info('登录成功', { userId: response.data.userId });
+        // 处理登录成功
+      } else {
+        Logger.warn('登录失败', { code: response.code, message: response.message });
+        // 处理登录失败
+      }
+      
+    } catch (error) {
+      Logger.error('登录过程发生错误', error as Error);
+      // 处理异常
+    }
+  }
+  
+  build() {
+    Column({ space: 16 }) {
+      TextInput({ placeholder: '用户名', text: this.username })
+        .onChange((value) => this.username = value)
+      
+      TextInput({ placeholder: '密码', text: this.password })
+        .onChange((value) => this.password = value)
+        .type(InputType.Password)
+      
+      Button('登录')
+        .onClick(() => this.login())
+    }
+    .padding(20)
+  }
+}
+
+// 应用初始化时配置日志
+@Component
+struct App {
+  aboutToAppear() {
+    // 根据环境设置日志级别
+    if (__DEV__) {
+      Logger.setLogLevel(LogLevel.DEBUG);
+      Logger.setDevMode(true);
+    } else {
+      Logger.setLogLevel(LogLevel.WARN);
+    }
+    
+    Logger.info('应用启动');
+  }
+  
+  build() {
+    // 应用根组件
+  }
+}
+```
+
+### 25. 权限管理模块
+
+#### 场景：应用权限申请和管理
+```typescript
+enum PermissionType {
+  CAMERA = 'ohos.permission.CAMERA',
+  LOCATION = 'ohos.permission.LOCATION',
+  STORAGE = 'ohos.permission.WRITE_USER_STORAGE',
+  MICROPHONE = 'ohos.permission.MICROPHONE'
+}
+
+interface PermissionStatus {
+  granted: boolean;
+  denied: boolean;
+  restricted: boolean;
+}
+
+class PermissionManager {
+  private static permissionCache: Map<PermissionType, PermissionStatus> = new Map();
+  
+  static async requestPermission(permission: PermissionType): Promise<boolean> {
+    try {
+      // 检查缓存
+      const cachedStatus = this.permissionCache.get(permission);
+      if (cachedStatus && cachedStatus.granted) {
+        return true;
+      }
+      
+      // 请求权限
+      const status = await requestPermissions([permission]);
+      const granted = status[0] === 0; // 0表示授权成功
+      
+      // 更新缓存
+      this.permissionCache.set(permission, {
+        granted,
+        denied: !granted,
+        restricted: false
+      });
+      
+      Logger.info('权限申请结果', { permission, granted });
+      return granted;
+      
+    } catch (error) {
+      Logger.error('权限申请失败', error as Error, { permission });
+      return false;
+    }
+  }
+  
+  static async checkPermission(permission: PermissionType): Promise<PermissionStatus> {
+    try {
+      // 检查缓存
+      const cachedStatus = this.permissionCache.get(permission);
+      if (cachedStatus) {
+        return cachedStatus;
+      }
+      
+      // 检查实际权限状态
+      const status = await checkPermissions([permission]);
+      const permissionStatus: PermissionStatus = {
+        granted: status[0] === 0,
+        denied: status[0] === -1,
+        restricted: status[0] === 1
+      };
+      
+      // 更新缓存
+      this.permissionCache.set(permission, permissionStatus);
+      
+      return permissionStatus;
+      
+    } catch (error) {
+      Logger.error('权限检查失败', error as Error, { permission });
+      return { granted: false, denied: true, restricted: false };
+    }
+  }
+  
+  static async requestMultiplePermissions(permissions: PermissionType[]): Promise<Record<PermissionType, boolean>> {
+    const results: Record<PermissionType, boolean> = {} as Record<PermissionType, boolean>;
+    
+    for (const permission of permissions) {
+      results[permission] = await this.requestPermission(permission);
+    }
+    
+    return results;
+  }
+  
+  static clearCache(): void {
+    this.permissionCache.clear();
+  }
+  
+  static getDeniedPermissions(): PermissionType[] {
+    const denied: PermissionType[] = [];
+    for (const [permission, status] of this.permissionCache.entries()) {
+      if (status.denied || !status.granted) {
+        denied.push(permission);
+      }
+    }
+    return denied;
+  }
+}
+
+// 权限申请组件
+@Component
+struct PermissionRequestDialog {
+  @Prop permission: PermissionType;
+  @Prop onResult: (granted: boolean) => void;
+  @State isRequesting: boolean = false;
+  
+  private async request(): Promise<void> {
+    this.isRequesting = true;
+    
+    try {
+      const granted = await PermissionManager.requestPermission(this.permission);
+      this.onResult(granted);
+    } catch (error) {
+      Logger.error('权限申请组件错误', error as Error);
+      this.onResult(false);
+    } finally {
+      this.isRequesting = false;
+    }
+  }
+  
+  build() {
+    AlertDialog({
+      title: '权限申请',
+      message: this.getPermissionDescription(this.permission),
+      autoCancel: false,
+      alignment: DialogAlignment.Center,
+      offset: { dx: 0, dy: -20 },
+      confirm: {
+        value: '允许',
+        enabled: !this.isRequesting,
+        action: () => this.request()
+      },
+      cancel: {
+        value: '拒绝',
+        enabled: !this.isRequesting,
+        action: () => this.onResult(false)
+      }
+    });
+  }
+  
+  private getPermissionDescription(permission: PermissionType): string {
+    switch (permission) {
+      case PermissionType.CAMERA:
+        return '应用需要访问相机权限来拍摄照片和视频';
+      case PermissionType.LOCATION:
+        return '应用需要位置权限来提供基于位置的服务';
+      case PermissionType.STORAGE:
+        return '应用需要存储权限来保存和读取文件';
+      case PermissionType.MICROPHONE:
+        return '应用需要麦克风权限来进行语音录制';
+      default:
+        return '应用需要相关权限才能正常工作';
+    }
+  }
+}
+
+// 使用示例
+@Component
+struct CameraPage {
+  @State hasCameraPermission: boolean = false;
+  @State showPermissionDialog: boolean = false;
+  
+  aboutToAppear() {
+    this.checkCameraPermission();
+  }
+  
+  private async checkCameraPermission(): Promise<void> {
+    const status = await PermissionManager.checkPermission(PermissionType.CAMERA);
+    this.hasCameraPermission = status.granted;
+    
+    if (!this.hasCameraPermission) {
+      this.showPermissionDialog = true;
+    }
+  }
+  
+  private handlePermissionResult(granted: boolean): void {
+    this.hasCameraPermission = granted;
+    this.showPermissionDialog = false;
+    
+    if (granted) {
+      Logger.info('相机权限已获得，可以正常使用相机功能');
+    } else {
+      Logger.warn('相机权限被拒绝，部分功能可能无法使用');
+      // 可以显示提示信息或引导用户到设置页面
+    }
+  }
+  
+  build() {
+    Column() {
+      if (this.hasCameraPermission) {
+        // 相机预览组件
+        CameraPreview()
+      } else {
+        // 权限被拒绝时的提示界面
+        Column({ space: 16 }) {
+          Image($r('app.media.camera_disabled'))
+            .width(100)
+            .height(100)
+          
+          Text('需要相机权限')
+            .fontSize(18)
+            .fontWeight(FontWeight.Bold)
+          
+          Text('请在设置中授予相机权限以使用拍照功能')
+            .fontSize(14)
+            .fontColor('#666666')
+            .textAlign(TextAlign.Center)
+        }
+        .padding(32)
+      }
+      
+      if (this.showPermissionDialog) {
+        PermissionRequestDialog({
+          permission: PermissionType.CAMERA,
+          onResult: (granted) => this.handlePermissionResult(granted)
+        })
+      }
+    }
+  }
+}
+```
+
+### 26. 应用生命周期管理
+
+#### 场景：应用前后台状态监听
+```typescript
+class AppStateManager {
+  private static instance: AppStateManager;
+  private static listeners: Array<(state: AppState) => void> = [];
+  private static currentState: AppState = AppState.BACKGROUND;
+  private static backgroundTimer: number | null = null;
+  private static readonly BACKGROUND_DELAY = 30000; // 30秒后认为进入后台
+  
+  static getInstance(): AppStateManager {
+    if (!this.instance) {
+      this.instance = new AppStateManager();
+    }
+    return this.instance;
+  }
+  
+  static addListener(listener: (state: AppState) => void): void {
+    this.listeners.push(listener);
+  }
+  
+  static removeListener(listener: (state: AppState) => void): void {
+    const index = this.listeners.indexOf(listener);
+    if (index > -1) {
+      this.listeners.splice(index, 1);
+    }
+  }
+  
+  static getCurrentState(): AppState {
+    return this.currentState;
+  }
+  
+  static notifyAppStateChange(newState: AppState): void {
+    if (this.currentState !== newState) {
+      this.currentState = newState;
+      this.listeners.forEach(listener => {
+        try {
+          listener(newState);
+        } catch (error) {
+          Logger.error('应用状态监听器执行错误', error as Error);
+        }
+      });
+      
+      Logger.info('应用状态变更', { from: AppState[this.currentState], to: AppState[newState] });
+    }
+  }
+  
+  static handleAppForeground(): void {
+    // 取消后台定时器
+    if (this.backgroundTimer) {
+      clearTimeout(this.backgroundTimer);
+      this.backgroundTimer = null;
+    }
+    
+    this.notifyAppStateChange(AppState.FOREGROUND);
+  }
+  
+  static handleAppBackground(): void {
+    // 设置延迟确认后台状态
+    this.backgroundTimer = setTimeout(() => {
+      this.notifyAppStateChange(AppState.BACKGROUND);
+    }, this.BACKGROUND_DELAY);
+  }
+  
+  static handleAppDestroy(): void {
+    this.notifyAppStateChange(AppState.DESTROYED);
+    // 清理资源
+    this.cleanup();
+  }
+  
+  private static cleanup(): void {
+    if (this.backgroundTimer) {
+      clearTimeout(this.backgroundTimer);
+      this.backgroundTimer = null;
+    }
+    this.listeners = [];
+  }
+}
+
+enum AppState {
+  FOREGROUND = 'foreground',
+  BACKGROUND = 'background',
+  DESTROYED = 'destroyed'
+}
+
+// 应用入口组件
+@Component
+struct MyApp {
+  private appStateMgr: AppStateManager = AppStateManager.getInstance();
+  
+  aboutToAppear() {
+    // 初始化应用状态管理
+    this.appStateMgr.addListener(this.handleAppStateChange.bind(this));
+    this.appStateMgr.handleAppForeground();
+    
+    Logger.info('应用启动');
+  }
+  
+  aboutToDisappear() {
+    this.appStateMgr.handleAppDestroy();
+    Logger.info('应用销毁');
+  }
+  
+  onPageShow() {
+    this.appStateMgr.handleAppForeground();
+  }
+  
+  onPageHide() {
+    this.appStateMgr.handleAppBackground();
+  }
+  
+  private handleAppStateChange(state: AppState): void {
+    switch (state) {
+      case AppState.FOREGROUND:
+        this.handleAppForeground();
+        break;
+      case AppState.BACKGROUND:
+        this.handleAppBackground();
+        break;
+      case AppState.DESTROYED:
+        this.handleAppDestroy();
+        break;
+    }
+  }
+  
+  private handleAppForeground(): void {
+    Logger.info('应用进入前台');
+    // 恢复数据同步
+    // 刷新UI
+    // 重新启动定时任务
+  }
+  
+  private handleAppBackground(): void {
+    Logger.info('应用进入后台');
+    // 暂停不必要的操作
+    // 保存当前状态
+    // 释放部分资源
+  }
+  
+  private handleAppDestroy(): void {
+    Logger.info('应用即将销毁');
+    // 保存重要数据
+    // 清理定时器
+    // 关闭连接
+  }
+  
+  build() {
+    Navigator()
+      .mode(NavigationMode.Stack)
+      .active(false)
+  }
+}
+
+// 需要响应应用状态的业务组件
+@Component
+struct DataSyncComponent {
+  @State isSyncing: boolean = false;
+  private syncTimer: number | null = null;
+  
+  aboutToAppear() {
+    AppStateManager.getInstance().addListener(this.handleAppStateChange.bind(this));
+  }
+  
+  aboutToDisappear() {
+    AppStateManager.getInstance().removeListener(this.handleAppStateChange.bind(this));
+    this.stopAutoSync();
+  }
+  
+  private handleAppStateChange(state: AppState): void {
+    switch (state) {
+      case AppState.FOREGROUND:
+        this.startAutoSync();
+        break;
+      case AppState.BACKGROUND:
+        this.stopAutoSync();
+        break;
+    }
+  }
+  
+  private startAutoSync(): void {
+    if (this.syncTimer) return;
+    
+    // 立即同步一次
+    this.performSync();
+    
+    // 设置定时同步
+    this.syncTimer = setInterval(() => {
+      this.performSync();
+    }, 300000); // 每5分钟同步一次
+  }
+  
+  private stopAutoSync(): void {
+    if (this.syncTimer) {
+      clearInterval(this.syncTimer);
+      this.syncTimer = null;
+    }
+  }
+  
+  private async performSync(): Promise<void> {
+    if (this.isSyncing) return;
+    
+    this.isSyncing = true;
+    try {
+      Logger.debug('开始数据同步');
+      // 执行同步逻辑
+      await DataService.syncData();
+      Logger.debug('数据同步完成');
+    } catch (error) {
+      Logger.error('数据同步失败', error as Error);
+    } finally {
+      this.isSyncing = false;
+    }
+  }
+  
+  build() {
+    // 组件UI
+  }
+}
+
 ## 🚨 最新编译错误及解决方案
 
 ### Error: Object literals cannot be used as type declarations
@@ -1146,6 +2621,175 @@ let a = 1;
 let b = 2;
 ```
 
+### Error: Classes cannot be used as objects
+**原因**：将类当作对象字面量使用
+**解决**：使用接口或类型定义
+```typescript
+// ❌ 错误示例
+const config = MyClass;  // 将类当作对象使用
+
+// ✅ 正确做法
+interface ConfigType {
+  setting1: string;
+  setting2: number;
+}
+
+const config: ConfigType = {
+  setting1: 'value1',
+  setting2: 123
+};
+```
+
+### Error: Function may throw exceptions
+**原因**：函数可能抛出异常但未处理
+**解决**：添加try-catch包装或明确声明
+```typescript
+// ❌ 错误示例
+function riskyOperation() {
+  throw new Error('Something went wrong');
+}
+
+// ✅ 正确做法
+function safeOperation(): string {
+  try {
+    // 可能出错的操作
+    return 'success';
+  } catch (error) {
+    console.error('Operation failed:', error);
+    return 'failed';
+  }
+}
+```
+
+### Error: Deprecated API usage
+**原因**：使用了已弃用的API
+**解决**：替换为新API或添加兼容性处理
+```typescript
+// ❌ 错误示例
+router.pushUrl('/page');  // 已弃用
+
+// ✅ 正确做法
+router.push({ url: '/page' });  // 新API
+```
+
+### Error: Missing return type annotation
+**原因**：函数缺少返回类型注解
+**解决**：为所有函数添加明确返回类型
+```typescript
+// ❌ 错误示例
+function calculate(a: number, b: number) {
+  return a + b;
+}
+
+// ✅ 正确做法
+function calculate(a: number, b: number): number {
+  return a + b;
+}
+```
+
+### Error: Implicit any type in parameter
+**原因**：函数参数未指定类型
+**解决**：为所有参数添加明确类型
+```typescript
+// ❌ 错误示例
+function processData(data) {  // 参数类型隐式为any
+  return data.toString();
+}
+
+// ✅ 正确做法
+interface ProcessData {
+  id: number;
+  name: string;
+}
+
+function processData(data: ProcessData): string {
+  return data.name;
+}
+```
+
+### Error: Property 'xxx' does not exist on type
+**原因**：访问了不存在的属性
+**解决**：检查接口定义或使用类型守卫
+```typescript
+// ❌ 错误示例
+interface User {
+  name: string;
+  age: number;
+}
+
+const user: User = { name: 'John', age: 30 };
+console.log(user.email);  // email属性不存在
+
+// ✅ 正确做法
+interface User {
+  name: string;
+  age: number;
+  email?: string;  // 可选属性
+}
+
+const user: User = { name: 'John', age: 30 };
+if (user.email) {
+  console.log(user.email);
+}
+```
+
+### Error: Type 'undefined' is not assignable to type
+**原因**：将undefined值赋给不允许为空的类型
+**解决**：使用联合类型或提供默认值
+```typescript
+// ❌ 错误示例
+interface Config {
+  apiUrl: string;
+}
+
+const config: Config = {
+  apiUrl: undefined  // 错误：undefined不能赋给string
+};
+
+// ✅ 正确做法
+interface Config {
+  apiUrl: string | undefined;  // 或者提供默认值
+}
+
+const config: Config = {
+  apiUrl: 'https://api.example.com'
+};
+```
+
+### Error: Cannot find namespace 'xxx'
+**原因**：使用了未导入的命名空间
+**解决**：正确导入所需模块
+```typescript
+// ❌ 错误示例
+console.log(http.RequestMethod.GET);  // http未导入
+
+// ✅ 正确做法
+import http from '@ohos.net.http';
+
+console.log(http.RequestMethod.GET);
+```
+
+### Error: JSX element type 'xxx' does not have any construct or call signatures
+**原因**：组件定义不符合ArkTS规范
+**解决**：确保组件正确装饰和导出
+```typescript
+// ❌ 错误示例
+@Component
+struct MyComponent {
+  // 缺少必要的装饰器或方法
+}
+
+// ✅ 正确做法
+@Component
+struct MyComponent {
+  @State count: number = 0;
+  
+  build() {
+    Text(`Count: ${this.count}`)
+  }
+}
+```
+
 在提交代码前，请确认：
 
 - [ ] 没有使用 `any` 或 `unknown` 类型
@@ -1161,6 +2805,43 @@ let b = 2;
 - [ ] 没有使用空值合并操作符 `??`
 - [ ] 所有函数都有明确的返回类型注解
 - [ ] 复杂类型的变量都有明确的类型注解
+- [ ] 没有将类当作对象字面量使用
+- [ ] 异步函数都有适当的错误处理
+- [ ] 没有使用已弃用的API
+- [ ] 所有参数都有明确的类型定义
+- [ ] 可选属性都有适当的null/undefined检查
+- [ ] 组件装饰器使用正确（@Component, @Entry等）
+- [ ] 状态管理使用正确的装饰器（@State, @Prop, @Link等）
+- [ ] 导入语句完整且正确
+- [ ] 没有未使用的导入
+- [ ] 所有异步操作都有await关键字
+- [ ] Promise链式调用使用正确的catch处理
+- [ ] 数组访问有边界检查
+- [ ] 字符串操作有null/undefined检查
+- [ ] 组件生命周期方法使用正确
+- [ ] 事件处理器有适当的错误处理
+- [ ] 网络请求有超时和错误处理
+- [ ] 本地存储操作有异常处理
+- [ ] UI组件有条件渲染时使用安全的方式
+- [ ] 样式属性使用正确的单位和格式
+- [ ] 响应式布局考虑不同屏幕尺寸
+- [ ] 图片资源使用正确的路径和格式
+- [ ] 动画效果有适当的性能优化
+- [ ] 内存泄漏风险点已检查（定时器、事件监听器等）
+- [ ] 第三方库使用有适当的版本锁定
+- [ ] 代码注释清晰且准确
+- [ ] 复杂逻辑有适当的单元测试覆盖
+- [ ] 性能敏感代码有benchmark测试
+- [ ] 安全相关代码经过安全审查
+- [ ] 国际化文本有适当的翻译
+- [ ] Accessibility功能已考虑
+- [ ] 应用权限申请有合理的说明
+- [ ] 用户隐私数据处理符合规范
+- [ ] 编译警告已处理或有明确理由保留
+- [ ] 代码格式符合项目规范
+- [ ] 命名约定保持一致
+- [ ] 文件组织结构清晰
+- [ ] 依赖关系没有循环引用
 
 ## 🚨 常见编译错误及解决方案
 
@@ -1200,32 +2881,81 @@ let b = 2;
 **原因**：函数缺少返回类型注解
 **解决**：为函数添加明确的返回类型
 
-## 📚 最佳实践总结
+## 🔍 代码审查清单
 
-### 1. 代码组织
-- 将相关接口组织在同一文件或专门接口文件中
-- 使用清晰的命名约定，接口使用 `I` 前缀或描述性名称
-- 类名使用 PascalCase，方法和变量使用 camelCase
+### 基础规范检查
+- [ ] 是否遵循所有ArkTS核心限制
+- [ ] 类型定义是否完整且准确
+- [ ] 接口设计是否合理且一致
+- [ ] 变量命名是否清晰有意义
+- [ ] 函数职责是否单一明确
 
-### 2. 类型设计
-- 优先使用组合而非继承
-- 使用联合类型限制值的范围
-- 为可选属性提供明确的默认值
+### 安全性检查
+- [ ] 输入验证是否充分
+- [ ] 错误处理是否完善
+- [ ] 敏感数据处理是否安全
+- [ ] 权限申请是否必要且合理
+- [ ] 网络请求是否有适当的安全措施
 
-### 3. 错误处理
-- 使用明确的错误类型而非字符串错误
-- 提供详细的错误信息和错误代码
-- 在关键操作点添加适当的错误检查
+### 性能检查
+- [ ] 是否有不必要的重复计算
+- [ ] 数组和对象操作是否高效
+- [ ] 是否合理使用缓存机制
+- [ ] 内存泄漏风险点是否已处理
+- [ ] UI渲染是否流畅无卡顿
 
-### 4. 性能考虑
-- 避免在循环中创建不必要的对象
-- 使用缓存机制存储重复计算结果
-- 批量操作优于多次单独操作
+### 可维护性检查
+- [ ] 代码结构是否清晰
+- [ ] 注释是否准确且必要
+- [ ] 复杂逻辑是否有足够文档
+- [ ] 组件职责是否分离良好
+- [ ] 依赖关系是否合理
 
-### 5. 可维护性
-- 保持函数和类的单一职责
-- 添加适当的注释说明复杂逻辑
-- 使用有意义的变量和方法名
+### 测试覆盖检查
+- [ ] 核心功能是否有单元测试
+- [ ] 边界条件是否充分测试
+- [ ] 异常情况是否有测试覆盖
+- [ ] UI交互是否有自动化测试
+- [ ] 性能关键路径是否有基准测试
+
+## 📊 开发效率提升建议
+
+### 1. 开发环境优化
+- 使用VS Code配合HarmonyOS插件
+- 配置代码片段和快捷键
+- 设置实时编译和热重载
+- 建立统一的代码模板
+
+### 2. 团队协作规范
+- 建立Git提交规范
+- 制定分支管理策略
+- 定期代码审查机制
+- 知识分享和文档维护
+
+### 3. 持续集成建议
+- 自动化编译和测试
+- 代码质量检查集成
+- 性能监控和报警
+- 版本发布流程标准化
+
+## 🎯 学习资源推荐
+
+### 官方文档
+- [HarmonyOS开发者官网](https://developer.harmonyos.com/)
+- [ArkTS语言参考](https://developer.harmonyos.com/docs/docs/doc-references/arkts-intro-0000001280801036)
+- [UI开发指南](https://developer.harmonyos.com/docs/docs/doc-guides/ui-development-intro-0000001158361223)
+
+### 社区资源
+- HarmonyOS开发者论坛
+- GitHub开源项目参考
+- 技术博客和教程
+- 在线课程和培训
+
+### 实践建议
+- 从小功能模块开始练习
+- 参考官方示例项目
+- 积极参与社区讨论
+- 定期总结经验和教训
 
 ## 🎯 迁移指南
 
