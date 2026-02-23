@@ -1,0 +1,347 @@
+{
+  "volume": "景祐遁甲符应经二",
+  "title": "十二神吉凶口诀",
+  "description": "十二神是奇门遁甲中判断方位吉凶的重要工具，与排盘、步罡等技法配合使用",
+  "mnemonic": {
+    "rightColumn": "五符最利天曹平，地府忧慎人马惊，风伯雷公鼓角位，雨师凿将奏天英，风云失路唐符庆，国印丹书紫诏荣",
+    "leftColumn": "天关封把地轴忌，天贼须防后向兵"
+  },
+  "gods": [
+    {
+      "id": "wufu",
+      "name": "五符",
+      "category": "吉神",
+      "fortuneLevel": 5,
+      "fortune": "大吉",
+      "originalText": "五符最利",
+      "meaning": "十二神中最吉利的神，代表福气、好运、成功",
+      "symbol": "福禄寿喜，万事亨通",
+      "suitable": ["出行", "求官", "求财", "婚嫁", "开业", "动土"],
+      "taboo": [],
+      "application": {
+        "general": "遇之可主动行动，诸事皆宜",
+        "travel": "出行大吉，一路顺遂",
+        "career": "求官必得，升迁有望",
+        "wealth": "求财有利，财源广进",
+        "marriage": "婚嫁吉利，姻缘美满"
+      }
+    },
+    {
+      "id": "tiancao",
+      "name": "天曹",
+      "category": "平神",
+      "fortuneLevel": 3,
+      "fortune": "平",
+      "originalText": "天曹平",
+      "meaning": "性质中性偏平和，代表官府、文书、秩序",
+      "symbol": "文书往来，官府公事",
+      "suitable": ["办理公务", "文书往来", "处理官方事务"],
+      "taboo": [],
+      "application": {
+        "general": "无大凶，适合办理公务、文书往来",
+        "travel": "平安出行，无大碍",
+        "career": "公务顺利，升迁需等待",
+        "wealth": "平稳理财，不宜冒险",
+        "marriage": "姻缘平淡，需耐心"
+      }
+    },
+    {
+      "id": "difu",
+      "name": "地府",
+      "category": "凶神",
+      "fortuneLevel": 2,
+      "fortune": "凶",
+      "originalText": "地府忧慎人马惊",
+      "meaning": "主忧患、阴气、地下之事，出行或动土时需格外谨慎",
+      "symbol": "阴气重，忧患多",
+      "suitable": ["祭祀先人", "处理阴宅事务"],
+      "taboo": ["出行", "动土", "远行", "婚嫁"],
+      "application": {
+        "general": "需谨慎行事，避免动土或出行",
+        "travel": "出行易使人马惊慌，不宜远行",
+        "career": "事业有阻，小人暗害",
+        "wealth": "财运不佳，防破财",
+        "marriage": "姻缘不顺，多忧虑"
+      },
+      "warning": "人马惊：预示出行可能遇到惊吓、马匹受惊或交通不顺"
+    },
+    {
+      "id": "fengbo",
+      "name": "风伯",
+      "category": "中神",
+      "fortuneLevel": 3,
+      "fortune": "中",
+      "originalText": "风伯雷公鼓角位",
+      "meaning": "代表自然界的风之力，也象征喧闹、声响、突发状况",
+      "symbol": "风动声响，变化无常",
+      "suitable": ["宣传推广", "声名远播之事"],
+      "taboo": ["安静之事", "秘密行动"],
+      "application": {
+        "general": "主喧闹、声响，可能涉及宣传或争斗",
+        "travel": "出行有变，注意天气",
+        "career": "名声在外，但不稳定",
+        "wealth": "财来财去，不宜守财",
+        "marriage": "姻缘多变，有口舌"
+      }
+    },
+    {
+      "id": "leigong",
+      "name": "雷公",
+      "category": "中神",
+      "fortuneLevel": 3,
+      "fortune": "中",
+      "originalText": "风伯雷公鼓角位",
+      "meaning": "代表雷电之力，象征威严、震动、突发",
+      "symbol": "雷霆之威，震动四方",
+      "suitable": ["树立威信", "震慑小人"],
+      "taboo": ["安静之事", "柔和之事"],
+      "application": {
+        "general": "主威严、突发，暗示可能涉及军事或争斗",
+        "travel": "出行有惊无险",
+        "career": "事业有突破，但来得快去得快",
+        "wealth": "财运起伏，有意外收入",
+        "marriage": "姻缘有变，需谨慎"
+      },
+      "note": "鼓角位：指军队的鼓角之声，暗示可能涉及军事场合"
+    },
+    {
+      "id": "yushi",
+      "name": "雨师",
+      "category": "吉神",
+      "fortuneLevel": 4,
+      "fortune": "吉",
+      "originalText": "雨师凿将奏天英",
+      "meaning": "主降雨、滋润，也象征恩泽、赏赐",
+      "symbol": "恩泽普施，滋润万物",
+      "suitable": ["求恩", "求赏", "上书申诉"],
+      "taboo": [],
+      "application": {
+        "general": "主奏报上达，适合上书、申诉、求取功名",
+        "travel": "出行顺利，有贵人相助",
+        "career": "仕途有望，可得上级赏识",
+        "wealth": "财运渐佳，有意外之财",
+        "marriage": "姻缘吉利，有人撮合"
+      }
+    },
+    {
+      "id": "zaojiang",
+      "name": "凿将",
+      "category": "中吉神",
+      "fortuneLevel": 4,
+      "fortune": "吉",
+      "originalText": "雨师凿将奏天英",
+      "meaning": "主开凿、破除、奏报，与天英星相关",
+      "symbol": "开凿通达，破除障碍",
+      "suitable": ["破除阻碍", "开创新事"],
+      "taboo": ["守成之事"],
+      "application": {
+        "general": "适合开创、突破、向上奏报",
+        "travel": "出行可成，能破除阻碍",
+        "career": "事业有突破机会",
+        "wealth": "财运可开拓新源",
+        "marriage": "姻缘可成，有人助力"
+      }
+    },
+    {
+      "id": "fengyun",
+      "name": "风云",
+      "category": "变化神",
+      "fortuneLevel": 3,
+      "fortune": "变",
+      "originalText": "风云失路唐符庆",
+      "meaning": "代表变化、流动，若不得位（失路）则不吉",
+      "symbol": "变化无常，顺逆不定",
+      "suitable": ["应变之事"],
+      "taboo": ["需要稳定之事"],
+      "application": {
+        "general": "风云失路主动荡或不安，需配合唐符化解",
+        "travel": "出行多变，方向不定",
+        "career": "事业多变，需随机应变",
+        "wealth": "财运不稳，时好时坏",
+        "marriage": "姻缘多变，需耐心等待"
+      },
+      "remedy": "虽风云失路，但有唐符可化解凶象"
+    },
+    {
+      "id": "tangfu",
+      "name": "唐符",
+      "category": "吉神",
+      "fortuneLevel": 4,
+      "fortune": "吉",
+      "originalText": "风云失路唐符庆",
+      "meaning": "主喜庆、祥瑞，是化解凶象的吉神",
+      "symbol": "喜庆祥瑞，逢凶化吉",
+      "suitable": ["庆典", "婚嫁", "开业"],
+      "taboo": [],
+      "application": {
+        "general": "即使风云不利，唐符仍能带来喜事，化解凶象",
+        "travel": "出行逢凶化吉",
+        "career": "事业有喜，升迁有望",
+        "wealth": "财运转好，有意外惊喜",
+        "marriage": "姻缘有喜讯"
+      }
+    },
+    {
+      "id": "guoyin",
+      "name": "国印",
+      "category": "大吉神",
+      "fortuneLevel": 5,
+      "fortune": "大吉",
+      "originalText": "国印丹书紫诏荣",
+      "meaning": "与朝廷、官方、文书相关，主荣华、升迁",
+      "symbol": "官印在握，权柄在手",
+      "suitable": ["求官", "考学", "文书获批", "升迁"],
+      "taboo": [],
+      "application": {
+        "general": "代表荣耀、升迁、功名，适合求官、考学等",
+        "travel": "出行有贵人接待",
+        "career": "仕途大吉，升迁有望",
+        "wealth": "财运通达，有官方助力",
+        "marriage": "姻缘高贵，门当户对"
+      }
+    },
+    {
+      "id": "danshu",
+      "name": "丹书",
+      "category": "大吉神",
+      "fortuneLevel": 5,
+      "fortune": "大吉",
+      "originalText": "国印丹书紫诏荣",
+      "meaning": "代表皇帝诏书、重要文书，主文书吉庆",
+      "symbol": "丹书铁券，文书吉祥",
+      "suitable": ["文书事务", "考试", "签约"],
+      "taboo": [],
+      "application": {
+        "general": "文书类事务大吉，适合签约、考试、公文",
+        "travel": "出行文书顺利",
+        "career": "事业文书有喜",
+        "wealth": "财务文书无碍",
+        "marriage": "婚书顺利，文定大吉"
+      }
+    },
+    {
+      "id": "zizhao",
+      "name": "紫诏",
+      "category": "大吉神",
+      "fortuneLevel": 5,
+      "fortune": "大吉",
+      "originalText": "国印丹书紫诏荣",
+      "meaning": "代表皇帝紫色诏书，最高级别的官方文书",
+      "symbol": "紫诏临门，荣华富贵",
+      "suitable": ["求官", "升迁", "重大事务"],
+      "taboo": [],
+      "application": {
+        "general": "主荣耀、升迁、功名，最高级别的吉祥",
+        "travel": "出行有最高级别的接待",
+        "career": "仕途通达，位极人臣",
+        "wealth": "财源广进，富贵双全",
+        "marriage": "姻缘显贵，门庭生辉"
+      }
+    },
+    {
+      "id": "tianguan",
+      "name": "天关",
+      "category": "凶神",
+      "fortuneLevel": 2,
+      "fortune": "凶",
+      "originalText": "天关封把地轴忌",
+      "meaning": "主把守、封闭，象征关口、障碍，不宜强行通过",
+      "symbol": "关口紧闭，通行不易",
+      "suitable": ["防守", "守成"],
+      "taboo": ["出行", "远行", "强行通过"],
+      "application": {
+        "general": "不宜强行通过，主阻碍、封闭",
+        "travel": "出行有阻，关口难过",
+        "career": "事业遇阻，晋升无望",
+        "wealth": "财路不通，求财不得",
+        "marriage": "姻缘有阻，难以成就"
+      },
+      "warning": "遇天关不宜强行，宜退守等待"
+    },
+    {
+      "id": "dizhou",
+      "name": "地轴",
+      "category": "凶神",
+      "fortuneLevel": 1,
+      "fortune": "大凶",
+      "originalText": "天关封把地轴忌",
+      "meaning": "主禁忌、地基、不动，动土或迁徙时需忌讳",
+      "symbol": "地基不稳，忌动忌迁",
+      "suitable": ["静守", "不动"],
+      "taboo": ["动土", "搬迁", "建房", "挖掘"],
+      "application": {
+        "general": "动土或迁徙时遇到此神需忌讳，否则可能招致灾祸",
+        "travel": "不宜出行，宜守原地",
+        "career": "事业不宜变动",
+        "wealth": "不宜投资或大动作",
+        "marriage": "姻缘不宜进行，宜等待"
+      },
+      "warning": "地轴为大凶，动则生祸，静则无碍"
+    },
+    {
+      "id": "tianzei",
+      "name": "天贼",
+      "category": "大凶神",
+      "fortuneLevel": 1,
+      "fortune": "大凶",
+      "originalText": "天贼须防后向兵",
+      "meaning": "主贼害、偷盗、暗算，需特别防备来自后方或暗处的攻击",
+      "symbol": "贼星临门，暗中有害",
+      "suitable": [],
+      "taboo": ["出行", "交易", "托付财物", "背后之事"],
+      "application": {
+        "general": "需特别防备后方或暗处的攻击，可能涉及背叛、伏击",
+        "travel": "出行有贼，防偷防盗",
+        "career": "事业有小人暗算",
+        "wealth": "财物有失，防贼防盗",
+        "marriage": "姻缘有第三者，防背叛"
+      },
+      "warning": "后向兵：需特别防备来自后方或暗处的攻击"
+    }
+  ],
+  "applicationGuide": {
+    "quji": {
+      "title": "趋吉原则",
+      "description": "遇到吉神时可主动行动",
+      "jiGods": ["五符", "唐符", "国印", "丹书", "紫诏", "雨师"],
+      "actions": ["出行", "求官", "文书往来", "婚嫁", "开业"]
+    },
+    "bixiong": {
+      "title": "避凶原则",
+      "description": "遇到凶神时需谨慎行事",
+      "xiongGods": ["地府", "天贼", "地轴", "天关"],
+      "actions": ["避免动土", "避免出行", "避免冲突", "静守等待"]
+    },
+    "huajie": {
+      "title": "化解原则",
+      "description": "即使在不利环境中也有转机",
+      "example": "风云失路虽不利，但有唐符可化解"
+    }
+  },
+  "buGangPeihe": {
+    "title": "步罡配合应用",
+    "description": "口诀与步罡图紧密结合，构成完整的术数应用体系",
+    "steps": [
+      "先判断吉凶（口诀）",
+      "再通过步罡踏斗调整气场（步罡法）",
+      "达到趋吉避凶的目的"
+    ],
+    "keyPoints": [
+      {"point": "吉神方位", "action": "朝向五符、国印等吉神方位行动"},
+      {"point": "凶神回避", "action": "通过特定步伐绕开天贼、地轴等凶神"},
+      {"point": "能量调动", "action": "脚步的节奏和方位与神煞格局相呼应"}
+    ]
+  },
+  "fortuneLevelDesc": {
+    "5": "大吉",
+    "4": "吉",
+    "3": "平/中",
+    "2": "凶",
+    "1": "大凶"
+  },
+  "meta": {
+    "source": "景祐遁甲符应经二",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-23"
+  }
+}

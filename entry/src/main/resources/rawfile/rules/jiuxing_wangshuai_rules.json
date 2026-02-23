@@ -1,0 +1,420 @@
+{
+  "volume": "景祐遁甲符应经二",
+  "title": "九星休旺规律",
+  "description": "根据三元经：九星各旺于我生月、相于同类月、死于生我月、囚于克我月、休于我克月",
+  "wuxingRelation": {
+    "shengWoWeiwang": "被我生者旺",
+    "tongLeiWeiXiang": "与我同类者相",
+    "woShengWeiSi": "生我者死",
+    "keWoWeiQiu": "克我者囚",
+    "woKeWeiXiu": "我克者休"
+  },
+  "stars": [
+    {
+      "id": "tianpeng",
+      "name": "天蓬",
+      "palace": "坎一宫",
+      "element": "水",
+      "states": {
+        "wang": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "水生木，寅卯属木之气"
+        },
+        "xiang": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "亥子属水，比和同类"
+        },
+        "si": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "金生水，申酉属金"
+        },
+        "qiu": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "土克水，辰戌丑未属土"
+        },
+        "xiu": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "水克火，巳午属火"
+        }
+      }
+    },
+    {
+      "id": "tianying",
+      "name": "天英",
+      "palace": "离九宫",
+      "element": "火",
+      "states": {
+        "wang": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "火生土，辰戌丑未属土"
+        },
+        "xiang": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "巳午属火，比和同类"
+        },
+        "si": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "木生火，寅卯属木"
+        },
+        "qiu": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "水克火，亥子属水"
+        },
+        "xiu": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "火克金，申酉属金"
+        }
+      }
+    },
+    {
+      "id": "tianchong",
+      "name": "天冲",
+      "palace": "震三宫",
+      "element": "木",
+      "states": {
+        "wang": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "木生火，巳午属火"
+        },
+        "xiang": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "寅卯属木，比和同类"
+        },
+        "si": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "水生木，亥子属水"
+        },
+        "qiu": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "金克木，申酉属金"
+        },
+        "xiu": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "木克土，辰戌丑未属土"
+        }
+      }
+    },
+    {
+      "id": "tianfu",
+      "name": "天辅",
+      "palace": "巽四宫",
+      "element": "木",
+      "states": {
+        "wang": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "木生火，巳午属火"
+        },
+        "xiang": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "寅卯属木，比和同类"
+        },
+        "si": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "水生木，亥子属水"
+        },
+        "qiu": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "金克木，申酉属金"
+        },
+        "xiu": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "木克土，辰戌丑未属土"
+        }
+      }
+    },
+    {
+      "id": "tianxin",
+      "name": "天心",
+      "palace": "乾六宫",
+      "element": "金",
+      "states": {
+        "wang": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "金生水，亥子属水"
+        },
+        "xiang": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "申酉属金，比和同类"
+        },
+        "si": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "土生金，辰戌丑未属土"
+        },
+        "qiu": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "火克金，巳午属火"
+        },
+        "xiu": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "金克木，寅卯属木"
+        }
+      }
+    },
+    {
+      "id": "tianzhu",
+      "name": "天柱",
+      "palace": "兑七宫",
+      "element": "金",
+      "states": {
+        "wang": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "金生水，亥子属水"
+        },
+        "xiang": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "申酉属金，比和同类"
+        },
+        "si": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "土生金，辰戌丑未属土"
+        },
+        "qiu": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "火克金，巳午属火"
+        },
+        "xiu": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "金克木，寅卯属木"
+        }
+      }
+    },
+    {
+      "id": "tianren",
+      "name": "天任",
+      "palace": "艮八宫",
+      "element": "土",
+      "states": {
+        "wang": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "土生金，申酉属金"
+        },
+        "xiang": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "辰戌丑未属土，比和同类"
+        },
+        "si": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "火生土，巳午属火"
+        },
+        "qiu": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "木克土，寅卯属木"
+        },
+        "xiu": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "土克水，亥子属水"
+        }
+      }
+    },
+    {
+      "id": "tianqin",
+      "name": "天禽",
+      "palace": "中五宫",
+      "element": "土",
+      "states": {
+        "wang": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "土生金，申酉属金"
+        },
+        "xiang": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "辰戌丑未属土，比和同类"
+        },
+        "si": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "火生土，巳午属火"
+        },
+        "qiu": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "木克土，寅卯属木"
+        },
+        "xiu": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "土克水，亥子属水"
+        }
+      }
+    },
+    {
+      "id": "tianrui",
+      "name": "天芮",
+      "palace": "坤二宫",
+      "element": "土",
+      "states": {
+        "wang": {
+          "months": ["申", "酉"],
+          "monthNames": ["七月", "八月"],
+          "seasonDesc": "秋季",
+          "reason": "土生金，申酉属金"
+        },
+        "xiang": {
+          "months": ["辰", "戌", "丑", "未"],
+          "monthNames": ["三月", "九月", "十二月", "六月"],
+          "seasonDesc": "四季月",
+          "reason": "辰戌丑未属土，比和同类"
+        },
+        "si": {
+          "months": ["巳", "午"],
+          "monthNames": ["四月", "五月"],
+          "seasonDesc": "夏季",
+          "reason": "火生土，巳午属火"
+        },
+        "qiu": {
+          "months": ["寅", "卯"],
+          "monthNames": ["正月", "二月"],
+          "seasonDesc": "春季",
+          "reason": "木克土，寅卯属木"
+        },
+        "xiu": {
+          "months": ["亥", "子"],
+          "monthNames": ["十月", "十一月"],
+          "seasonDesc": "冬季",
+          "reason": "土克水，亥子属水"
+        }
+      }
+    }
+  ],
+  "stateDescriptions": {
+    "wang": {
+      "name": "旺",
+      "meaning": "力量最强，星曜发挥最大效用",
+      "fortuneLevel": 5,
+      "color": "#FF4444"
+    },
+    "xiang": {
+      "name": "相",
+      "meaning": "次强，星曜效力良好",
+      "fortuneLevel": 4,
+      "color": "#FF8800"
+    },
+    "xiu": {
+      "name": "休",
+      "meaning": "休养状态，力量减弱但不至于凶",
+      "fortuneLevel": 3,
+      "color": "#4488FF"
+    },
+    "qiu": {
+      "name": "囚",
+      "meaning": "被困状态，力量受制",
+      "fortuneLevel": 2,
+      "color": "#888888"
+    },
+    "si": {
+      "name": "死",
+      "meaning": "衰极状态，力量最弱",
+      "fortuneLevel": 1,
+      "color": "#444444"
+    }
+  },
+  "monthZhiMapping": {
+    "寅": {"monthNum": 1, "monthName": "正月", "season": "春"},
+    "卯": {"monthNum": 2, "monthName": "二月", "season": "春"},
+    "辰": {"monthNum": 3, "monthName": "三月", "season": "春"},
+    "巳": {"monthNum": 4, "monthName": "四月", "season": "夏"},
+    "午": {"monthNum": 5, "monthName": "五月", "season": "夏"},
+    "未": {"monthNum": 6, "monthName": "六月", "season": "夏"},
+    "申": {"monthNum": 7, "monthName": "七月", "season": "秋"},
+    "酉": {"monthNum": 8, "monthName": "八月", "season": "秋"},
+    "戌": {"monthNum": 9, "monthName": "九月", "season": "秋"},
+    "亥": {"monthNum": 10, "monthName": "十月", "season": "冬"},
+    "子": {"monthNum": 11, "monthName": "十一月", "season": "冬"},
+    "丑": {"monthNum": 12, "monthName": "十二月", "season": "冬"}
+  },
+  "applicationGuide": {
+    "steps": [
+      "确定当前月份的地支",
+      "查找对应九星在该月令的休旺状态",
+      "结合其他因素（时辰、格局、神煞）综合判断",
+      "旺相为吉利用时，休囚死需谨慎行事"
+    ],
+    "tips": [
+      "休旺只是判断的一个方面，不能单独作为决定因素",
+      "需要结合具体时辰、格局、其他神煞综合判断",
+      "同一颗星在不同情况下可能有不同的表现"
+    ]
+  },
+  "meta": {
+    "source": "景祐遁甲符应经二·三元经",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-23"
+  }
+}

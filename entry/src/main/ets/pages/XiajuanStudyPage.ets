@@ -1,3 +1,4 @@
+import { router } from '@kit.ArkUI'
 import { NavigationBar } from '../components/NavigationBar'
 
 @Entry
@@ -22,6 +23,112 @@ struct XiajuanStudyPage {
           }
           .width('100%')
           .padding({ left: 16, right: 16, top: 16, bottom: 8 })
+
+          // 实战工具入口
+          Column({ space: 8 }) {
+            Text('景祐符应·实战工具')
+              .fontSize(14)
+              .fontWeight(FontWeight.Medium)
+              .fontColor('#722ED1')
+              .alignSelf(ItemAlign.Start)
+
+            // 第一行：核心智能化
+            Row() {
+              Column() {
+                Text('⭐')
+                  .fontSize(18)
+                Text('九星休旺')
+                  .fontSize(12)
+                  .fontColor('#333333')
+                  .margin({ top: 4 })
+              }
+              .layoutWeight(1)
+              .padding(10)
+              .backgroundColor('#FFF7E6')
+              .borderRadius(8)
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/JingyouToolsPage' });
+              })
+
+              Column() {
+                Text('✨')
+                  .fontSize(18)
+                Text('三奇检测')
+                  .fontSize(12)
+                  .fontColor('#333333')
+                  .margin({ top: 4 })
+              }
+              .layoutWeight(1)
+              .padding(10)
+              .backgroundColor('#F6FFED')
+              .borderRadius(8)
+              .margin({ left: 8 })
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/JingyouToolsPage' });
+              })
+
+              Column() {
+                Text('🔮')
+                  .fontSize(18)
+                Text('十二神')
+                  .fontSize(12)
+                  .fontColor('#333333')
+                  .margin({ top: 4 })
+              }
+              .layoutWeight(1)
+              .padding(10)
+              .backgroundColor('#E6F7FF')
+              .borderRadius(8)
+              .margin({ left: 8 })
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/JingyouToolsPage' });
+              })
+            }
+            .width('100%')
+
+            // 第二行：特色工具
+            Row() {
+              Column() {
+                Text('⚔️')
+                  .fontSize(18)
+                Text('透天关法')
+                  .fontSize(12)
+                  .fontColor('#333333')
+                  .margin({ top: 4 })
+              }
+              .layoutWeight(1)
+              .padding(10)
+              .backgroundColor('#F9F0FF')
+              .borderRadius(8)
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/JingyouToolsPage' });
+              })
+
+              Column() {
+                Text('👣')
+                  .fontSize(18)
+                Text('步罡可视化')
+                  .fontSize(12)
+                  .fontColor('#333333')
+                  .margin({ top: 4 })
+              }
+              .layoutWeight(1)
+              .padding(10)
+              .backgroundColor('#FFF0F6')
+              .borderRadius(8)
+              .margin({ left: 8 })
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/JingyouToolsPage' });
+              })
+
+              Column()
+                .layoutWeight(1)
+                .margin({ left: 8 })
+            }
+            .width('100%')
+          }
+          .width('100%')
+          .padding({ left: 16, right: 16, bottom: 8 })
 
           // 五不可击原文摘录
           Column({ space: 8 }) {

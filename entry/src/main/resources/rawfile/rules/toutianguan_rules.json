@@ -1,0 +1,145 @@
+{
+  "volume": "景祐遁甲符应经二",
+  "title": "透天关法",
+  "description": "九天玄女深思秘言，主将防身之秘术，凡出将收兵、冒阵解围，无不垂神佑护",
+  "origin": {
+    "source": "九天玄女",
+    "principle": "搜罗八变，通晓玄微",
+    "foundation": "穷天上之六甲，定人间之五行"
+  },
+  "liujiaSystem": {
+    "description": "六甲为甲子、甲戌、甲申、甲午、甲辰、甲寅，用于确定人间五行关系",
+    "liujia": [
+      {"name": "甲子", "xun": "甲子旬", "element": "水", "direction": "正北", "palace": 0},
+      {"name": "甲戌", "xun": "甲戌旬", "element": "土", "direction": "西北", "palace": 5},
+      {"name": "甲申", "xun": "甲申旬", "element": "金", "direction": "西南", "palace": 1},
+      {"name": "甲午", "xun": "甲午旬", "element": "火", "direction": "正南", "palace": 8},
+      {"name": "甲辰", "xun": "甲辰旬", "element": "土", "direction": "东南", "palace": 3},
+      {"name": "甲寅", "xun": "甲寅旬", "element": "木", "direction": "东北", "palace": 7}
+    ]
+  },
+  "sanJiMen": {
+    "description": "三吉门为休门、生门、景门，宫三门出入用之大利",
+    "doors": [
+      {
+        "name": "休门",
+        "element": "水",
+        "basePalace": "坎一宫",
+        "fortune": "大吉",
+        "meaning": "休养生息，适合养精蓄锐",
+        "militaryUse": "适合驻扎休整、养兵蓄锐"
+      },
+      {
+        "name": "生门",
+        "element": "土",
+        "basePalace": "艮八宫",
+        "fortune": "大吉",
+        "meaning": "生生不息，利于开创进取",
+        "militaryUse": "适合出征、攻城掠地"
+      },
+      {
+        "name": "景门",
+        "element": "火",
+        "basePalace": "离九宫",
+        "fortune": "中吉",
+        "meaning": "风景明丽，利于文事声名",
+        "militaryUse": "适合誓师、鼓舞士气"
+      }
+    ]
+  },
+  "militaryApplications": [
+    {
+      "id": "chujiang",
+      "name": "出将",
+      "description": "出征前使用此法获得神佑",
+      "procedure": "择吉时，行七步罡，向吉神方位出发",
+      "effect": "神灵护佑，出师大吉"
+    },
+    {
+      "id": "shoubing",
+      "name": "收兵",
+      "description": "收兵撤退时保护部队安全",
+      "procedure": "行七步罡，选择安全方位撤退",
+      "effect": "全身而退，避免伏击"
+    },
+    {
+      "id": "maozhen",
+      "name": "冒阵",
+      "description": "冲锋陷阵时护身",
+      "procedure": "战前行七步罡，向敌阵吉方冲锋",
+      "effect": "护身避险，攻无不克"
+    },
+    {
+      "id": "jiewei",
+      "name": "解围",
+      "description": "突围解围时得保全",
+      "procedure": "判断吉方，行七步罡后突围",
+      "effect": "化险为夷，突出重围"
+    },
+    {
+      "id": "qingbao",
+      "name": "情报判断",
+      "description": "判断投诚者虚实真假",
+      "procedure": "起盘观象，结合透天关法判断",
+      "effect": "明辨虚实，识破诡计"
+    }
+  ],
+  "specialAdvantages": [
+    {
+      "id": "bukong",
+      "name": "不惧空亡",
+      "description": "不问空亡，紧急时可忽略空亡凶象"
+    },
+    {
+      "id": "busha",
+      "name": "不惧岁煞",
+      "description": "不问岁煞，急用时可突破禁忌"
+    },
+    {
+      "id": "yingji",
+      "name": "应急适用",
+      "description": "陈机急用之时，灵活变通"
+    }
+  ],
+  "usageGuidelines": {
+    "principles": [
+      "虔诚恭敬：心怀敬畏，诚心使用",
+      "时机恰当：选择合适的时间和场合",
+      "配合其他：可与其他占卜方法结合",
+      "灵活变通：根据实际情况调整应用"
+    ],
+    "taboos": [
+      "不可轻慢：不可随意使用或亵渎",
+      "避免滥用：不应在无关紧要的事情上使用",
+      "注意保密：此为秘术，不宜随意传授"
+    ]
+  },
+  "modernApplications": [
+    {
+      "scenario": "重要决策",
+      "description": "面临重大抉择时使用，获得方向指引",
+      "method": "起盘判断吉方，行步罡后按吉方行动"
+    },
+    {
+      "scenario": "危机处理",
+      "description": "紧急情况下的应对策略",
+      "method": "快速判断形势，选择最有利方位脱困"
+    },
+    {
+      "scenario": "出行择吉",
+      "description": "重要出行前选择吉利时日和方位",
+      "method": "结合三吉门和当日排盘确定出行方向"
+    },
+    {
+      "scenario": "商业谈判",
+      "description": "重要商务活动的时机和方位选择",
+      "method": "选择有利时辰，从吉方前往谈判地点"
+    }
+  ],
+  "meta": {
+    "source": "景祐遁甲符应经二·透天关法",
+    "alias": "都天大六壬",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-23"
+  }
+}

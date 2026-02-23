@@ -1,0 +1,233 @@
+{
+  "volume": "景祐遁甲符应经二",
+  "title": "三奇吉凶判定规则",
+  "description": "三奇（乙、丙、丁）相会一方为吉，不会则凶；入墓最凶，六仪克制亦凶",
+  "sanqiBasic": {
+    "yi": {
+      "id": "yi",
+      "name": "乙奇",
+      "alias": "日奇",
+      "element": "木",
+      "symbolMeaning": "日精，阴木，柔顺之德"
+    },
+    "bing": {
+      "id": "bing",
+      "name": "丙奇",
+      "alias": "月奇",
+      "element": "火",
+      "symbolMeaning": "月精，阳火，光明威权"
+    },
+    "ding": {
+      "id": "ding",
+      "name": "丁奇",
+      "alias": "星奇",
+      "element": "火",
+      "symbolMeaning": "星精，阴火，文明智慧"
+    }
+  },
+  "rules": [
+    {
+      "id": "sanqi_xianghui",
+      "name": "三奇相会",
+      "category": "吉象",
+      "condition": "乙、丙、丁三奇在同一宫位相聚",
+      "fortune": "大吉",
+      "fortuneLevel": 5,
+      "description": "三奇齐聚一宫，力量最强，事情容易成功",
+      "application": [
+        "出行大吉",
+        "求财必得",
+        "谋事易成",
+        "贵人相助"
+      ]
+    },
+    {
+      "id": "sanqi_shuanghui",
+      "name": "双奇相会",
+      "category": "次吉",
+      "condition": "任意两奇在同一宫位",
+      "fortune": "吉",
+      "fortuneLevel": 4,
+      "combinations": [
+        {"combo": "乙丙", "meaning": "日月相会，阴阳调和，主贵人提携"},
+        {"combo": "乙丁", "meaning": "日星相会，文昌得力，主智慧机遇"},
+        {"combo": "丙丁", "meaning": "月星相会，光明照耀，主声名远播"}
+      ],
+      "application": [
+        "谋事较顺",
+        "有一定助力",
+        "需配合其他因素判断"
+      ]
+    },
+    {
+      "id": "sanqi_fensan",
+      "name": "三奇分散",
+      "category": "凶象",
+      "condition": "三奇分散在不同宫位",
+      "fortune": "凶",
+      "fortuneLevel": 2,
+      "description": "三奇不聚则力量分散，效果减弱",
+      "application": [
+        "力量分散难聚",
+        "事情多有反复",
+        "需寻找补救措施"
+      ]
+    },
+    {
+      "id": "sanqi_rumu",
+      "name": "三奇入墓",
+      "category": "大凶",
+      "condition": "三奇落入各自的墓库宫位",
+      "fortune": "大凶",
+      "fortuneLevel": 1,
+      "muKuMapping": [
+        {
+          "qi": "乙",
+          "muPalace": "乾六宫",
+          "muElement": "金",
+          "reason": "乙木入乾金之墓，木被金克而入墓",
+          "severity": 5
+        },
+        {
+          "qi": "丙",
+          "muPalace": "乾六宫",
+          "muElement": "金",
+          "reason": "丙火入乾金戌墓（戌为火墓），阳火入墓",
+          "severity": 5
+        },
+        {
+          "qi": "丁",
+          "muPalace": "艮八宫",
+          "muElement": "土",
+          "reason": "丁火入艮土丑墓（丑为火墓），阴火入墓",
+          "severity": 5
+        }
+      ],
+      "description": "三奇入墓是最严重的凶象，主事情难成，多有阻碍",
+      "application": [
+        "事情必有阻碍",
+        "难以成功",
+        "需择他日行事"
+      ]
+    },
+    {
+      "id": "liuyi_kezhan",
+      "name": "六仪克制",
+      "category": "凶象",
+      "condition": "六仪（戊己庚辛壬癸）之间相互克制",
+      "fortune": "凶",
+      "fortuneLevel": 2,
+      "liuyiInfo": [
+        {"yi": "戊", "element": "土", "position": "甲子旬首"},
+        {"yi": "己", "element": "土", "position": "甲戌旬首"},
+        {"yi": "庚", "element": "金", "position": "甲申旬首"},
+        {"yi": "辛", "element": "金", "position": "甲午旬首"},
+        {"yi": "壬", "element": "水", "position": "甲辰旬首"},
+        {"yi": "癸", "element": "水", "position": "甲寅旬首"}
+      ],
+      "keRelations": [
+        {"ke": "土克水", "example": "戊己克壬癸", "meaning": "土水相战"},
+        {"ke": "水克火", "example": "壬癸克丙丁", "meaning": "水火相战"},
+        {"ke": "火克金", "example": "丙丁克庚辛", "meaning": "火金相战"},
+        {"ke": "金克木", "example": "庚辛克乙", "meaning": "金木相战"},
+        {"ke": "木克土", "example": "乙克戊己", "meaning": "木土相战"}
+      ],
+      "description": "六仪相互克制主争斗、冲突、不和",
+      "application": [
+        "主争斗冲突",
+        "人事不和",
+        "谋事多阻"
+      ]
+    },
+    {
+      "id": "liuyi_xingke",
+      "name": "六仪刑克",
+      "category": "凶象",
+      "condition": "六仪刑克三奇",
+      "fortune": "凶",
+      "fortuneLevel": 2,
+      "xingRelations": [
+        {"xing": "庚金刑乙木", "meaning": "金木相刑，主伤损"},
+        {"xing": "壬水刑丙火", "meaning": "水火相刑，主是非"},
+        {"xing": "癸水刑丁火", "meaning": "阴水克阴火，主暗损"}
+      ],
+      "description": "六仪刑克三奇为不吉，主暗中阻碍",
+      "application": [
+        "暗中有阻",
+        "小人作祟",
+        "须防暗损"
+      ]
+    }
+  ],
+  "detectionLogic": {
+    "sanqiHuiCheck": {
+      "description": "检测三奇是否在同一宫位相会",
+      "steps": [
+        "获取排盘结果中乙、丙、丁各自所在宫位",
+        "比较三者宫位是否相同",
+        "三同为大吉，两同为次吉，全分散为凶"
+      ]
+    },
+    "rumuCheck": {
+      "description": "检测三奇是否落入墓库",
+      "steps": [
+        "乙奇在乾六宫 → 入墓",
+        "丙奇在乾六宫 → 入墓",
+        "丁奇在艮八宫 → 入墓"
+      ]
+    },
+    "keZhanCheck": {
+      "description": "检测六仪之间是否存在克制关系",
+      "steps": [
+        "获取各宫位的天干配置",
+        "检查同宫或相邻宫的天干五行关系",
+        "存在克制关系则标记为凶"
+      ]
+    }
+  },
+  "chuxingShenming": {
+    "title": "出行呼神法",
+    "description": "欲出行者，皆向其方，呼神字，行六十步，左转于太阴中",
+    "shenZiTable": [
+      {"star": "天蓬", "shenZi": "子禽", "direction": "正北"},
+      {"star": "天芮", "shenZi": "子成", "direction": "西南"},
+      {"star": "天冲", "shenZi": "子翘", "direction": "正东"},
+      {"star": "天辅", "shenZi": "子卿", "direction": "东南"},
+      {"star": "天禽", "shenZi": "子公", "direction": "中央"},
+      {"star": "天心", "shenZi": "子襄", "direction": "西北"},
+      {"star": "天柱", "shenZi": "子衢", "direction": "正西"},
+      {"star": "天任", "shenZi": "子申", "direction": "东北"},
+      {"star": "天英", "shenZi": "子威", "direction": "正南"}
+    ],
+    "steps": [
+      "选定吉利方向",
+      "面向该方向呼喊对应星神名字",
+      "按指定步数前行六十步",
+      "左转进入太阴方位"
+    ]
+  },
+  "applicationGuide": {
+    "jiCriteria": [
+      "三奇相会一方",
+      "三奇得门相助",
+      "三奇临吉星吉门",
+      "三奇旺相得时"
+    ],
+    "xiongCriteria": [
+      "三奇分散不聚",
+      "三奇入墓受困",
+      "三奇被克被刑",
+      "三奇落空亡地"
+    ],
+    "remediation": [
+      "三奇分散时可通过祈祷等方式凝聚",
+      "三奇受克时可选择其他时机",
+      "入墓时可寻找化解之法"
+    ]
+  },
+  "meta": {
+    "source": "景祐遁甲符应经二",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-23"
+  }
+}

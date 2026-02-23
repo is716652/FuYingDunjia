@@ -13,6 +13,7 @@
     "pages/AttackDefensePage",
     "pages/ZhiFuZhiShiHistoryPage",
     "pages/XiajuanStudyPage",
+    "pages/JingyouToolsPage",
     "pages/Legal/UserAgreement",
     "pages/Legal/PrivacyPolicy"
   ]

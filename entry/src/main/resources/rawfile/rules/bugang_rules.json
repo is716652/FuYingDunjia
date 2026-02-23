@@ -1,0 +1,157 @@
+{
+  "volume": "景祐遁甲符应经二",
+  "title": "步罡踏斗法",
+  "description": "凡举事先左脚横，右脚直，后移右脚，横左脚直，七步罡后，向此吉神出",
+  "qibugang": {
+    "name": "七步罡",
+    "totalSteps": 7,
+    "purpose": "调动天地能量，趋吉避凶",
+    "steps": [
+      {
+        "step": 1,
+        "action": "起势",
+        "footwork": "左脚横跨",
+        "direction": "向左",
+        "description": "先左脚横跨，做好准备姿势",
+        "positionX": 0,
+        "positionY": 0
+      },
+      {
+        "step": 2,
+        "action": "立定",
+        "footwork": "右脚直立",
+        "direction": "向前",
+        "description": "右脚直立，稳定重心",
+        "positionX": 1,
+        "positionY": 1
+      },
+      {
+        "step": 3,
+        "action": "移步",
+        "footwork": "移动右脚",
+        "direction": "向右前",
+        "description": "后移右脚，准备换步",
+        "positionX": 2,
+        "positionY": 1
+      },
+      {
+        "step": 4,
+        "action": "横跨",
+        "footwork": "横跨左脚",
+        "direction": "向左",
+        "description": "横跨左脚，调整方位",
+        "positionX": 2,
+        "positionY": 2
+      },
+      {
+        "step": 5,
+        "action": "直立",
+        "footwork": "左脚直立",
+        "direction": "向前",
+        "description": "左脚直立，稳定身形",
+        "positionX": 3,
+        "positionY": 2
+      },
+      {
+        "step": 6,
+        "action": "调整",
+        "footwork": "调整步伐",
+        "direction": "向吉方",
+        "description": "调整步伐，朝向吉方",
+        "positionX": 3,
+        "positionY": 3
+      },
+      {
+        "step": 7,
+        "action": "完成",
+        "footwork": "定步出发",
+        "direction": "吉神方位",
+        "description": "七步罡完成，向吉神方位出发",
+        "positionX": 4,
+        "positionY": 3
+      }
+    ]
+  },
+  "beidouGang": {
+    "name": "北斗七星罡",
+    "description": "模拟北斗七星形状的步罡法，对应天枢、天璇、天玑、天权、玉衡、开阳、摇光七星",
+    "stars": [
+      {"name": "天枢", "alias": "贪狼", "position": 1, "x": 0, "y": 0, "meaning": "起始，确定方向"},
+      {"name": "天璇", "alias": "巨门", "position": 2, "x": 1, "y": 0.5, "meaning": "开门，打开通道"},
+      {"name": "天玑", "alias": "禄存", "position": 3, "x": 2, "y": 1, "meaning": "转折，调整路径"},
+      {"name": "天权", "alias": "文曲", "position": 4, "x": 3, "y": 1.5, "meaning": "权衡，判断方位"},
+      {"name": "玉衡", "alias": "廉贞", "position": 5, "x": 4, "y": 2.5, "meaning": "平衡，稳定身心"},
+      {"name": "开阳", "alias": "武曲", "position": 6, "x": 5, "y": 3.5, "meaning": "行动，蓄势待发"},
+      {"name": "摇光", "alias": "破军", "position": 7, "x": 6, "y": 4, "meaning": "出发，向吉方前进"}
+    ],
+    "pathType": "curve",
+    "symbolMeaning": "借北斗之力，调动天地能量"
+  },
+  "jiugongGang": {
+    "name": "九宫步罡",
+    "description": "按照九宫方位行走的步罡法",
+    "palaceOrder": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    "palaceNames": ["坎一", "坤二", "震三", "巽四", "中五", "乾六", "兑七", "艮八", "离九"],
+    "palacePositions": [
+      {"palace": 1, "name": "坎", "x": 1, "y": 2, "direction": "北"},
+      {"palace": 2, "name": "坤", "x": 2, "y": 2, "direction": "西南"},
+      {"palace": 3, "name": "震", "x": 0, "y": 1, "direction": "东"},
+      {"palace": 4, "name": "巽", "x": 0, "y": 0, "direction": "东南"},
+      {"palace": 5, "name": "中", "x": 1, "y": 1, "direction": "中"},
+      {"palace": 6, "name": "乾", "x": 2, "y": 0, "direction": "西北"},
+      {"palace": 7, "name": "兑", "x": 2, "y": 1, "direction": "西"},
+      {"palace": 8, "name": "艮", "x": 0, "y": 2, "direction": "东北"},
+      {"palace": 9, "name": "离", "x": 1, "y": 0, "direction": "南"}
+    ],
+    "routes": [
+      {
+        "id": "yangshun",
+        "name": "阳顺路线",
+        "description": "阳遁顺行路线",
+        "sequence": [1, 8, 3, 4, 9, 2, 7, 6],
+        "usage": "阳遁时使用，顺时针方向"
+      },
+      {
+        "id": "yinni",
+        "name": "阴逆路线",
+        "description": "阴遁逆行路线",
+        "sequence": [9, 4, 3, 8, 1, 6, 7, 2],
+        "usage": "阴遁时使用，逆时针方向"
+      }
+    ]
+  },
+  "practiceGuide": {
+    "preparation": [
+      "选择安静平坦的场地",
+      "沐浴更衣，心神安宁",
+      "确定吉方和目标方位",
+      "调整呼吸，集中精神"
+    ],
+    "execution": [
+      "起步前默念咒语或存想",
+      "每一步都要稳健有力",
+      "步伐节奏与呼吸配合",
+      "心中存想北斗七星或九宫方位"
+    ],
+    "completion": [
+      "完成后面向吉方站定",
+      "深呼吸三次，收功",
+      "按既定方向出发行动"
+    ]
+  },
+  "visualizationConfig": {
+    "gridSize": 3,
+    "cellSize": 80,
+    "pathColor": "#1890FF",
+    "stepColor": "#52C41A",
+    "currentStepColor": "#FF4D4F",
+    "animationDuration": 500,
+    "showStepNumbers": true,
+    "showDirections": true
+  },
+  "meta": {
+    "source": "景祐遁甲符应经二·透天关法",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-23"
+  }
+}
