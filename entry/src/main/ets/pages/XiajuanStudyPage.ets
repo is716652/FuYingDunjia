@@ -126,6 +126,47 @@ struct XiajuanStudyPage {
                 .margin({ left: 8 })
             }
             .width('100%')
+
+            // 第三行：辅助工具
+            Row() {
+              Column() {
+                Text('🏕️')
+                  .fontSize(18)
+                Text('闭六戊')
+                  .fontSize(12)
+                  .fontColor('#333333')
+                  .margin({ top: 4 })
+              }
+              .layoutWeight(1)
+              .padding(10)
+              .backgroundColor('#E6F7FF')
+              .borderRadius(8)
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/JingyouToolsPage' });
+              })
+
+              Column() {
+                Text('🔄')
+                  .fontSize(18)
+                Text('神煞转化')
+                  .fontSize(12)
+                  .fontColor('#333333')
+                  .margin({ top: 4 })
+              }
+              .layoutWeight(1)
+              .padding(10)
+              .backgroundColor('#FFF1F0')
+              .borderRadius(8)
+              .margin({ left: 8 })
+              .onClick(() => {
+                router.pushUrl({ url: 'pages/JingyouToolsPage' });
+              })
+
+              Column()
+                .layoutWeight(1)
+                .margin({ left: 8 })
+            }
+            .width('100%')
           }
           .width('100%')
           .padding({ left: 16, right: 16, bottom: 8 })

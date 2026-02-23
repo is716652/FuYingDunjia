@@ -1,0 +1,144 @@
+{
+  "volume": "景祐遁甲符应经二",
+  "title": "闭六戊法",
+  "description": "真人闭六戊法，用于安营止宿、避病去害，是军阵与个人护身的核心法术",
+  "origin": {
+    "source": "经曰",
+    "principle": "欲安营止宿，避病去害，当用真人闭六戊法",
+    "method": "先置其北，在旬中六戊上，凡野宿安营为之，凶恶不敢犯"
+  },
+  "liuwuTable": {
+    "description": "六戊推算表：根据当日所属旬确定六戊所在地支",
+    "mappings": [
+      {
+        "xunName": "甲子旬",
+        "xunHead": "甲子",
+        "xunRange": ["甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉"],
+        "liuwu": "戊辰",
+        "liuwuZhi": "辰",
+        "direction": "东南",
+        "element": "土",
+        "palaceIndex": 3
+      },
+      {
+        "xunName": "甲戌旬",
+        "xunHead": "甲戌",
+        "xunRange": ["甲戌", "乙亥", "丙子", "丁丑", "戊寅", "己卯", "庚辰", "辛巳", "壬午", "癸未"],
+        "liuwu": "戊寅",
+        "liuwuZhi": "寅",
+        "direction": "东北",
+        "element": "土",
+        "palaceIndex": 7
+      },
+      {
+        "xunName": "甲申旬",
+        "xunHead": "甲申",
+        "xunRange": ["甲申", "乙酉", "丙戌", "丁亥", "戊子", "己丑", "庚寅", "辛卯", "壬辰", "癸巳"],
+        "liuwu": "戊子",
+        "liuwuZhi": "子",
+        "direction": "正北",
+        "element": "土",
+        "palaceIndex": 0
+      },
+      {
+        "xunName": "甲午旬",
+        "xunHead": "甲午",
+        "xunRange": ["甲午", "乙未", "丙申", "丁酉", "戊戌", "己亥", "庚子", "辛丑", "壬寅", "癸卯"],
+        "liuwu": "戊戌",
+        "liuwuZhi": "戌",
+        "direction": "西北",
+        "element": "土",
+        "palaceIndex": 5
+      },
+      {
+        "xunName": "甲辰旬",
+        "xunHead": "甲辰",
+        "xunRange": ["甲辰", "乙巳", "丙午", "丁未", "戊申", "己酉", "庚戌", "辛亥", "壬子", "癸丑"],
+        "liuwu": "戊申",
+        "liuwuZhi": "申",
+        "direction": "西南",
+        "element": "土",
+        "palaceIndex": 1
+      },
+      {
+        "xunName": "甲寅旬",
+        "xunHead": "甲寅",
+        "xunRange": ["甲寅", "乙卯", "丙辰", "丁巳", "戊午", "己未", "庚申", "辛酉", "壬戌", "癸亥"],
+        "liuwu": "戊午",
+        "liuwuZhi": "午",
+        "direction": "正南",
+        "element": "土",
+        "palaceIndex": 8
+      }
+    ]
+  },
+  "operationSteps": [
+    {
+      "step": 1,
+      "title": "确定旬首",
+      "description": "根据当日干支确定所属旬（甲子旬/甲戌旬/甲申旬/甲午旬/甲辰旬/甲寅旬）"
+    },
+    {
+      "step": 2,
+      "title": "查找六戊",
+      "description": "根据旬首查表得到六戊所在地支（辰/寅/子/戌/申/午）"
+    },
+    {
+      "step": 3,
+      "title": "确定方位",
+      "description": "六戊地支对应的方位即为结界核心方位"
+    },
+    {
+      "step": 4,
+      "title": "画地结界",
+      "description": "用刀从鬼门（东北艮位）起，向左画地一周，形成结界"
+    },
+    {
+      "step": 5,
+      "title": "取中央土",
+      "description": "取中央土一斗，分置于六戊方位上，象征中央戊土镇压四方"
+    },
+    {
+      "step": 6,
+      "title": "念咒施法",
+      "description": "吸气叩齿七遍，诵读安营咒，完成结界"
+    }
+  ],
+  "relatedSpells": {
+    "anYingZhou": {
+      "name": "安营咒",
+      "content": "太山之阳，常山之阴，盗贼不起，虎狼不行，城郭不完，闭以金关千凶，万恶莫之敢干，仍在营中，宿不复出也。"
+    },
+    "yuBuZhou": {
+      "name": "禹步咒",
+      "content": "禹步相催，登阳门。白气混混灌我形。天廻地转，步七星。躡罡步斗，齐九灵。我步我长生。我得我长生。恶逆摧伏，妖邪惊。泉炎消滅，我长生，急急如律令。"
+    }
+  },
+  "applicationScenarios": [
+    {
+      "scenario": "野外宿营",
+      "description": "在野外过夜时，按此法布置结界可避凶恶侵害",
+      "priority": "高"
+    },
+    {
+      "scenario": "安营扎寨",
+      "description": "军队驻扎时设置防护结界",
+      "priority": "高"
+    },
+    {
+      "scenario": "避病去害",
+      "description": "身体不适或感觉有邪气时，面向六戊方位祈禳",
+      "priority": "中"
+    },
+    {
+      "scenario": "择地安居",
+      "description": "选择住所时参考六戊方位进行布局",
+      "priority": "中"
+    }
+  ],
+  "meta": {
+    "source": "景祐遁甲符应经二·真人闭六戊法",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-23"
+  }
+}

@@ -7,11 +7,13 @@ import { BugangVisualizer } from '../components/BugangVisualizer'
 import { JiuxingWangShuaiAnalyzer } from '../components/JiuxingWangShuaiAnalyzer'
 import { SanqiJixiongDetector } from '../components/SanqiJixiongDetector'
 import { ShiershenLookup } from '../components/ShiershenLookup'
+import { BiliuwuCalculator } from '../components/BiliuwuCalculator'
+import { ShenshaTransform } from '../components/ShenshaTransform'
 
 @Entry
 @Component
 struct JingyouToolsPage {
-  @State selectedCategory: number = 0; // 0: 第一阶段, 1: 第二阶段
+  @State selectedCategory: number = 0; // 0: 核心智能化, 1: 特色工具, 2: 辅助工具
   @State selectedTab: number = 0;
   @State currentMonthZhi: string = '子'; // 当前月令地支
 
@@ -24,6 +26,7 @@ struct JingyouToolsPage {
       Row() {
         this.buildCategoryTab('核心智能化', 0)
         this.buildCategoryTab('特色工具', 1)
+        this.buildCategoryTab('辅助工具', 2)
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 12, bottom: 8 })
@@ -31,19 +34,39 @@ struct JingyouToolsPage {
 
       // Tab切换
       if (this.selectedCategory === 0) {
-        Row() {
-          this.buildTabItem('九星休旺', 0, '⭐')
-          this.buildTabItem('三奇检测', 1, '✨')
-          this.buildTabItem('十二神', 2, '🔮')
+        Scroll() {
+          Row() {
+            this.buildTabItem('九星休旺', 0, '⭐')
+            this.buildTabItem('三奇检测', 1, '✨')
+            this.buildTabItem('十二神', 2, '🔮')
+          }
         }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%')
+        .padding({ left: 16, right: 16, top: 4, bottom: 12 })
+        .backgroundColor('#FFFFFF')
+      } else if (this.selectedCategory === 1) {
+        Scroll() {
+          Row() {
+            this.buildTabItem('透天关法', 0, '⚔️')
+            this.buildTabItem('步罡可视化', 1, '👣')
+          }
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
         .width('100%')
         .padding({ left: 16, right: 16, top: 4, bottom: 12 })
         .backgroundColor('#FFFFFF')
       } else {
-        Row() {
-          this.buildTabItem('透天关法', 0, '⚔️')
-          this.buildTabItem('步罡图形化', 1, '👣')
+        Scroll() {
+          Row() {
+            this.buildTabItem('闭六戊', 0, '🏕️')
+            this.buildTabItem('神煞转化', 1, '🔄')
+          }
         }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
         .width('100%')
         .padding({ left: 16, right: 16, top: 4, bottom: 12 })
         .backgroundColor('#FFFFFF')
@@ -61,12 +84,19 @@ struct JingyouToolsPage {
             } else {
               ShiershenLookup()
             }
-          } else {
+          } else if (this.selectedCategory === 1) {
             // 第二阶段：特色工具
             if (this.selectedTab === 0) {
               ToutianGuanTool()
             } else {
               BugangVisualizer()
+            }
+          } else {
+            // 第三阶段：辅助工具
+            if (this.selectedTab === 0) {
+              BiliuwuCalculator()
+            } else {
+              ShenshaTransform()
             }
           }
         }
@@ -102,22 +132,23 @@ struct JingyouToolsPage {
     Column() {
       Row() {
         Text(icon)
-          .fontSize(18)
+          .fontSize(16)
         Text(title)
-          .fontSize(15)
+          .fontSize(14)
           .fontWeight(this.selectedTab === index ? FontWeight.Bold : FontWeight.Normal)
           .fontColor(this.selectedTab === index ? '#722ED1' : '#666666')
-          .margin({ left: 6 })
+          .margin({ left: 4 })
+          .maxLines(1)
       }
-      .padding({ left: 20, right: 20, top: 10, bottom: 10 })
+      .padding({ left: 12, right: 12, top: 8, bottom: 8 })
       .backgroundColor(this.selectedTab === index ? '#F0E6FF' : '#FFFFFF')
-      .borderRadius(20)
+      .borderRadius(16)
       .border({
         width: this.selectedTab === index ? 2 : 1,
         color: this.selectedTab === index ? '#722ED1' : '#E8E8E8'
       })
     }
-    .margin({ right: 12 })
+    .margin({ right: 8 })
     .onClick(() => {
       this.selectedTab = index;
     })

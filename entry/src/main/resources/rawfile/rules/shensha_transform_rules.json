@@ -1,0 +1,174 @@
+{
+  "volume": "景祐遁甲符应经二",
+  "title": "神煞转化咒",
+  "description": "将各种凶神煞气转化为吉庆福气，体现奇门遁甲'化煞为权'的高级应用",
+  "origin": {
+    "originalText": "逢天狗化为天道，逢太白化为福星，逢白虎化为驿马，逢螣蛇化为喜信，逢太乙化为来福，逢亡神化为阴符，逢劫煞化为便风吹破，敌人营寨逢旄头化为奎璧，奎璧文星，急急如律令。",
+    "source": "景祐遁甲符应经二·符咒护身法"
+  },
+  "transformations": [
+    {
+      "id": "tiangou",
+      "originalSha": {
+        "name": "天狗",
+        "category": "凶煞",
+        "nature": "主灾厄、破败、血光",
+        "description": "天狗为凶星，主意外灾害、破损、血光之灾，动土、修造、出行时遇之不吉"
+      },
+      "transformTo": {
+        "name": "天道",
+        "category": "吉神",
+        "nature": "正道、顺遂、吉祥",
+        "description": "天道主正大光明、事事顺遂，凶转吉，得正道护佑"
+      },
+      "meaning": "凶转吉，得正道",
+      "chant": "逢天狗化为天道",
+      "applicationTip": "遇天狗日或天狗方时，心诵此句可化解凶气"
+    },
+    {
+      "id": "taibai",
+      "originalSha": {
+        "name": "太白",
+        "category": "凶煞",
+        "nature": "主杀伐、刑罚、兵灾",
+        "description": "太白即金星，五行属金，主杀伐、刑罚、战争，性质刚烈，遇之主有争斗、官非"
+      },
+      "transformTo": {
+        "name": "福星",
+        "category": "吉神",
+        "nature": "福禄、财运、贵人",
+        "description": "福星主吉庆、福气、好运，化刚为柔，杀气转为福气"
+      },
+      "meaning": "金星主杀，化为福气",
+      "chant": "逢太白化为福星",
+      "applicationTip": "遇太白煞或金气过旺时，心诵此句可转杀为福"
+    },
+    {
+      "id": "baihu",
+      "originalSha": {
+        "name": "白虎",
+        "category": "凶煞",
+        "nature": "主血光、伤亡、官讼",
+        "description": "白虎为四方神之一，位主西方，性主肃杀，遇之主有血光、伤灾、官司争讼"
+      },
+      "transformTo": {
+        "name": "驿马",
+        "category": "吉神",
+        "nature": "迁动、通达、进取",
+        "description": "驿马主迁动、出行顺利、升迁调动，化凶猛为通达之象"
+      },
+      "meaning": "凶神变通达",
+      "chant": "逢白虎化为驿马",
+      "applicationTip": "出行遇白虎方位时，心诵此句可化险为夷，反得通达"
+    },
+    {
+      "id": "tengshe",
+      "originalSha": {
+        "name": "螣蛇",
+        "category": "凶煞",
+        "nature": "主惊恐、怪异、虚惊",
+        "description": "螣蛇为八神之一，主虚惊、怪梦、诡异之事，遇之易有惊恐、噩梦、怪异现象"
+      },
+      "transformTo": {
+        "name": "喜信",
+        "category": "吉神",
+        "nature": "喜讯、好消息、吉兆",
+        "description": "喜信主好消息、喜庆之事，化怪异为喜讯，惊恐变惊喜"
+      },
+      "meaning": "怪异变喜讯",
+      "chant": "逢螣蛇化为喜信",
+      "applicationTip": "遇螣蛇临宫或有怪异感应时，心诵此句可化凶为吉"
+    },
+    {
+      "id": "taiyi",
+      "originalSha": {
+        "name": "太乙",
+        "category": "中性偏凶",
+        "nature": "主病灾、神煞、变动",
+        "description": "太乙为神煞之一，主病灾、变化、不稳定因素，遇之需防疾病、意外变故"
+      },
+      "transformTo": {
+        "name": "来福",
+        "category": "吉神",
+        "nature": "福气来临、好运降临",
+        "description": "来福主福气自来、好运降临，化病灾为福气，转变为吉祥"
+      },
+      "meaning": "主病灾变福气",
+      "chant": "逢太乙化为来福",
+      "applicationTip": "身体不适或感觉有病气时，心诵此句祈求转化"
+    },
+    {
+      "id": "wangshen",
+      "originalSha": {
+        "name": "亡神",
+        "category": "凶煞",
+        "nature": "主丧亡、失落、损耗",
+        "description": "亡神为凶煞，主死亡、丧事、失物、损失，遇之不宜动土、远行、求财"
+      },
+      "transformTo": {
+        "name": "阴符",
+        "category": "吉神",
+        "nature": "护佑、隐藏、保护",
+        "description": "阴符为护身符咒之力，化死亡为护佑，获得暗中保护"
+      },
+      "meaning": "主死亡变符咒护佑",
+      "chant": "逢亡神化为阴符",
+      "applicationTip": "遇亡神日或有不祥感应时，心诵此句可获符咒护佑"
+    },
+    {
+      "id": "jiesha",
+      "originalSha": {
+        "name": "劫煞",
+        "category": "凶煞",
+        "nature": "主劫难、损失、灾祸",
+        "description": "劫煞为年煞之一，主劫难、盗贼、破财、灾祸，遇之需防被劫、失财"
+      },
+      "transformTo": {
+        "name": "便风",
+        "category": "吉神",
+        "nature": "顺风、消散、化解",
+        "description": "便风如顺风般将劫难吹散，化灾祸为无形，劫难被风吹破"
+      },
+      "meaning": "主劫难被风吹散",
+      "chant": "逢劫煞化为便风吹破",
+      "applicationTip": "遇劫煞或感觉有劫难时，心诵此句可化解灾厄"
+    },
+    {
+      "id": "maotou",
+      "originalSha": {
+        "name": "旄头",
+        "category": "凶煞",
+        "nature": "主兵灾、战争、杀伐",
+        "description": "旄头为昴星之别名，主兵革、战争、杀伐之事，遇之主有争斗、战乱"
+      },
+      "transformTo": {
+        "name": "奎璧",
+        "category": "吉神",
+        "nature": "文运、科甲、才学",
+        "description": "奎璧为文星，奎宿主文章、璧宿主文学，化兵灾为文运，主科举、文名"
+      },
+      "meaning": "主兵灾变文星，主文运",
+      "chant": "逢旄头化为奎璧，奎璧文星",
+      "applicationTip": "从武转文、化干戈为玉帛时，心诵此句可获文运加持"
+    }
+  ],
+  "usageGuide": {
+    "basicMethod": [
+      "排盘或择日时，若遇到对应凶煞",
+      "查找该凶煞对应的转化关系",
+      "心诵完整咒语或单句转化咒",
+      "配合步罡或符咒效果更佳"
+    ],
+    "completeChant": "逢天狗化为天道，逢太白化为福星，逢白虎化为驿马，逢螣蛇化为喜信，逢太乙化为来福，逢亡神化为阴符，逢劫煞化为便风吹破，敌人营寨逢旄头化为奎璧，奎璧文星，急急如律令。",
+    "chantTiming": [
+      "出行前默念，可提前化解路途凶煞",
+      "排盘见凶时默念，可转化盘中凶象",
+      "紧急避险时默念，可获临时护佑"
+    ]
+  },
+  "meta": {
+    "source": "景祐遁甲符应经二·符咒护身法",
+    "version": "1.0.0",
+    "lastUpdated": "2026-01-23"
+  }
+}
